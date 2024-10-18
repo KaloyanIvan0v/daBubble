@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { FirebaseServicesService } from './../../../shared/services/firebase.service';
+import { Component, OnInit } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../shared/services/auth-services/auth.service';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -8,17 +11,28 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  constructor(
+    private authService: AuthService,
+    private firebaseService: FirebaseServicesService
+  ) {}
+
+  ngOnInit(): void {
+    this.authService.login(this.user.email, this.user.password);
+  }
+
   user = {
     email: '',
     password: '',
   };
 
-  onSubmit() {
-    if (this.user.email && this.user.password) {
-      console.log('Login successful!', this.user);
-    } else {
-      console.log('Please fill in all fields.');
-    }
+  onLogin(event: Event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+    this.authService.login(this.user.email, this.user.password); // Call the login function
+  }
+
+  // Status überprüfen
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated;
   }
 }

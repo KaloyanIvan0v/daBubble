@@ -1,6 +1,6 @@
 <!-- login.component.html -->
 <div class="login-container">
-  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+  <form (submit)="onLogin($event)" #loginForm="ngForm">
     <h2>Anmeldung</h2>
     <h4>
       Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
