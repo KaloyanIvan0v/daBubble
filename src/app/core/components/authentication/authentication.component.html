@@ -6,5 +6,11 @@
     <div>Neu bei DaBubble?</div>
     <div>Konto ertellen</div>
   </div>
-  <div class="auth-wrapper"></div>
+  <div class="auth-wrapper">
+    <ul>
+      <li *ngFor="let user of users | async">
+        {{ user | json }}
+      </li>
+    </ul>
+  </div>
 </section>
