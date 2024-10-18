@@ -1,0 +1,39 @@
+$bg-color: #eceefe;
+$secondary-color: #ffffff;
+$light-purple: #aeb0d9;
+$text-grey: #686868;
+$purple1: #444df2;
+$purple2: #797ef3;
+$purple3: #535af1;
+$online-green: #92c83e;
+$email-blue: #1181ff;
+
+@mixin dFlex($jc: center, $ai: center, $fd: row) {
+  display: flex;
+  justify-content: $jc;
+  align-items: $ai;
+  flex-direction: $fd;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.d-none {
+  display: none;
+}
+
+.v-none {
+  visibility: hidden;
+}
+
+.v-visible {
+  visibility: visible;
+}
+
+@media (max-width: 1000px) {
+  .g-title {
+    font-size: 56px !important;
+  }
+}

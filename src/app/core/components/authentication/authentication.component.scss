@@ -1,0 +1,31 @@
+.logo-container {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 243px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.sign-in {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100px;
+  min-height: 100px;
+}
