@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FirebaseServicesService } from '../../shared/services/firebase.service';
 import { Observable } from 'rxjs';
 import { JsonPipe } from '@angular/common';
-import { AuthService } from '../../shared/services/auth-services/auth.service';
 
 @Component({
   selector: 'app-authentication',
@@ -14,10 +13,7 @@ import { AuthService } from '../../shared/services/auth-services/auth.service';
   providers: [JsonPipe],
 })
 export class AuthenticationComponent {
-  constructor(
-    private firebaseService: FirebaseServicesService,
-    private authService: AuthService
-  ) {
+  constructor(private firebaseService: FirebaseServicesService) {
     this.users = this.firebaseService.getRealtimeCollectionData('users');
   }
 
