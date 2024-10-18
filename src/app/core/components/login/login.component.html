@@ -1,0 +1,62 @@
+<!-- login.component.html -->
+<div class="login-container">
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <h2>Anmeldung</h2>
+    <h4>
+      Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
+      verwendest.
+    </h4>
+    <!-- Email Input -->
+    <div class="inputs-container">
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="user.email"
+        required
+        email
+        #email="ngModel"
+        class="form-control"
+        placeholder="beispielname@email.com"
+      />
+      <div *ngIf="email.invalid && email.touched" class="error-message">
+        Diese E-Mail-Adresse ist leider ungültig.
+      </div>
+
+      <!-- Password Input -->
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="user.password"
+        required
+        minlength="6"
+        #password="ngModel"
+        class="form-control"
+        placeholder="Passwort"
+      />
+      <div *ngIf="password.invalid && password.touched" class="error-message">
+        Falsches Passwort oder E-Mail. Bitto noch einmal versuchen.
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="buttons-container">
+      <button
+        type="submit"
+        [disabled]="loginForm.invalid"
+        class="btn btn-primary"
+      >
+        Anmelden
+      </button>
+
+      <button
+        type="submit"
+        [disabled]="loginForm.invalid"
+        class="btn btn-primary"
+      >
+        Gäste-Login
+      </button>
+    </div>
+  </form>
+</div>
