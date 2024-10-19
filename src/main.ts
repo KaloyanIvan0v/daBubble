@@ -16,13 +16,9 @@ import { provideAuth, getAuth } from '@angular/fire/auth'; // Import Firebase Au
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat'; // Import FIREBASE_OPTIONS
 import { environment } from './app/environments/environment';
-<<<<<<< Updated upstream
 import { RouterModule } from '@angular/router';
 import { MainWorkspaceRoutes } from './app/core/components/main/main-workspace/main-workspace-routing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-=======
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
->>>>>>> Stashed changes
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -31,11 +27,8 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, // Provide FIREBASE_OPTIONS
     provideAuth(() => getAuth()), // Provide Firebase Authentication
-<<<<<<< Updated upstream
     provideFirestore(() => getFirestore()),
-    provideRouter(MainWorkspaceRoutes), provideAnimationsAsync(),
-=======
-    provideFirestore(() => getFirestore()), provideAnimationsAsync(),
->>>>>>> Stashed changes
+    provideRouter(MainWorkspaceRoutes),
+    provideAnimationsAsync(),
   ],
 }).catch((err) => console.error(err));
