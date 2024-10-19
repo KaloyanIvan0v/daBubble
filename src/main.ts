@@ -19,6 +19,7 @@ import { environment } from './app/environments/environment';
 <<<<<<< Updated upstream
 import { RouterModule } from '@angular/router';
 import { MainWorkspaceRoutes } from './app/core/components/main/main-workspace/main-workspace-routing';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 =======
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 >>>>>>> Stashed changes
@@ -32,7 +33,7 @@ bootstrapApplication(AppComponent, {
     provideAuth(() => getAuth()), // Provide Firebase Authentication
 <<<<<<< Updated upstream
     provideFirestore(() => getFirestore()),
-    provideRouter(MainWorkspaceRoutes),
+    provideRouter(MainWorkspaceRoutes), provideAnimationsAsync(),
 =======
     provideFirestore(() => getFirestore()), provideAnimationsAsync(),
 >>>>>>> Stashed changes
