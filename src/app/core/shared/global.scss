@@ -25,7 +25,6 @@ button {
   flex-direction: $fd;
 }
 
-<<<<<<< Updated upstream
 @mixin iconButton($img-path, $hover-img-path) {
   background-image: url($img-path);
   background-repeat: no-repeat;
@@ -37,10 +36,9 @@ button {
   &:hover {
     background-image: url($hover-img-path);
   }
-=======
-mat-icon {
-  color: $text-grey;
->>>>>>> Stashed changes
+  mat-icon {
+    color: $text-grey;
+  }
 }
 
 h2 {
