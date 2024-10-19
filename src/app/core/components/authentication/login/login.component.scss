@@ -1,0 +1,31 @@
+@import "./../../../shared/global.scss";
+
+.login-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 486px;
+  }
+}
+
+.inputs-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 46px;
+  gap: 40px;
+
+  input {
+    min-width: 500px;
+    border-radius: 100px;
+    min-height: 60px;
+    border: none;
+    outline: none;
+    background-color: $bg-color;
+  }
+}

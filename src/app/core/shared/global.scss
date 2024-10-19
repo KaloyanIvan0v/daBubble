@@ -19,6 +19,26 @@ $email-blue: #1181ff;
   flex-direction: $fd;
 }
 
+h2 {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 55.2px;
+  color: $purple1;
+  margin-top: 50px;
+}
+
+h4 {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: center;
+  margin-top: 30px;
+}
+
 a {
   text-decoration: none;
   cursor: pointer;
@@ -34,4 +54,23 @@ a {
 
 .v-visible {
   visibility: visible;
+}
+
+.purple-btn {
+  border-radius: 25px;
+  border: none;
+  background-color: $purple1;
+  padding: 12px 25px 12px 25px;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.white-btn {
+  border-radius: 25px;
+  border: 1px solid $purple1;
+  padding: 12px 25px 12px 25px;
+  color: $purple1;
+  font-size: 18px;
+  font-weight: 700;
 }

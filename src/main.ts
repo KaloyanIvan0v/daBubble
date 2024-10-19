@@ -15,7 +15,6 @@ import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth'; // Import Firebase Auth
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat'; // Import FIREBASE_OPTIONS
-
 import { environment } from './app/environments/environment';
 
 bootstrapApplication(AppComponent, {
