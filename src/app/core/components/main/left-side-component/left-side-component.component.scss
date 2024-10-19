@@ -31,14 +31,8 @@ section {
 }
 
 .new-mgs-button {
-  background-image: url("./../../../../../assets/img/buttons/edit_square-black.svg");
-  background-repeat: no-repeat;
-  background-size: 24px 24px;
-  background-position: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  &:hover {
-    background-image: url("./../../../../../assets/img/buttons/edit_square-blue.svg");
-  }
+  @include iconButton(
+    "/assets/img/buttons/edit_square-black.svg",
+    "/assets/img/buttons/edit_square-blue.svg"
+  );
 }
