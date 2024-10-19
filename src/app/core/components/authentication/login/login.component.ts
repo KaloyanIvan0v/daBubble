@@ -28,11 +28,10 @@ export class LoginComponent implements OnInit {
   };
 
   onLogin(event: Event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-    this.authService.login(this.user.email, this.user.password); // Call the login function
+    event.preventDefault();
+    this.authService.login(this.user.email, this.user.password);
   }
 
-  // Status überprüfen
   get isAuthenticated(): boolean {
     return this.authService.isAuthenticated;
   }

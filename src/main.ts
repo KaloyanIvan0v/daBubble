@@ -16,6 +16,8 @@ import { provideAuth, getAuth } from '@angular/fire/auth'; // Import Firebase Au
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat'; // Import FIREBASE_OPTIONS
 import { environment } from './app/environments/environment';
+import { RouterModule } from '@angular/router';
+import { MainWorkspaceRoutes } from './app/core/components/main/main-workspace/main-workspace-routing';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -25,5 +27,6 @@ bootstrapApplication(AppComponent, {
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, // Provide FIREBASE_OPTIONS
     provideAuth(() => getAuth()), // Provide Firebase Authentication
     provideFirestore(() => getFirestore()),
+    provideRouter(MainWorkspaceRoutes),
   ],
 }).catch((err) => console.error(err));

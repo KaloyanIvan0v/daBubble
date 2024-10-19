@@ -1,0 +1,60 @@
+@import "./../../../shared/global.scss";
+section {
+  width: 100%;
+  height: 100px;
+  @include dFlex($jc: space-between, $fd: row);
+  padding: 20px;
+  p {
+    margin: 0;
+  }
+  box-sizing: border-box;
+}
+
+.search-wrapper {
+  @include dFlex($fd: row);
+  width: 50%;
+  height: 70px;
+  max-width: 989px;
+  min-width: 100px;
+  background-color: white;
+  border-radius: 42px;
+
+  input {
+    width: 100%;
+    margin: 0px 0px 0px 28px;
+    font-size: 24px;
+  }
+
+  img {
+    width: auto;
+    height: 35px;
+    flex-shrink: 0;
+    margin: 0px 28px 0px 0px;
+  }
+}
+
+.user-wrapper {
+  @include dFlex($fd: row);
+  gap: 20px;
+
+  .user-name {
+    font-size: 34px;
+    font-weight: 700;
+    min-width: max-content;
+  }
+
+  .user-img {
+    img {
+      width: auto;
+      height: 70px;
+      border-radius: 50%;
+    }
+  }
+
+  .user-menu {
+    img {
+      width: auto;
+      height: 30px;
+    }
+  }
+}
