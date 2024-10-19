@@ -1,3 +1,44 @@
 @import "./../../../shared/global.scss";
 section {
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.header {
+  @include dFlex($jc: space-between);
+  width: 100%;
+  height: max-content;
+}
+
+.logo-container {
+  gap: 15px;
+  @include dFlex();
+  .logo-name {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .logo-img {
+    width: 60px;
+    height: auto;
+  }
+}
+
+.icon-btn {
+  cursor: pointer;
+  &:hover {
+    background-color: $bg-color;
+  }
+}
+
+.new-mgs-button {
+  background-image: url("./../../../../../assets/img/buttons/edit_square-black.svg");
+  background-repeat: no-repeat;
+  background-size: 24px 24px;
+  background-position: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  &:hover {
+    background-image: url("./../../../../../assets/img/buttons/edit_square-blue.svg");
+  }
 }
