@@ -8,8 +8,14 @@ $purple3: #535af1;
 $online-green: #92c83e;
 $email-blue: #1181ff;
 
-* {
-  font-family: "Nunito" !important;
+h1,
+h2,
+h3,
+h4,
+p,
+span,
+button {
+  font-family: "Nunito";
 }
 
 @mixin dFlex($jc: center, $ai: center, $fd: row) {
@@ -19,6 +25,7 @@ $email-blue: #1181ff;
   flex-direction: $fd;
 }
 
+<<<<<<< Updated upstream
 @mixin iconButton($img-path, $hover-img-path) {
   background-image: url($img-path);
   background-repeat: no-repeat;
@@ -30,6 +37,10 @@ $email-blue: #1181ff;
   &:hover {
     background-image: url($hover-img-path);
   }
+=======
+mat-icon {
+  color: $text-grey;
+>>>>>>> Stashed changes
 }
 
 h2 {
@@ -60,6 +71,10 @@ a {
 input {
   outline: none;
   border: none;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 .d-none {
