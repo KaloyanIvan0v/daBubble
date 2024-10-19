@@ -9,7 +9,7 @@ $online-green: #92c83e;
 $email-blue: #1181ff;
 
 * {
-  font-family: "Nunito";
+  font-family: "Nunito" !important;
 }
 
 @mixin dFlex($jc: center, $ai: center, $fd: row) {
@@ -78,4 +78,12 @@ input {
   color: $purple1;
   font-size: 18px;
   font-weight: 700;
+}
+
+.link-text {
+  font-family: Figtree !important;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 21.6px;
+  color: $purple1;
 }
