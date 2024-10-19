@@ -1,13 +1,12 @@
 import { FirebaseServicesService } from './../../../shared/services/firebase.service';
 import { Component, OnInit } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth-services/auth.service';
-
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [BrowserModule, FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

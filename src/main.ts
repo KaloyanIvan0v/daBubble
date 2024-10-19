@@ -14,6 +14,8 @@ import { routes } from './app/app.routes'; // Import your routes
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth'; // Import Firebase Auth
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { FIREBASE_OPTIONS } from '@angular/fire/compat'; // Import FIREBASE_OPTIONS
+
 import { environment } from './app/environments/environment';
 
 bootstrapApplication(AppComponent, {
@@ -21,7 +23,8 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(),
     provideRouter(routes), // Provide the router configuration
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-    provideFirestore(() => getFirestore()),
+    { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig }, // Provide FIREBASE_OPTIONS
     provideAuth(() => getAuth()), // Provide Firebase Authentication
+    provideFirestore(() => getFirestore()),
   ],
 }).catch((err) => console.error(err));

@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FirebaseServicesService } from '../../shared/services/firebase.service';
 import { Observable } from 'rxjs';
 import { JsonPipe } from '@angular/common';
-
+import { LoginComponent } from './login/login.component';
 @Component({
   selector: 'app-authentication',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LoginComponent],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss',
   providers: [JsonPipe],
