@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth-services/auth.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -13,7 +14,8 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
-    private firebaseService: FirebaseServicesService
+    private firebaseService: FirebaseServicesService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -33,5 +35,9 @@ export class LoginComponent implements OnInit {
   // Status überprüfen
   get isAuthenticated(): boolean {
     return this.authService.isAuthenticated;
+  }
+
+  guestLogin() {
+    this.router.navigate(['/dashboard']);
   }
 }

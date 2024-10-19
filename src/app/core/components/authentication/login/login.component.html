@@ -46,9 +46,7 @@
         Anmelden
       </button>
 
-      <button type="submit" [disabled]="loginForm.invalid" class="white-btn">
-        Gäste-Login
-      </button>
+      <button class="white-btn" (click)="guestLogin()">Gäste-Login</button>
     </div>
   </form>
 </div>
