@@ -2,14 +2,15 @@
 @import "./../style-helper.scss";
 
 section {
-  @include dFlex();
+  @include dFlex($fd: column);
   width: 100%;
-  height: 100px;
+  margin-top: 25px;
 }
 
 header {
   width: 100%;
   @include dFlex($jc: space-between);
+  margin-bottom: 25px;
 }
 
 .left-wrapper-open {
@@ -65,4 +66,49 @@ header {
   &:hover {
     color: $purple3;
   }
+}
+
+.chat-items {
+  @include dFlex($fd: column, $ai: start);
+  width: 100%;
+  padding-left: 40px;
+  box-sizing: border-box;
+}
+
+.chat-item {
+  @include dFlex();
+  width: max-content;
+  gap: 15px;
+  padding: 4px 20px;
+  margin-bottom: 13px;
+  &:hover {
+    background-color: $bg-color;
+    border-radius: 30px;
+  }
+}
+
+.item-img {
+  position: relative;
+  @include dFlex();
+  width: 50px;
+  height: 50px;
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+}
+
+.item-name {
+  @include dFlex();
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.status {
+  position: absolute;
+  bottom: 0px;
+  right: -2px;
+  @include statusDot("online");
+  z-index: 4;
 }

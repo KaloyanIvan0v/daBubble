@@ -101,8 +101,29 @@ header {
 
 .add-channel {
   @include dFlex($jc: start);
+  gap: 10px;
   width: 100%;
   padding-left: 60px;
   box-sizing: border-box;
   font-weight: 200;
+  .add-img {
+    @include iconButton(
+      "/assets/img/buttons/add_circle-black.svg",
+      "/assets/img/buttons/add_circle-blue.svg"
+    );
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    color: $purple3;
+    .add-img {
+      @include iconButton(
+        "/assets/img/buttons/add_circle-blue.svg",
+        "/assets/img/buttons/add_circle-blue.svg"
+      );
+      width: 24px;
+      height: 24px;
+    }
+  }
 }
