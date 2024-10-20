@@ -75,6 +75,21 @@ header {
   box-sizing: border-box;
 }
 
+.chat-items-closed,
+.chat-items-open {
+  overflow: hidden;
+}
+
+.chat-items-closed {
+  max-height: 0;
+  transition: max-height 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.chat-items-open {
+  max-height: 900px;
+  transition: max-height 0.6s cubic-bezier(1, 0.25, 0.8, 1);
+}
+
 .chat-item {
   @include dFlex();
   width: max-content;

@@ -2,23 +2,36 @@
   <header>
     <div
       [ngClass]="{
-          'left-wrapper-closed': !chatListOpen,
-          'left-wrapper-open': chatListOpen,
-        }"
-      (click)="toggleChatlList()"
+        'left-wrapper-closed': !chatListOpen,
+        'left-wrapper-open': chatListOpen
+      }"
+      (click)="toggleChatList()"
       class="left-wrapper"
     >
       <div
         [ngClass]="{
           'drop-down-closed': !chatListOpen,
-          'drop-down-open': chatListOpen,
+          'drop-down-open': chatListOpen
         }"
       ></div>
       <div class="person-black-blue-img"></div>
       <div class="chat-tittle">Direktnachrichten</div>
     </div>
   </header>
-  <div class="chat-items">
+  <div
+    class="chat-items"
+    [ngClass]="{
+      'chat-items-closed': !chatListOpen,
+      'chat-items-open': chatListOpen
+    }"
+  >
+    <div class="chat-item">
+      <div class="item-img">
+        <img src="assets/img/profile-img/Frederik-Beck.svg" alt="" />
+        <div class="status"></div>
+      </div>
+      <div class="item-name">Frederik Beck</div>
+    </div>
     <div class="chat-item">
       <div class="item-img">
         <img src="assets/img/profile-img/Frederik-Beck.svg" alt="" />

@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 export class ChatListComponent {
   chatListOpen: boolean = false;
 
-  toggleChatlList() {
+  toggleChatList() {
     this.chatListOpen = !this.chatListOpen;
   }
 }

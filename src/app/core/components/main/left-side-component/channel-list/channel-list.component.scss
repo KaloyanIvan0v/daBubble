@@ -65,6 +65,21 @@ header {
   font-size: 18px;
 }
 
+.channel-items-closed,
+.channel-items-open {
+  overflow: hidden;
+}
+
+.channel-items-closed {
+  max-height: 0;
+  transition: max-height 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.channel-items-open {
+  max-height: 900px;
+  transition: max-height 0.6s cubic-bezier(1, 0.25, 0.8, 1);
+}
+
 .channel-list {
   width: 100%;
   margin-top: 25px;

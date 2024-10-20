@@ -19,7 +19,13 @@
     </div>
     <div class="add-black-blue-background-img"></div>
   </header>
-  <div class="channel-items">
+  <div
+    [ngClass]="{
+      'channel-items-closed': !channelListOpen,
+      'channel-items-open': channelListOpen
+    }"
+    class="channel-items"
+  >
     <div class="channel-list">
       <div class="channel">
         <div class="channel-tag"></div>
