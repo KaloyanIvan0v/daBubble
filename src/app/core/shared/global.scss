@@ -80,6 +80,12 @@ h4 {
   margin-top: 30px;
 }
 
+p {
+  margin: 0 !important;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
 a {
   text-decoration: none;
   cursor: pointer;
@@ -107,22 +113,25 @@ button:hover {
 }
 
 .purple-btn {
-  border-radius: 25px;
-  border: none;
-  background-color: $purple1;
-  padding: 12px 25px 12px 25px;
+  background-color: $purple1 !important;
   color: white;
   font-size: 18px;
   font-weight: 700;
+  padding: 25px;
 }
 
 .white-btn {
-  border-radius: 25px;
-  border: 1px solid $purple1;
-  padding: 12px 25px 12px 25px;
-  color: $purple1;
+  border: 1px solid $purple1 !important;
+  color: $purple1 !important;
   font-size: 18px;
   font-weight: 700;
+  padding: 25px;
+
+  &:hover {
+    background-color: $purple1 !important;
+    color: white !important;
+    filter: brightness(1.2);
+  }
 }
 
 .link-text {

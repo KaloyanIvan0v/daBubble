@@ -8,38 +8,47 @@
     </h4>
     <!-- Email Input -->
     <div class="inputs-container">
-      <mat-icon class="material-icons-outlined">email</mat-icon>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        [(ngModel)]="user.email"
-        required
-        email
-        #email="ngModel"
-        class="form-control"
-        placeholder="beispielname@email.com"
-      />
+      <div class="email-input" [class.input-focus-border]="isEmailFocused">
+        <mat-icon class="material-icons-outlined">email</mat-icon>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="user.email"
+          required
+          email
+          #email="ngModel"
+          placeholder="beispielname@email.com"
+          (focus)="onFocus('email')"
+          (blur)="onBlur('email')"
+        />
+      </div>
       <div *ngIf="email.invalid && email.touched" class="error-message">
-        Diese E-Mail-Adresse ist leider ungültig.
+        <p>*Diese E-Mail-Adresse ist leider ungültig.</p>
       </div>
 
       <!-- Password Input -->
-      <mat-icon class="material-icons-outlined">lock</mat-icon>
+      <div
+        class="password-input"
+        [class.input-focus-border]="isPasswordFocused"
+      >
+        <mat-icon class="material-icons-outlined">lock</mat-icon>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="user.password"
+          required
+          minlength="6"
+          #password="ngModel"
+          placeholder="Passwort"
+          (focus)="onFocus('password')"
+          (blur)="onBlur('password')"
+        />
+      </div>
 
-      <input
-        type="password"
-        id="password"
-        name="password"
-        [(ngModel)]="user.password"
-        required
-        minlength="6"
-        #password="ngModel"
-        class="form-control"
-        placeholder="Passwort"
-      />
       <div *ngIf="password.invalid && password.touched" class="error-message">
-        Falsches Passwort oder E-Mail. Bitto noch einmal versuchen.
+        <p>Falsches Passwort oder E-Mail. Bitto noch einmal versuchen.</p>
       </div>
     </div>
 
@@ -51,15 +60,17 @@
       <div class="gray-line"></div>
     </div>
 
-    <button class="google-btn">Anmelden mit Google</button>
+    <button class="google-btn">
+      <img src="assets/img/icons/google_login.svg" alt="" />
+      Anmelden mit Google
+    </button>
 
     <!-- Buttons -->
     <div class="buttons-container">
-      <button type="" [disabled]="loginForm.invalid" class="primary-btn">
-        Anmelden
+      <button class="purple-btn" mat-flat-button>Anmelden</button>
+      <button class="white-btn" (click)="guestLogin()" mat-stroked-button>
+        Gäste-Login
       </button>
-
-      <button class="secondary-btn" (click)="guestLogin()">Gäste-Login</button>
     </div>
   </form>
 </div>

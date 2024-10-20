@@ -1,15 +1,13 @@
-import { FirebaseServicesService } from './../../../shared/services/firebase.service';
+import { SharedModule } from '../../../shared/shared-module';
+import { FirebaseServicesService } from '../../../shared/services/firebase.service';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth-services/auth.service';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule, MatIconModule],
+  imports: [SharedModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -40,5 +38,24 @@ export class LoginComponent implements OnInit {
 
   guestLogin() {
     this.router.navigate(['/dashboard']);
+  }
+
+  isEmailFocused: boolean = false;
+  isPasswordFocused: boolean = false;
+
+  onFocus(inputType: string): void {
+    if (inputType === 'email') {
+      this.isEmailFocused = true;
+    } else if (inputType === 'password') {
+      this.isPasswordFocused = true;
+    }
+  }
+
+  onBlur(inputType: string): void {
+    if (inputType === 'email') {
+      this.isEmailFocused = false;
+    } else if (inputType === 'password') {
+      this.isPasswordFocused = false;
+    }
   }
 }
