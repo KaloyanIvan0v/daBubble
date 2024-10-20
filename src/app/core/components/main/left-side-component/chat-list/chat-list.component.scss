@@ -1,4 +1,6 @@
 @import "global.scss";
+@import "./../style-helper.scss";
+
 section {
   @include dFlex();
   width: 100%;
@@ -10,15 +12,32 @@ header {
   @include dFlex($jc: space-between);
 }
 
-.left-wrapper {
+.left-wrapper-open {
   @include dFlex();
 
   &:hover {
-    .drop-down-img {
+    .drop-down-open {
+      @include dropDown("true", "true");
+    }
+
+    .person-black-blue-img {
       @include iconButton(
-        "/assets/img/buttons/arrow_drop_down-blue.svg",
-        "/assets/img/buttons/arrow_drop_down-blue.svg"
+        "/assets/img/icons/account_circle-blue.svg",
+        "/assets/img/icons/account_circle-blue.svg"
       );
+    }
+    .chat-tittle {
+      color: $purple3;
+    }
+  }
+}
+
+.left-wrapper-closed {
+  @include dFlex();
+
+  &:hover {
+    .drop-down-closed {
+      @include dropDown("true", "false");
     }
 
     .person-black-blue-img {

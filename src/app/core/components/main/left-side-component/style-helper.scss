@@ -1,0 +1,68 @@
+@import "global.scss";
+
+@mixin dropDown($hover, $open) {
+  @if $hover == "true" {
+    @if $open == "true" {
+      @include iconButton(
+        "/assets/img/buttons/arrow_drop_down-blue.svg",
+        "/assets/img/buttons/arrow_drop_down-blue.svg"
+      );
+    } @else {
+      @include iconButton(
+        "/assets/img/buttons/arrow_drop_down-blue.svg",
+        "/assets/img/buttons/arrow_drop_down-blue.svg"
+      );
+      transform: rotate(-90deg);
+    }
+  } @else {
+    @if $open == "true" {
+      @include iconButton(
+        "/assets/img/buttons/arrow_drop_down-black.svg",
+        "/assets/img/buttons/arrow_drop_down-blue.svg"
+      );
+    } @else {
+      @include iconButton(
+        "/assets/img/buttons/arrow_drop_down-black.svg",
+        "/assets/img/buttons/arrow_drop_down-blue.svg"
+      );
+      transform: rotate(-90deg);
+    }
+  }
+}
+
+.drop-down-open {
+  @include dropDown("false", "true");
+  &:hover {
+    @include dropDown("true", "true");
+  }
+}
+
+.drop-down-closed {
+  @include dropDown("false", "false");
+  &:hover {
+    @include dropDown("true", "false");
+  }
+}
+
+.workspaces-img {
+  @include iconButton(
+    "/assets/img/buttons/workspaces-black.svg",
+    "/assets/img/buttons/workspaces-blue.svg"
+  );
+}
+
+.add-black-blue-img {
+  @include iconButton(
+    "/assets/img/buttons/add-bold-black.svg",
+    "/assets/img/buttons/add-blue.svg"
+  );
+}
+
+.add-black-blue-background-img {
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/add-bold-black.svg",
+    "/assets/img/buttons/add-blue.svg"
+  );
+  height: 30px;
+  width: 30px;
+}

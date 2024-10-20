@@ -1,7 +1,19 @@
 <section>
   <header>
-    <div class="left-wrapper">
-      <div class="drop-down-img"></div>
+    <div
+      [ngClass]="{
+          'left-wrapper-closed': !chatListOpen,
+          'left-wrapper-open': chatListOpen,
+        }"
+      (click)="toggleChatlList()"
+      class="left-wrapper"
+    >
+      <div
+        [ngClass]="{
+          'drop-down-closed': !chatListOpen,
+          'drop-down-open': chatListOpen,
+        }"
+      ></div>
       <div class="person-black-blue-img"></div>
       <div class="chat-tittle">Direktnachrichten</div>
     </div>

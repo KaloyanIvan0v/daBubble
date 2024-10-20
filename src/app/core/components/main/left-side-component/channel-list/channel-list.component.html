@@ -1,17 +1,34 @@
 <section>
   <header>
-    <div class="left-wrapper">
-      <div class="drop-down-img"></div>
+    <div
+      [ngClass]="{
+          'left-wrapper-closed ': !channelListOpen,
+          'left-wrapper-open ': channelListOpen,
+        }"
+      (click)="toggleChannelList()"
+      class="left-wrapper"
+    >
+      <div
+        [ngClass]="{
+          'drop-down-closed': !channelListOpen,
+          'drop-down-open': channelListOpen,
+        }"
+      ></div>
       <div class="workspaces-img"></div>
       <div class="channel-tittle">Channels</div>
     </div>
-    <div class="add-black-blue-img"></div>
+    <div class="add-black-blue-background-img"></div>
   </header>
-  <div channel-list>
-    <div># Entwicklerteam # Devspace # Community # Bugfixes</div>
+  <div class="channel-items">
+    <div class="channel-list">
+      <div class="channel">
+        <div class="channel-tag"></div>
+        <div>Entwicklerteam</div>
+      </div>
+    </div>
     <div class="add-channel">
-      <img src="" alt="" />
-      <div>Channer hinzufügen</div>
+      <img src="/assets/img/buttons/add_circle-black.svg" alt="" />
+      <div>Channel hinzufügen</div>
     </div>
   </div>
 </section>

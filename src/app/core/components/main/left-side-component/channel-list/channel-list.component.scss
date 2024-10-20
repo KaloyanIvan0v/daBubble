@@ -1,8 +1,11 @@
 @import "global.scss";
+@import "./../style-helper.scss";
+
 section {
   @include dFlex($fd: column);
   width: 100%;
   height: 100%;
+  margin-top: 25px;
 }
 
 header {
@@ -10,15 +13,31 @@ header {
   @include dFlex($jc: space-between);
 }
 
-.left-wrapper {
+.left-wrapper-open {
+  @include dFlex();
+  &:hover {
+    .drop-down-open {
+      @include dropDown("true", "true");
+    }
+
+    .workspaces-img {
+      @include iconButton(
+        "/assets/img/buttons/workspaces-blue.svg",
+        "/assets/img/buttons/workspaces-blue.svg"
+      );
+    }
+    .channel-tittle {
+      color: $purple3;
+    }
+  }
+}
+
+.left-wrapper-closed {
   @include dFlex();
 
   &:hover {
-    .drop-down-img {
-      @include iconButton(
-        "/assets/img/buttons/arrow_drop_down-blue.svg",
-        "/assets/img/buttons/arrow_drop_down-blue.svg"
-      );
+    .drop-down-closed {
+      @include dropDown("true", "false");
     }
 
     .workspaces-img {
@@ -39,4 +58,51 @@ header {
   &:hover {
     color: $purple3;
   }
+}
+
+.channel-items {
+  width: 100%;
+  font-size: 18px;
+}
+
+.channel-list {
+  width: 100%;
+  margin-top: 25px;
+  padding-left: 25px;
+  box-sizing: border-box;
+}
+
+.channel {
+  @include dFlex($jc: start);
+  margin-bottom: 25px;
+  width: 100%;
+  padding: 0px 20px;
+  box-sizing: border-box;
+  font-weight: 300;
+  .channel-tag {
+    @include iconButton(
+      "/assets/img/icons/tag-black.svg",
+      "/assets/img/icons/tag-black.svg"
+    );
+  }
+  &:hover {
+    font-weight: 600;
+    color: $purple3;
+    .channel-tag {
+      @include iconButton(
+        "/assets/img/icons/tag-blue.svg",
+        "/assets/img/icons/tag-blue.svg"
+      );
+    }
+    background-color: $bg-color;
+    border-radius: 20px;
+  }
+}
+
+.add-channel {
+  @include dFlex($jc: start);
+  width: 100%;
+  padding-left: 60px;
+  box-sizing: border-box;
+  font-weight: 200;
 }

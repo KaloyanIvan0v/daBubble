@@ -162,24 +162,3 @@ button:hover {
     color: $text-grey;
   }
 }
-
-.add-black-blue-img {
-  @include iconButton(
-    "/assets/img/buttons/add-bold-black.svg",
-    "/assets/img/buttons/add-blue.svg"
-  );
-}
-
-.drop-down-img {
-  @include iconButton(
-    "/assets/img/buttons/arrow_drop_down-black.svg",
-    "/assets/img/buttons/arrow_drop_down-blue.svg"
-  );
-}
-
-.workspaces-img {
-  @include iconButton(
-    "/assets/img/buttons/workspaces-black.svg",
-    "/assets/img/buttons/workspaces-blue.svg"
-  );
-}
