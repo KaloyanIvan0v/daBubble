@@ -1,4 +1,4 @@
-@import "./../../../shared/global.scss";
+@import "global.scss";
 section {
   padding: 30px;
   box-sizing: border-box;
@@ -23,15 +23,8 @@ section {
   }
 }
 
-.icon-btn {
-  cursor: pointer;
-  &:hover {
-    background-color: $bg-color;
-  }
-}
-
 .new-mgs-button {
-  @include iconButton(
+  @include iconButtonWithHoverBackground(
     "/assets/img/buttons/edit_square-black.svg",
     "/assets/img/buttons/edit_square-blue.svg"
   );

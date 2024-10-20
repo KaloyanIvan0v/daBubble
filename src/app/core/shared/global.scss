@@ -28,7 +28,6 @@ button {
 @mixin iconButton($img-path, $hover-img-path) {
   background-image: url($img-path);
   background-repeat: no-repeat;
-  background-size: 24px 24px;
   background-position: center;
   width: 40px;
   height: 40px;
@@ -38,6 +37,14 @@ button {
   }
   mat-icon {
     color: $text-grey;
+  }
+}
+
+@mixin iconButtonWithHoverBackground($img-path, $hover-img-path) {
+  @include iconButton($img-path, $hover-img-path);
+  cursor: pointer;
+  &:hover {
+    background-color: $bg-color;
   }
 }
 
@@ -112,4 +119,67 @@ button:hover {
   font-weight: 400;
   line-height: 21.6px;
   color: $purple1;
+}
+
+.primary-btn {
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24.55px;
+  color: white;
+  background-color: $purple1;
+  &:hover {
+    background-color: $purple2;
+  }
+  &:active {
+    background-color: $purple1;
+  }
+  &:disabled {
+    background-color: $text-grey;
+  }
+}
+
+.secondary-btn {
+  padding: 12px 25px;
+  border-radius: 25px;
+  border: 1px solid $purple2;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24.55px;
+  color: $purple1;
+  background-color: $secondary-color;
+  &:hover {
+    background-color: $purple3;
+    color: white;
+  }
+  &:active {
+    background-color: $purple1;
+  }
+  &:disabled {
+    background-color: white;
+    border: 1px solid $text-grey;
+    color: $text-grey;
+  }
+}
+
+.add-black-blue-img {
+  @include iconButton(
+    "/assets/img/buttons/add-bold-black.svg",
+    "/assets/img/buttons/add-blue.svg"
+  );
+}
+
+.drop-down-img {
+  @include iconButton(
+    "/assets/img/buttons/arrow_drop_down-black.svg",
+    "/assets/img/buttons/arrow_drop_down-blue.svg"
+  );
+}
+
+.workspaces-img {
+  @include iconButton(
+    "/assets/img/buttons/workspaces-black.svg",
+    "/assets/img/buttons/workspaces-blue.svg"
+  );
 }

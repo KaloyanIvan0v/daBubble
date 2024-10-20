@@ -1,0 +1,42 @@
+@import "global.scss";
+section {
+  @include dFlex($fd: column);
+  width: 100%;
+  height: 100%;
+}
+
+header {
+  width: 100%;
+  @include dFlex($jc: space-between);
+}
+
+.left-wrapper {
+  @include dFlex();
+
+  &:hover {
+    .drop-down-img {
+      @include iconButton(
+        "/assets/img/buttons/arrow_drop_down-blue.svg",
+        "/assets/img/buttons/arrow_drop_down-blue.svg"
+      );
+    }
+
+    .workspaces-img {
+      @include iconButton(
+        "/assets/img/buttons/workspaces-blue.svg",
+        "/assets/img/buttons/workspaces-blue.svg"
+      );
+    }
+    .channel-tittle {
+      color: $purple3;
+    }
+  }
+}
+
+.channel-tittle {
+  font-size: 20px;
+  font-weight: 600;
+  &:hover {
+    color: $purple3;
+  }
+}

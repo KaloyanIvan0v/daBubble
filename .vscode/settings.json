@@ -1,5 +1,10 @@
 {
   "liveshare.launcherClient": "visualStudioCode",
   "liveshare.showReadOnlyUsersInEditor": "always",
-  "liveshare.nameTagVisibility": "Always"
+  "liveshare.nameTagVisibility": "Always",
+  "path-intellisense.autoTriggerNextSuggestion": true,
+  "path-intellisense.extensionOnImport": true,
+  "path-intellisense.showHiddenFiles": true,
+  "path-intellisense.autoSlashAfterDirectory": true,
+  "path-intellisense.absolutePathTo": ""
 }

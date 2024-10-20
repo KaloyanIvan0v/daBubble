@@ -28,6 +28,10 @@
               "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["/src/app/core/shared"]
+            },
+
             "scripts": []
           },
           "configurations": {
@@ -44,12 +48,18 @@
                   "maximumError": "4kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "stylePreprocessorOptions": {
+                "includePaths": ["src/app/core/shared"]
+              }
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "stylePreprocessorOptions": {
+                "includePaths": ["src/app/core/shared"]
+              }
             }
           },
           "defaultConfiguration": "production"
