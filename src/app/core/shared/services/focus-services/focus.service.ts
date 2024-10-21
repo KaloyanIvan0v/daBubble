@@ -7,6 +7,7 @@ export class FocusService {
   constructor() {}
 
   focused: { [key: string]: boolean } = {
+    name: false,
     email: false,
     password: false,
   };
