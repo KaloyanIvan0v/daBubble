@@ -3,11 +3,17 @@
     <img src="assets/img/logo-long.svg" alt="logo" />
   </div>
   <div class="sign-in">
-    <div>Neu bei DaBubble?</div>
-    <div>Konto ertellen</div>
+    <div>
+      {{ showSignup ? "" : "Neu bei DaBubble?" }}
+    </div>
+
+    <div (click)="toggleSignup()" class="link">
+      {{ showSignup ? "" : "Konto erstellen" }}
+    </div>
   </div>
 
   <div class="auth-wrapper">
-    <app-login></app-login>
+    <app-login *ngIf="!showSignup"></app-login>
+    <app-signup *ngIf="showSignup"></app-signup>
   </div>
 </section>

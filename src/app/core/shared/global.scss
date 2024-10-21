@@ -184,6 +184,8 @@ button:hover {
   }
 }
 
+/* Styles for inputs */
+
 .inputs-container {
   display: flex;
   flex-direction: column;
@@ -191,7 +193,8 @@ button:hover {
   margin-bottom: 15px;
 
   .email-input,
-  .password-input {
+  .password-input,
+  .name-input {
     width: 500px;
     border-radius: 100px;
     height: 60px;
@@ -220,5 +223,16 @@ button:hover {
 
   img {
     margin-left: 32px;
+  }
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  position: relative;
+
+  p {
+    position: absolute;
+    top: -30px;
   }
 }

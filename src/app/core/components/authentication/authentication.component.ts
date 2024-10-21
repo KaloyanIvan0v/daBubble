@@ -4,16 +4,18 @@ import { FirebaseServicesService } from '../../shared/services/firebase.service'
 import { Observable } from 'rxjs';
 import { JsonPipe } from '@angular/common';
 import { LoginComponent } from './login/login.component';
+import { SignupComponent } from '../signup/signup.component';
 
 @Component({
   selector: 'app-authentication',
   standalone: true,
-  imports: [CommonModule, LoginComponent],
+  imports: [CommonModule, LoginComponent, SignupComponent],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss',
   providers: [JsonPipe],
 })
 export class AuthenticationComponent {
+  showSignup = false;
   constructor(private firebaseService: FirebaseServicesService) {
     this.users = this.firebaseService.getRealtimeCollectionData('users');
   }
@@ -29,5 +31,9 @@ export class AuthenticationComponent {
     this.users.subscribe((data) => {
       console.log('Daten:', data);
     });
+  }
+
+  toggleSignup() {
+    this.showSignup = !this.showSignup;
   }
 }

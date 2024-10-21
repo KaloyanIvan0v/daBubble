@@ -65,14 +65,3 @@
   height: 1px;
   border-bottom: 1px solid $light-purple;
 }
-
-.error-message {
-  color: red;
-  font-size: 14px;
-  position: relative;
-
-  p {
-    position: absolute;
-    top: -30px;
-  }
-}
