@@ -20,4 +20,10 @@ export class SignupComponent {
     private firebaseService: FirebaseServicesService,
     public focusService: FocusService
   ) {}
+
+  isChecked: boolean = false;
+
+  toggleCheckbox() {
+    this.isChecked = !this.isChecked;
+  }
 }

@@ -33,14 +33,28 @@
 }
 
 .privacy-policy {
-  img {
-    cursor: pointer;
-    position: relative;
-    margin-right: 10px;
-    transition: filter 0.1s ease;
+  .check-box {
+    display: flex;
+    align-items: center;
 
-    &:hover {
-      filter: brightness(10);
+    img {
+      width: 24px !important;
+      margin-right: 10px;
     }
   }
+
+  .check-box-img {
+    cursor: pointer;
+
+    @include iconButton(
+      "/assets/img/buttons/checkbox-dark-unchecked.svg",
+      "/assets/img/buttons/checkbox-dark-checked.svg"
+    );
+  }
+}
+
+.button-container {
+  position: absolute;
+  right: 53px;
+  bottom: 40px;
 }

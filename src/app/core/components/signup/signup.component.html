@@ -77,8 +77,17 @@
       </div>
     </div>
     <div class="privacy-policy">
-      <div class="check-box">
-        <img src="assets/img/icons/checkbox-empty.svg" alt="checkbox" />
+      <div class="check-box" (click)="toggleCheckbox()">
+        <img
+          src="assets/img/buttons/checkbox-light-unchecked.svg"
+          class="check-box-img"
+          [ngClass]="{ checked: isChecked, unchecked: !isChecked }"
+          [ngStyle]="{
+            'background-image': isChecked
+              ? 'url(/assets/img/buttons/checkbox-light-checked.svg)'
+              : 'url(/assets/img/buttons/checkbox-light-unchecked.svg)'
+          }"
+        />
         <span>
           Ich stimme der
           <a href="/">
@@ -87,7 +96,10 @@
           zu.
         </span>
       </div>
-      <!---->
+
+      <div class="button-container">
+        <button class="primary-btn" mat-flat-button>Weiter</button>
+      </div>
     </div>
   </form>
 </div>
