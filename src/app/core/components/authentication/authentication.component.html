@@ -4,11 +4,11 @@
   </div>
   <div class="sign-in">
     <div>
-      {{ showSignup ? "" : "Neu bei DaBubble?" }}
+      <h4>{{ showSignup ? "" : "Neu bei DaBubble?" }}</h4>
     </div>
 
     <div (click)="toggleSignup()" class="link">
-      {{ showSignup ? "" : "Konto erstellen" }}
+      <span>{{ showSignup ? "" : "Konto erstellen" }}</span>
     </div>
   </div>
 

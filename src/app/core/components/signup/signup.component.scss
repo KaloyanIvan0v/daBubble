@@ -13,3 +13,34 @@
     max-width: 486px;
   }
 }
+
+.check-box {
+  max-width: 620px;
+
+  span {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.2px;
+    color: #42526e;
+  }
+}
+
+.check-box {
+  .purple {
+    font-family: "Figtree";
+    color: $purple1;
+  }
+}
+
+.privacy-policy {
+  img {
+    cursor: pointer;
+    position: relative;
+    margin-right: 10px;
+    transition: filter 0.1s ease;
+
+    &:hover {
+      filter: brightness(10);
+    }
+  }
+}
