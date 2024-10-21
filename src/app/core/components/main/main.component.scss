@@ -1,5 +1,7 @@
 @import "./../../shared/global.scss";
-
+* {
+  transition: all 0.175s ease-in-out;
+}
 section {
   position: relative;
   background-color: $bg-color;
@@ -28,11 +30,10 @@ p {
     background-color: white;
     border-radius: 30px;
     margin-right: 20px;
-    max-height: calc(100vh - 150px);
+    max-height: calc(100vh - 140px);
     overflow: scroll;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    transition: all 0.3s ease-in-out;
   }
 
   app-left-side-component::-webkit-scrollbar {

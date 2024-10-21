@@ -20,7 +20,7 @@ import { HeaderComponent } from './header/header.component';
 })
 export class MainComponent {
   workSpaceOpen: boolean = false;
-  workspaceButtonText: string = 'Workspace-Menu schließen';
+  workspaceButtonText: string = 'Workspace-Menu öffnen';
 
   toggleWorkspace() {
     this.workSpaceOpen = !this.workSpaceOpen;
@@ -28,9 +28,9 @@ export class MainComponent {
 
   changeText() {
     if (this.workSpaceOpen) {
-      this.workspaceButtonText = 'Workspace-Menu öffnen';
-    } else {
       this.workspaceButtonText = 'Workspace-Menu schließen';
+    } else {
+      this.workspaceButtonText = 'Workspace-Menu öffnen';
     }
   }
 }

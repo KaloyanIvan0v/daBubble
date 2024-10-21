@@ -1,0 +1,28 @@
+@import "global.scss";
+
+section {
+  @include dFlex($fd: column, $jc: space-between);
+  width: 100%;
+  height: 100%;
+  border: 1px solid $light-purple;
+  border-radius: 20px;
+  margin: 40px 45px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.input-wrapper {
+  @include dFlex($jc: start);
+  width: 100%;
+  color: $text-grey;
+  textarea {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 300;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    resize: none;
+    background: none;
+  }
+}
