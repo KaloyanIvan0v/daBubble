@@ -1,6 +1,6 @@
 <!-- signup.component.html -->
 <div class="signup-container">
-  <form (submit)="onLogin($event)" #signupForm="ngForm">
+  <form #signupForm="ngForm">
     <h2>Anmeldung</h2>
     <h4>
       Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues
@@ -9,7 +9,10 @@
     <div class="inputs-container">
       <!-- Name Input -->
 
-      <div class="email-input" [class.input-focus-border]="isNameFocused">
+      <div
+        class="name-input"
+        [class.input-focus-border]="focusService.focused['name']"
+      >
         <img src="assets/img/icons/mail-grey.svg" alt="mail" />
         <input
           type="text"
@@ -17,11 +20,10 @@
           name="name"
           [(ngModel)]="user.name"
           required
-          email
-          #email="ngModel"
+          #name="ngModel"
           placeholder="Name und Nachname"
-          (focus)="onFocus('name')"
-          (blur)="onBlur('name')"
+          (focus)="focusService.onFocus('name')"
+          (blur)="focusService.onBlur('name')"
         />
       </div>
       <div *ngIf="name.invalid && name.touched" class="error-message">
@@ -29,7 +31,10 @@
       </div>
 
       <!-- Email Input -->
-      <div class="email-input" [class.input-focus-border]="isEmailFocused">
+      <div
+        class="email-input"
+        [class.input-focus-border]="focusService.focused['email']"
+      >
         <img src="assets/img/icons/mail-grey.svg" alt="mail" />
         <input
           type="email"
@@ -40,8 +45,8 @@
           email
           #email="ngModel"
           placeholder="beispielname@email.com"
-          (focus)="onFocus('email')"
-          (blur)="onBlur('email')"
+          (focus)="focusService.onFocus('email')"
+          (blur)="focusService.onBlur('email')"
         />
       </div>
       <div *ngIf="email.invalid && email.touched" class="error-message">
@@ -51,7 +56,7 @@
       <!-- Password Input -->
       <div
         class="password-input"
-        [class.input-focus-border]="isPasswordFocused"
+        [class.input-focus-border]="focusService.focused['password']"
       >
         <img src="assets/img/icons/lock-grey.svg" alt="lock" />
         <input
@@ -63,8 +68,8 @@
           minlength="6"
           #password="ngModel"
           placeholder="Passwort"
-          (focus)="onFocus('password')"
-          (blur)="onBlur('password')"
+          (focus)="focusService.onFocus('password')"
+          (blur)="focusService.onBlur('password')"
         />
       </div>
 
