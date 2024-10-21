@@ -1,7 +1,21 @@
 <section>
   <app-header></app-header>
   <div class="main-container">
-    <app-left-side-component></app-left-side-component>
+    <div (click)="toggleWorkspace(); changeText()" class="workspace-menu-btn">
+      <div>{{ workspaceButtonText }}</div>
+      <div
+        [ngClass]="{
+          'workspace-open-img': !workSpaceOpen,
+          'workspace-close-img': workSpaceOpen
+        }"
+      ></div>
+    </div>
+    <app-left-side-component
+      [ngClass]="{
+          'width-0': !workSpaceOpen,
+
+        }"
+    ></app-left-side-component>
     <app-main-workspace> </app-main-workspace>
     <app-right-side-container></app-right-side-container>
   </div>

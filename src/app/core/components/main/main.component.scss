@@ -1,6 +1,7 @@
 @import "./../../shared/global.scss";
 
 section {
+  position: relative;
   background-color: $bg-color;
   height: 100vh;
   width: 100%;
@@ -17,7 +18,6 @@ p {
 
 .main-container {
   display: flex;
-  gap: 20px;
   width: 100%;
   box-sizing: border-box;
   flex-grow: 1;
@@ -27,10 +27,12 @@ p {
     width: 366px;
     background-color: white;
     border-radius: 30px;
+    margin-right: 20px;
     max-height: calc(100vh - 150px);
     overflow: scroll;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    transition: all 0.3s ease-in-out;
   }
 
   app-left-side-component::-webkit-scrollbar {
@@ -40,6 +42,7 @@ p {
     flex-grow: 1;
     background-color: white;
     border-radius: 30px;
+    margin-right: 20px;
     max-height: 100%;
   }
 
@@ -49,4 +52,69 @@ p {
     border-radius: 30px;
     max-height: 100%;
   }
+}
+
+.workspace-menu-btn {
+  position: fixed;
+  top: 80vh;
+  left: 0px;
+  display: flex;
+  gap: 10px;
+  padding: 14px 23px;
+  z-index: 1000;
+  cursor: pointer;
+  transform: rotate(-90deg) translateY(50%); // Translation nach der Rotation
+  transform-origin: left center; // Rotation von der linken Seite
+  background-color: rgb(255, 255, 255);
+  font-size: 20px;
+  font-weight: 500;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  box-shadow: 4px 4px 7px 0px #00000033;
+  &:hover {
+    color: $purple3;
+
+    .workspace-open-img {
+      @include iconButton(
+        "/assets/img/buttons/show-navigation-blue.svg",
+        "/assets/img/buttons/show-navigation-blue.svg"
+      );
+      width: 30px;
+      height: 30px;
+    }
+
+    .workspace-close-img {
+      @include iconButton(
+        "/assets/img/buttons/hide-navigation-blue.svg",
+        "/assets/img/buttons/hide-navigation-blue.svg"
+      );
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+.workspace-open-img {
+  @include iconButton(
+    "/assets/img/buttons/show-navigation-black.svg",
+    "/assets/img/buttons/show-navigation-blue.svg"
+  );
+  transform: rotate(90deg);
+  width: 30px;
+  height: 30px;
+}
+
+.workspace-close-img {
+  @include iconButton(
+    "/assets/img/buttons/hide-navigation-black.svg",
+    "/assets/img/buttons/hide-navigation-blue.svg"
+  );
+  transform: rotate(90deg);
+  width: 30px;
+  height: 30px;
+}
+
+.width-0 {
+  width: 0px !important;
+  margin-right: 0px !important;
 }
