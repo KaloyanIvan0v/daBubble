@@ -1,5 +1,6 @@
 @import "global.scss";
 section {
+  @include dFlex($fd: column);
   padding: 30px;
   box-sizing: border-box;
 }
@@ -28,4 +29,14 @@ section {
     "/assets/img/buttons/edit_square-black.svg",
     "/assets/img/buttons/edit_square-blue.svg"
   );
+}
+
+app-channel-list {
+  flex-grow: 1;
+}
+
+app-chat-list {
+  flex-grow: 1;
+  height: 50%;
+  background-color: skyblue;
 }
