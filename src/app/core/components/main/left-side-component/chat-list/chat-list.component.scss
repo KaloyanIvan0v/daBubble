@@ -71,14 +71,9 @@ header {
 .chat-items {
   @include dFlex($fd: column, $ai: start);
   width: 100%;
-  max-height: calc(100vh - 200px);
   padding-left: 40px;
   box-sizing: border-box;
-  overflow-y: auto;
-}
-
-.chat-items-closed,
-.chat-items-open {
+  overflow-y: hidden;
 }
 
 .chat-items-closed {
@@ -86,7 +81,6 @@ header {
 }
 
 .chat-items-open {
-  max-height: calc(100vh - 200px);
 }
 
 .chat-item {

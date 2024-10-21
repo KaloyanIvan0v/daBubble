@@ -1,14 +1,21 @@
 @import "global.scss";
 section {
+  position: relative;
   @include dFlex($fd: column);
-  padding: 30px;
+  padding: 10px 30px 30px 30px;
   box-sizing: border-box;
 }
 
 .header {
+  position: sticky;
+  top: 0px;
   @include dFlex($jc: space-between);
   width: 100%;
   height: max-content;
+  z-index: 5;
+  background-color: white;
+  padding-top: 20px;
+  //box-shadow: 0px 0px 230px 0px rgb(125, 49, 247);
 }
 
 .logo-container {
@@ -38,5 +45,4 @@ app-channel-list {
 app-chat-list {
   flex-grow: 1;
   height: 50%;
-  background-color: skyblue;
 }
