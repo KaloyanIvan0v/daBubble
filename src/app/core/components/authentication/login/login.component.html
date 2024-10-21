@@ -8,7 +8,7 @@
     </h4>
     <!-- Email Input -->
     <div class="inputs-container">
-      <div class="email-input" [class.input-focus-border]="isEmailFocused">
+      <div class="email-input" [class.input-focus-border]="focused['email']">
         <img src="assets/img/icons/mail-grey.svg" alt="mail" />
         <input
           type="email"
@@ -30,7 +30,7 @@
       <!-- Password Input -->
       <div
         class="password-input"
-        [class.input-focus-border]="isPasswordFocused"
+        [class.input-focus-border]="focused['password']"
       >
         <img src="assets/img/icons/lock-grey.svg" alt="lock" />
         <input

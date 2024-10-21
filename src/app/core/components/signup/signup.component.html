@@ -1,1 +1,76 @@
-<p>signup works!</p>
+<!-- signup.component.html -->
+<div class="signup-container">
+  <form (submit)="onLogin($event)" #signupForm="ngForm">
+    <h2>Anmeldung</h2>
+    <h4>
+      Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues
+      DABubble-Konto.
+    </h4>
+    <div class="inputs-container">
+      <!-- Name Input -->
+
+      <div class="email-input" [class.input-focus-border]="isNameFocused">
+        <img src="assets/img/icons/mail-grey.svg" alt="mail" />
+        <input
+          type="text"
+          id="name"
+          name="name"
+          [(ngModel)]="user.name"
+          required
+          email
+          #email="ngModel"
+          placeholder="Name und Nachname"
+          (focus)="onFocus('name')"
+          (blur)="onBlur('name')"
+        />
+      </div>
+      <div *ngIf="name.invalid && name.touched" class="error-message">
+        <p>Bitte schreiben Sie einen Namen.</p>
+      </div>
+
+      <!-- Email Input -->
+      <div class="email-input" [class.input-focus-border]="isEmailFocused">
+        <img src="assets/img/icons/mail-grey.svg" alt="mail" />
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="user.email"
+          required
+          email
+          #email="ngModel"
+          placeholder="beispielname@email.com"
+          (focus)="onFocus('email')"
+          (blur)="onBlur('email')"
+        />
+      </div>
+      <div *ngIf="email.invalid && email.touched" class="error-message">
+        <p>*Diese E-Mail-Adresse ist leider ungültig.</p>
+      </div>
+
+      <!-- Password Input -->
+      <div
+        class="password-input"
+        [class.input-focus-border]="isPasswordFocused"
+      >
+        <img src="assets/img/icons/lock-grey.svg" alt="lock" />
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="user.password"
+          required
+          minlength="6"
+          #password="ngModel"
+          placeholder="Passwort"
+          (focus)="onFocus('password')"
+          (blur)="onBlur('password')"
+        />
+      </div>
+
+      <div *ngIf="password.invalid && password.touched" class="error-message">
+        <p>Bitte geben Sie ein Password ein.</p>
+      </div>
+    </div>
+  </form>
+</div>

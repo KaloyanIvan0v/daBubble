@@ -183,3 +183,42 @@ button:hover {
     color: $text-grey;
   }
 }
+
+.inputs-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 46px;
+  margin-bottom: 15px;
+
+  .email-input,
+  .password-input {
+    width: 500px;
+    border-radius: 100px;
+    height: 60px;
+    background-color: $bg-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+    box-sizing: border-box;
+  }
+
+  .input-focus-border {
+    border: 1px solid $purple1;
+  }
+
+  input {
+    width: 420px;
+    background-color: $bg-color;
+    border-radius: 100px;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 21.6px;
+    height: 50px;
+    margin-left: 30px;
+  }
+
+  img {
+    margin-left: 32px;
+  }
+}
