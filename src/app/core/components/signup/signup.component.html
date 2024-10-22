@@ -96,7 +96,12 @@
       </div>
 
       <div class="button-container">
-        <button class="primary-btn" mat-flat-button>Weiter</button>
+        <button
+          class="primary-btn"
+          [disabled]="!signupForm.valid || !authUIService.isChecked"
+        >
+          Weiter
+        </button>
       </div>
     </div>
   </form>

@@ -113,27 +113,37 @@ button:hover {
 }
 
 .primary-btn {
-  background-color: $purple1 !important;
+  background-color: $purple1;
   color: white;
   font-size: 18px;
   font-weight: 700;
-  padding: 25px;
+  padding: 12px 25px 12px 25px;
+  border-radius: 25px;
+  border: none;
 
   &:disabled {
     background-color: $text-grey;
+    color: white;
+    pointer-events: none;
+  }
+
+  &:hover {
+    filter: brightness(1.2);
   }
 }
 
 .secondary-btn {
-  border: 1px solid $purple1 !important;
-  color: $purple1 !important;
+  border: 1px solid $purple1;
+  color: $purple1;
   font-size: 18px;
   font-weight: 700;
-  padding: 25px;
+  padding: 12px 25px 12px 25px;
+  border-radius: 25px;
+  box-sizing: border-box;
 
   &:hover {
-    background-color: $purple1 !important;
-    color: white !important;
+    background-color: $purple1;
+    color: white;
     filter: brightness(1.2);
   }
 

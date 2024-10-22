@@ -70,10 +70,10 @@
 
     <!-- Buttons -->
     <div class="buttons-container">
-      <button class="primary-btn" mat-flat-button>Anmelden</button>
-      <button class="secondary-btn" (click)="guestLogin()" mat-stroked-button>
-        Gäste-Login
+      <button class="primary-btn" [disabled]="!loginForm.valid">
+        Anmelden
       </button>
+      <button class="secondary-btn" (click)="guestLogin()">Gäste-Login</button>
     </div>
   </form>
 </div>
