@@ -18,7 +18,14 @@
       height: authUIService.showSignup ? '669px' : '769px',
     }"
   >
-    <app-login *ngIf="!authUIService.showSignup"></app-login>
-    <app-signup *ngIf="authUIService.showSignup"></app-signup>
+    <app-login
+      *ngIf="!authUIService.showSignup && !authUIService.showAvatarSelection"
+    ></app-login>
+    <app-signup
+      *ngIf="authUIService.showSignup && !authUIService.showAvatarSelection"
+    ></app-signup>
+    <app-choose-avatar
+      *ngIf="authUIService.showAvatarSelection"
+    ></app-choose-avatar>
   </div>
 </section>

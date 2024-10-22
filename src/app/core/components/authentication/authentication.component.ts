@@ -6,10 +6,17 @@ import { JsonPipe } from '@angular/common';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from '../signup/signup.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
+import { ChooseAvatarComponent } from '../choose-avatar/choose-avatar.component';
+
 @Component({
   selector: 'app-authentication',
   standalone: true,
-  imports: [CommonModule, LoginComponent, SignupComponent],
+  imports: [
+    CommonModule,
+    LoginComponent,
+    SignupComponent,
+    ChooseAvatarComponent,
+  ],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss',
   providers: [JsonPipe],

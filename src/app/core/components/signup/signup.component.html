@@ -99,6 +99,7 @@
         <button
           class="primary-btn"
           [disabled]="!signupForm.valid || !authUIService.isChecked"
+          (click)="authUIService.toggleAvatarSelection()"
         >
           Weiter
         </button>

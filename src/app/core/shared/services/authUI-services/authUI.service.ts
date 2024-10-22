@@ -7,10 +7,15 @@ export class AuthUIService {
   constructor() {}
 
   showSignup = false;
+  showAvatarSelection = false;
   isChecked: boolean = false;
 
   toggleSignup() {
     this.showSignup = !this.showSignup;
+  }
+
+  toggleAvatarSelection() {
+    this.showAvatarSelection = true;
   }
 
   toggleCheckbox() {
