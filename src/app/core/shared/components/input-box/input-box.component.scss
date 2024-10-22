@@ -26,3 +26,45 @@ section {
     background: none;
   }
 }
+
+.message-options {
+  @include dFlex($fd: row, $jc: space-between, $ai: center);
+  width: 100%;
+}
+
+.left-wrapper {
+  @include dFlex();
+  width: max-content;
+  gap: 5px;
+  .upload-button {
+    @include iconButtonWithHoverBackground(
+      "/assets/img/buttons/add-grey.svg",
+      "/assets/img/buttons/add-blue.svg"
+    );
+  }
+  .vertival-line {
+    width: 1px;
+    height: 40px;
+    background-color: $light-purple;
+  }
+
+  .add-emoji {
+    @include iconButtonWithHoverBackground(
+      "/assets/img/icons/sentiment_satisfied-grey.svg",
+      "/assets/img/icons/sentiment_satisfied-blue.svg"
+    );
+  }
+  .mention-button {
+    @include iconButtonWithHoverBackground(
+      "/assets/img/icons/alternate_email-grey.svg",
+      "/assets/img/icons/alternate_email-blue.svg"
+    );
+  }
+}
+
+.send-button {
+  @include iconButton(
+    "/assets/img/buttons/send_icon-dark-blue.svg",
+    "/assets/img/buttons/send_icon-light-blue.svg"
+  );
+}
