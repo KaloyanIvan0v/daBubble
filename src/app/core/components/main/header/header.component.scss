@@ -1,4 +1,4 @@
-@import "./../../../shared/global.scss";
+@import "global.scss";
 section {
   width: 100%;
   height: 100px;
@@ -37,24 +37,38 @@ section {
   @include dFlex($fd: row);
   gap: 20px;
 
-  .user-name {
-    font-size: 34px;
-    font-weight: 700;
-    min-width: max-content;
-  }
+  &:hover {
+    cursor: pointer;
+    .user-name {
+      color: $purple2;
+    }
 
-  .user-img {
-    img {
-      width: auto;
-      height: 70px;
-      border-radius: 50%;
+    .user-menu {
+      @include iconButton(
+        "/assets/img/buttons/arrow-down-blue.svg",
+        "/assets/img/buttons/arrow-down-blue.svg"
+      );
     }
   }
+}
 
-  .user-menu {
-    img {
-      width: auto;
-      height: 30px;
-    }
+.user-name {
+  font-size: 34px;
+  font-weight: 700;
+  min-width: max-content;
+}
+
+.user-img {
+  img {
+    width: auto;
+    height: 70px;
+    border-radius: 50%;
   }
+}
+
+.user-menu {
+  @include iconButton(
+    "/assets/img/buttons/arrow-down-black.svg",
+    "/assets/img/buttons/arrow-down-blue.svg"
+  );
 }
