@@ -12,7 +12,12 @@
     </div>
   </div>
 
-  <div class="auth-wrapper">
+  <div
+    class="auth-wrapper"
+    [ngStyle]="{
+      height: authUIService.showSignup ? '669px' : '769px',
+    }"
+  >
     <app-login *ngIf="!authUIService.showSignup"></app-login>
     <app-signup *ngIf="authUIService.showSignup"></app-signup>
   </div>

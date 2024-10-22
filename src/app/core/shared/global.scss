@@ -175,6 +175,10 @@ button:hover {
     &:hover {
       border: 1px solid $text-grey;
     }
+
+    &:last-child {
+      margin-bottom: 32px;
+    }
   }
 
   .input-focus-border {
