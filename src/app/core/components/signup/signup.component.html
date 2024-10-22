@@ -1,6 +1,6 @@
 <!-- signup.component.html -->
 <div class="signup-container">
-  <div class="back-arrow-img" [routerLink]="['/app-login']"></div>
+  <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
   <form #signupForm="ngForm">
     <h2>Konto erstellen</h2>
     <h4>
@@ -11,7 +11,7 @@
       <!-- Name Input -->
       <div
         class="name-input"
-        [class.input-focus-border]="focusService.focused['name']"
+        [class.input-focus-border]="authUIService.focused['name']"
       >
         <img src="assets/img/icons/person-grey.svg" alt="person" />
         <input
@@ -22,8 +22,8 @@
           required
           #name="ngModel"
           placeholder="Name und Nachname"
-          (focus)="focusService.onFocus('name')"
-          (blur)="focusService.onBlur('name')"
+          (focus)="authUIService.onFocus('name')"
+          (blur)="authUIService.onBlur('name')"
         />
       </div>
       <div *ngIf="name.invalid && name.touched" class="error-message">
@@ -33,7 +33,7 @@
       <!-- Email Input -->
       <div
         class="email-input"
-        [class.input-focus-border]="focusService.focused['email']"
+        [class.input-focus-border]="authUIService.focused['email']"
       >
         <img src="assets/img/icons/mail-grey.svg" alt="mail" />
         <input
@@ -45,8 +45,8 @@
           email
           #email="ngModel"
           placeholder="beispielname@email.com"
-          (focus)="focusService.onFocus('email')"
-          (blur)="focusService.onBlur('email')"
+          (focus)="authUIService.onFocus('email')"
+          (blur)="authUIService.onBlur('email')"
         />
       </div>
       <div *ngIf="email.invalid && email.touched" class="error-message">
@@ -56,7 +56,7 @@
       <!-- Password Input -->
       <div
         class="password-input"
-        [class.input-focus-border]="focusService.focused['password']"
+        [class.input-focus-border]="authUIService.focused['password']"
       >
         <img src="assets/img/icons/lock-grey.svg" alt="lock" />
         <input
@@ -68,8 +68,8 @@
           minlength="6"
           #password="ngModel"
           placeholder="Passwort"
-          (focus)="focusService.onFocus('password')"
-          (blur)="focusService.onBlur('password')"
+          (focus)="authUIService.onFocus('password')"
+          (blur)="authUIService.onBlur('password')"
         />
       </div>
 

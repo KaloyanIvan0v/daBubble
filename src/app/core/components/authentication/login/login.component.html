@@ -10,7 +10,7 @@
     <div class="inputs-container">
       <div
         class="email-input"
-        [class.input-focus-border]="focusService.focused['email']"
+        [class.input-focus-border]="authUIService.focused['email']"
       >
         <img src="assets/img/icons/mail-grey.svg" alt="mail" />
         <input
@@ -22,8 +22,8 @@
           email
           #email="ngModel"
           placeholder="beispielname@email.com"
-          (focus)="focusService.onFocus('email')"
-          (blur)="focusService.onBlur('email')"
+          (focus)="authUIService.onFocus('email')"
+          (blur)="authUIService.onBlur('email')"
         />
       </div>
       <div *ngIf="email.invalid && email.touched" class="error-message">
@@ -33,7 +33,7 @@
       <!-- Password Input -->
       <div
         class="password-input"
-        [class.input-focus-border]="focusService.focused['password']"
+        [class.input-focus-border]="authUIService.focused['password']"
       >
         <img src="assets/img/icons/lock-grey.svg" alt="lock" />
         <input
@@ -45,8 +45,8 @@
           minlength="6"
           #password="ngModel"
           placeholder="Passwort"
-          (focus)="focusService.onFocus('password')"
-          (blur)="focusService.onBlur('password')"
+          (focus)="authUIService.onFocus('password')"
+          (blur)="authUIService.onBlur('password')"
         />
       </div>
 

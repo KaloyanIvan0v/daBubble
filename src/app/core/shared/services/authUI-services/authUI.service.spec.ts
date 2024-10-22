@@ -1,12 +1,12 @@
-import { FocusService } from './focus.service';
+import { AuthUIService } from './authUI.service';
 import { TestBed } from '@angular/core/testing';
 
-describe('FocusService', () => {
-  let service: FocusService;
+describe('AuthUIService', () => {
+  let service: AuthUIService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FocusService);
+    service = TestBed.inject(AuthUIService);
   });
 
   it('should be created', () => {

@@ -4,16 +4,16 @@
   </div>
   <div class="sign-in">
     <div>
-      <h4>{{ showSignup ? "" : "Neu bei DaBubble?" }}</h4>
+      <h4>{{ authUIService.showSignup ? "" : "Neu bei DaBubble?" }}</h4>
     </div>
 
-    <div (click)="toggleSignup()" class="link">
-      <span>{{ showSignup ? "" : "Konto erstellen" }}</span>
+    <div (click)="authUIService.toggleSignup()" class="link">
+      <span>{{ authUIService.showSignup ? "" : "Konto erstellen" }}</span>
     </div>
   </div>
 
   <div class="auth-wrapper">
-    <app-login *ngIf="!showSignup"></app-login>
-    <app-signup *ngIf="showSignup"></app-signup>
+    <app-login *ngIf="!authUIService.showSignup"></app-login>
+    <app-signup *ngIf="authUIService.showSignup"></app-signup>
   </div>
 </section>

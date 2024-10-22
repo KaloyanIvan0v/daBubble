@@ -3,8 +3,14 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class FocusService {
+export class AuthUIService {
   constructor() {}
+
+  showSignup = false;
+
+  toggleSignup() {
+    this.showSignup = !this.showSignup;
+  }
 
   focused: { [key: string]: boolean } = {
     name: false,

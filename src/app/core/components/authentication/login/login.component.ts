@@ -3,7 +3,7 @@ import { FirebaseServicesService } from '../../../shared/services/firebase.servi
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../shared/services/auth-services/auth.service';
 import { Router } from '@angular/router';
-import { FocusService } from 'src/app/core/shared/services/focus-services/focus.service';
+import { AuthUIService } from 'src/app/core/shared/services/authUI-services/authUI.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private firebaseService: FirebaseServicesService,
     private router: Router,
-    public focusService: FocusService
+    public authUIService: AuthUIService
   ) {}
 
   ngOnInit(): void {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { SharedModule } from '../../shared/shared-module';
-import { FocusService } from 'src/app/core/shared/services/focus-services/focus.service';
+import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
 import { FirebaseServicesService } from '../../shared/services/firebase.service';
 import { RouterModule } from '@angular/router';
 
@@ -19,7 +19,7 @@ export class SignupComponent {
   };
   constructor(
     private firebaseService: FirebaseServicesService,
-    public focusService: FocusService
+    public authUIService: AuthUIService
   ) {}
 
   isChecked: boolean = false;
