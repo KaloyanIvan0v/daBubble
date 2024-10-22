@@ -70,6 +70,13 @@ h2 {
   margin-top: 50px;
 }
 
+h3 {
+  font-family: Nunito;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 43.65px;
+}
+
 h4 {
   margin-block-start: 0;
   margin-block-end: 0;
@@ -221,4 +228,15 @@ button:hover {
     position: absolute;
     top: -30px;
   }
+}
+
+.back-arrow-img {
+  position: absolute;
+  left: 40px;
+  top: 53px;
+
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/arrow_back-thin.svg",
+    "/assets/img/buttons/arrow_back-bold.svg"
+  );
 }

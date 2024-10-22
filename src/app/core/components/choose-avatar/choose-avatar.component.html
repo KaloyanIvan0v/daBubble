@@ -1,1 +1,20 @@
-<p>choose-avatar works!</p>
+<!-- choose-avatar.component.html -->
+<div class="choose-avatar-container">
+  <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
+
+  <h2>Wähle deinen Avatar</h2>
+  <img
+    src="assets/img/profile-img/profile-img-placeholder.svg"
+    alt="profile-img-placeholder"
+  />
+  <h3>Name Placeholder</h3>
+
+  <h4>Aus der liste wählen.</h4>
+  <div class="photos-container">
+    <div class="photos" *ngFor="let photo of photos">
+      <img [src]="photo" alt="Gallery Photo" />
+    </div>
+  </div>
+  <h4>Eigenes Bild verwenden</h4>
+  <button class="secondary-btn">Datei hochladen</button>
+</div>

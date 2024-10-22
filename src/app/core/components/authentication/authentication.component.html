@@ -15,7 +15,11 @@
   <div
     class="auth-wrapper"
     [ngStyle]="{
-      height: authUIService.showSignup ? '669px' : '769px',
+      height: authUIService.showSignup
+        ? '669px'
+        : '769px' && authUIService.showAvatarSelection
+        ? '669px'
+        : '769px'
     }"
   >
     <app-login
