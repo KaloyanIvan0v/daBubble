@@ -21,10 +21,4 @@ export class SignupComponent {
     private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService
   ) {}
-
-  isChecked: boolean = false;
-
-  toggleCheckbox() {
-    this.isChecked = !this.isChecked;
-  }
 }

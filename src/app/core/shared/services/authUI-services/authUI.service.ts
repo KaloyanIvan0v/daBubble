@@ -7,9 +7,14 @@ export class AuthUIService {
   constructor() {}
 
   showSignup = false;
+  isChecked: boolean = false;
 
   toggleSignup() {
     this.showSignup = !this.showSignup;
+  }
+
+  toggleCheckbox() {
+    this.isChecked = !this.isChecked;
   }
 
   focused: { [key: string]: boolean } = {

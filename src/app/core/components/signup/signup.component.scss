@@ -46,10 +46,19 @@
   .check-box-img {
     cursor: pointer;
 
-    @include iconButton(
-      "/assets/img/buttons/checkbox-dark-unchecked.svg",
-      "/assets/img/buttons/checkbox-dark-checked.svg"
-    );
+    &.checked {
+      @include iconButton(
+        "/assets/img/buttons/checkbox-light-checked.svg",
+        "/assets/img/buttons/checkbox-dark-checked.svg"
+      );
+    }
+
+    &.unchecked {
+      @include iconButton(
+        "/assets/img/buttons/checkbox-light-unchecked.svg",
+        "/assets/img/buttons/checkbox-dark-unchecked.svg"
+      );
+    }
   }
 }
 

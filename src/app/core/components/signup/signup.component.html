@@ -78,17 +78,14 @@
       </div>
     </div>
     <div class="privacy-policy">
-      <div class="check-box" (click)="toggleCheckbox()">
-        <img
-          src="assets/img/buttons/checkbox-light-unchecked.svg"
+      <div class="check-box" (click)="authUIService.toggleCheckbox()">
+        <div
           class="check-box-img"
-          [ngClass]="{ checked: isChecked, unchecked: !isChecked }"
-          [ngStyle]="{
-            'background-image': isChecked
-              ? 'url(/assets/img/buttons/checkbox-light-checked.svg)'
-              : 'url(/assets/img/buttons/checkbox-light-unchecked.svg)'
+          [ngClass]="{
+            checked: authUIService.isChecked,
+            unchecked: !authUIService.isChecked
           }"
-        />
+        ></div>
         <span>
           Ich stimme der
           <a href="/">
