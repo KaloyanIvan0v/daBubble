@@ -65,3 +65,12 @@
   height: 1px;
   border-bottom: 1px solid $light-purple;
 }
+
+.link-text {
+  padding: 5px 10px 5px 10px;
+  &:hover {
+    border-radius: 50px;
+    background-color: $bg-color;
+    font-weight: 500;
+  }
+}
