@@ -7,7 +7,7 @@ export class AuthUIService {
   constructor() {}
 
   showSignup = false;
-  showAvatarSelection = true;
+  showAvatarSelection = false;
   isChecked: boolean = false;
 
   toggleSignup() {
