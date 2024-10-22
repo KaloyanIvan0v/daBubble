@@ -58,3 +58,14 @@
   right: 53px;
   bottom: 40px;
 }
+
+.back-arrow-img {
+  position: absolute;
+  left: 40px;
+  top: 53px;
+
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/arrow_back-thin.svg",
+    "/assets/img/buttons/arrow_back-bold.svg"
+  );
+}

@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { SharedModule } from '../../shared/shared-module';
 import { FocusService } from 'src/app/core/shared/services/focus-services/focus.service';
 import { FirebaseServicesService } from '../../shared/services/firebase.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule, RouterModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })

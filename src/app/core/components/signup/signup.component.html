@@ -1,5 +1,6 @@
 <!-- signup.component.html -->
 <div class="signup-container">
+  <div class="back-arrow-img" [routerLink]="['/app-login']"></div>
   <form #signupForm="ngForm">
     <h2>Konto erstellen</h2>
     <h4>
@@ -12,7 +13,7 @@
         class="name-input"
         [class.input-focus-border]="focusService.focused['name']"
       >
-        <img src="assets/img/icons/mail-grey.svg" alt="mail" />
+        <img src="assets/img/icons/person-grey.svg" alt="person" />
         <input
           type="text"
           id="name"
