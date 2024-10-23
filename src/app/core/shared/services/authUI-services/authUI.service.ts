@@ -7,7 +7,8 @@ export class AuthUIService {
   constructor() {}
 
   showSignup = false;
-  showAvatarSelection = true;
+  showAvatarSelection = false;
+  showResetPassword = true;
   isChecked: boolean = false;
 
   toggleSignup() {
@@ -16,6 +17,10 @@ export class AuthUIService {
 
   toggleAvatarSelection() {
     this.showAvatarSelection = true;
+  }
+
+  toggleResetPassword() {
+    this.showResetPassword = true;
   }
 
   toggleCheckbox() {

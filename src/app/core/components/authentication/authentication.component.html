@@ -15,21 +15,33 @@
   <div
     class="auth-wrapper"
     [ngStyle]="{
-      height: authUIService.showSignup
+      height: authUIService.showResetPassword
+        ? '469px'
+        : authUIService.showSignup || authUIService.showAvatarSelection
         ? '669px'
-        : '769px' && authUIService.showAvatarSelection
-        ? '669px'
-        : '769px'
+        : '769px',
+      width: authUIService.showResetPassword ? '698px' : '606px'
     }"
   >
     <app-login
-      *ngIf="!authUIService.showSignup && !authUIService.showAvatarSelection"
+      *ngIf="
+        !authUIService.showSignup &&
+        !authUIService.showAvatarSelection &&
+        !authUIService.showResetPassword
+      "
     ></app-login>
     <app-signup
-      *ngIf="authUIService.showSignup && !authUIService.showAvatarSelection"
+      *ngIf="
+        authUIService.showSignup &&
+        !authUIService.showAvatarSelection &&
+        !authUIService.showResetPassword
+      "
     ></app-signup>
     <app-choose-avatar
       *ngIf="authUIService.showAvatarSelection"
     ></app-choose-avatar>
+    <app-reset-password
+      *ngIf="authUIService.showResetPassword"
+    ></app-reset-password>
   </div>
 </section>

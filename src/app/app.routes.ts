@@ -3,6 +3,7 @@ import { AuthenticationComponent } from './core/components/authentication/authen
 import { MainComponent } from './core/components/main/main.component';
 import { SignupComponent } from './core/components/signup/signup.component';
 import { LoginComponent } from './core/components/authentication/login/login.component';
+import { ResetPasswordComponent } from './core/components/authentication/reset-password/reset-password.component';
 export const routes: Routes = [
   {
     path: '',
@@ -20,5 +21,6 @@ export const routes: Routes = [
     path: 'app-signup',
     component: SignupComponent,
   },
+
   { path: '', redirectTo: 'channel-chat', pathMatch: 'full' },
 ];
