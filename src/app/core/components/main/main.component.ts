@@ -4,6 +4,7 @@ import { MainWorkspaceComponent } from './main-workspace/main-workspace.componen
 import { LeftSideComponentComponent } from './left-side-component/left-side-component.component';
 import { RightSideContainerComponent } from './right-side-container/right-side-container.component';
 import { HeaderComponent } from './header/header.component';
+import { AddChannelComponent } from '../../shared/components/add-channel/add-channel.component';
 
 @Component({
   selector: 'app-main',
@@ -14,6 +15,7 @@ import { HeaderComponent } from './header/header.component';
     RightSideContainerComponent,
     HeaderComponent,
     CommonModule,
+    AddChannelComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
