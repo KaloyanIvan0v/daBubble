@@ -9,11 +9,10 @@ import { CommonModule } from '@angular/common';
   styleUrl: './pop-up.component.scss',
 })
 export class PopUpComponent {
-  @Input() isVisible = true;
-
-  @Input() width: string = '300px'; // Default Wert
-  @Input() height: string = '300px'; // Default Wert
-  @Input() top!: string; // Default Positionierung
+  @Input() isVisible = false;
+  @Input() width: string = '300px';
+  @Input() height: string = '300px';
+  @Input() top!: string;
   @Input() left!: string;
   @Input() right!: string;
   closePopup() {

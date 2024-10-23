@@ -1,6 +1,9 @@
 @import "fonts.scss";
+@import "global.scss";
 
 body {
+  //@include dFlex();
   margin: 0;
   font-family: "Nunito", sans-serif;
+  background-color: $bg-color;
 }
