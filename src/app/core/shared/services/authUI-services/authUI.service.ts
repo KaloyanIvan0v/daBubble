@@ -6,10 +6,20 @@ import { Injectable } from '@angular/core';
 export class AuthUIService {
   constructor() {}
 
+  showLogin = false;
   showSignup = false;
   showAvatarSelection = false;
   showResetPassword = true;
   isChecked: boolean = false;
+
+  toggleLogin() {
+    this.showLogin = !this.showLogin;
+    if (this.showLogin) {
+      this.showAvatarSelection = false;
+      this.showSignup = false;
+      this.showResetPassword = false;
+    }
+  }
 
   toggleSignup() {
     this.showSignup = !this.showSignup;
