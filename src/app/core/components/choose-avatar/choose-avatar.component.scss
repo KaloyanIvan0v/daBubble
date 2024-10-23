@@ -4,15 +4,28 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 472px;
+  margin: 0 auto;
 
   h2 {
     margin-left: 15px;
     margin-bottom: 15px;
+    margin-top: 40px;
   }
 
   h3 {
     margin-top: 32px;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
+  }
+
+  .list-text {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 18px;
+  }
+
+  h4 {
+    margin-top: 0;
   }
 }
 
@@ -25,5 +38,22 @@
     height: 64px;
     border-radius: 50px;
     margin-right: 12px;
+  }
+}
+
+.button-container {
+  position: absolute;
+  right: 53px;
+  bottom: 40px;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  margin-top: 32px;
+  width: 100%;
+
+  .secondary-btn {
+    margin-left: 24px;
   }
 }
