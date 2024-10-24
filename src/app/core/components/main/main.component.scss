@@ -124,8 +124,10 @@ p {
   margin-right: 0px !important;
 }
 
-// app-add-channel {
-//   width: 100%;
-//   height: 100vh;
-//   background-color: red;
-// }
+app-add-channel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+}

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GlobalDataService } from './../../../../shared/services/global-data.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -11,7 +12,14 @@ import { CommonModule } from '@angular/common';
 export class ChannelListComponent {
   channelListOpen: boolean = false;
 
+  constructor(private globalDataService: GlobalDataService) {}
+
   toggleChannelList() {
     this.channelListOpen = !this.channelListOpen;
+  }
+
+  openAddChannel() {
+    this.globalDataService.openAddChannel;
+    console.log('openAddChannel');
   }
 }

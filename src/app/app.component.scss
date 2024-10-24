@@ -1,7 +1,1 @@
 @import "global.scss";
-
-section {
-  @include dFlex();
-  background-color: $bg-color;
-  width: 100%;
-}

@@ -1,5 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GlobalDataService } from '../../services/global-data.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-pop-up',
@@ -8,18 +10,25 @@ import { CommonModule } from '@angular/common';
   templateUrl: './pop-up.component.html',
   styleUrl: './pop-up.component.scss',
 })
-export class PopUpComponent {
-  @Input() isVisible = false;
-  @Input() width: string = '300px';
-  @Input() height: string = '300px';
-  @Input() top!: string;
-  @Input() left!: string;
-  @Input() right!: string;
-  closePopup() {
-    this.isVisible = false;
+export class PopUpComponent implements OnInit, OnDestroy {
+  isPopUpVisible: boolean = false;
+  private popUpSubscription!: Subscription;
+
+  constructor(private globalDataService: GlobalDataService) {}
+
+  ngOnInit() {
+    this.popUpSubscription =
+      this.globalDataService.popUpShadowVisible$.subscribe(
+        (isVisible: boolean) => {
+          this.isPopUpVisible = isVisible;
+        }
+      );
+  }
+  ngOnDestroy() {
+    this.popUpSubscription.unsubscribe();
   }
 
-  openPopup() {
-    this.isVisible = true;
+  closePopup() {
+    this.globalDataService.setPopUpVisible(false);
   }
 }

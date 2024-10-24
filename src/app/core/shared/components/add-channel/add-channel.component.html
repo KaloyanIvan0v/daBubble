@@ -1,12 +1,19 @@
-<app-pop-up
-  [width]="'872px'"
-  [height]="'539px'"
-  [top]="'calc(50% - 270px)'"
-  [left]="'calc(50% - 436px)'"
->
-  <div class="test-div">
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, harum sit
-    recusandae minus nemo molestiae fuga ratione enim sequi aspernatur quibusdam
-    dolore adipisci commodi placeat accusamus. At quasi esse natus.
+<section *ngIf="visible">
+  <div class="tittle-closse">
+    <div class="tittle">Channel erstellen</div>
+    <div class="close-button"></div>
   </div>
-</app-pop-up>
+  <div class="info">
+    Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+    themenbezogen sein #marketing zum Beispiel.
+  </div>
+  <div class="tittle-channel-name">Channel-Name</div>
+  <div class="input-channer-name">
+    <input type="text" />
+  </div>
+  <div class="tittle-channel-description">Beschreibung (optional)</div>
+  <div class="input-channel-description">
+    <input type="text" />
+  </div>
+  <div class="save-btn">Erstellen</div>
+</section>
