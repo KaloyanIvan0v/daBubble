@@ -3,12 +3,15 @@
   transition: all 0.175s ease-in-out;
 }
 section {
+  height: 100vh;
+  width: 100%;
+}
+
+.inner-section {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: $bg-color;
-  height: 100vh;
   width: 100%;
   max-width: 1980px;
   display: flex;
@@ -16,6 +19,22 @@ section {
   margin: 0;
   padding: 25px 20px;
   box-sizing: border-box;
+  background-color: $bg-color;
+}
+
+.pop-up-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100vh;
+  max-width: 1980px;
+  z-index: 999;
+  pointer-events: none;
+  * {
+    pointer-events: all;
+  }
 }
 
 p {

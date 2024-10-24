@@ -1,23 +1,34 @@
 <section>
-  <app-header></app-header>
-  <div class="main-container">
-    <div (click)="toggleWorkspace(); changeText()" class="workspace-menu-btn">
-      <div>{{ workspaceButtonText }}</div>
-      <div
+  <div class="inner-section">
+    <app-header></app-header>
+    <div class="main-container">
+      <div (click)="toggleWorkspace(); changeText()" class="workspace-menu-btn">
+        <div>{{ workspaceButtonText }}</div>
+        <div
+          [ngClass]="{
+            'workspace-open-img': !workSpaceOpen,
+            'workspace-close-img': workSpaceOpen
+          }"
+        ></div>
+      </div>
+      <app-left-side-component
         [ngClass]="{
-          'workspace-open-img': !workSpaceOpen,
-          'workspace-close-img': workSpaceOpen
-        }"
-      ></div>
-    </div>
-    <app-left-side-component
-      [ngClass]="{
           'width-0': !workSpaceOpen,
 
         }"
-    ></app-left-side-component>
-    <app-main-workspace> </app-main-workspace>
-    <app-right-side-container></app-right-side-container>
+      ></app-left-side-component>
+      <app-main-workspace> </app-main-workspace>
+      <app-right-side-container></app-right-side-container>
+    </div>
   </div>
+  <div class="pop-up-wrapper">
+    <app-add-channel *ngIf="popUpStates['addChannel']"></app-add-channel>
+    <app-add-user-to-channel *ngIf=""></app-add-user-to-channel>
+    <app-edit-channel *ngIf=""></app-edit-channel>
+    <app-own-profile-edit *ngIf=""></app-own-profile-edit>
+    <app-own-profile-view *ngIf=""></app-own-profile-view>
+    <app-profile-view *ngIf=""></app-profile-view>
+    <app-user-menu *ngIf=""></app-user-menu>
+  </div>
+  <app-pop-up *ngIf="popUpStates['popUpShadow']"></app-pop-up>
 </section>
-<app-add-channel></app-add-channel>

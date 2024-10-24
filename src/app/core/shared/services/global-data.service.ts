@@ -1,35 +1,41 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GlobalDataService {
-  private popUpShadowVisibleSubject = new BehaviorSubject<boolean>(true);
-  private addChannelVisibleSubject = new BehaviorSubject<boolean>(true);
-  popUpShadowVisible$ = this.popUpShadowVisibleSubject.asObservable();
-  addChannelVisible$ = this.addChannelVisibleSubject.asObservable();
+  private popUpStatesAsSubject = new BehaviorSubject<object>({
+    addChannel: true,
+    popUpShadow: true,
+    userMenu: false,
+    workspaceMenu: false,
+    addUserToChannel: false,
+    editChannel: false,
+    ownProfileEdit: false,
+    ownProfileView: false,
+    profileView: false,
+  });
+
+  popUpStates$ = this.popUpStatesAsSubject.asObservable();
+
   constructor() {}
 
-  setPopUpVisible(isVisible: boolean) {
-    this.popUpShadowVisibleSubject.next(isVisible);
+  openPopUp(popUp: string) {
+    const currentState = this.popUpStatesAsSubject.value;
+    const newState = {
+      ...currentState,
+      [popUp]: true,
+      popUpShadow: true,
+    };
+    this.popUpStatesAsSubject.next(newState);
   }
 
-  getPopUpVisible(): boolean {
-    return this.popUpShadowVisibleSubject.value;
-  }
-
-  openPopUp(popUp: BehaviorSubject<boolean>) {
-    popUp.next(true);
-    this.setPopUpVisible(true);
-  }
-
-  closeAddChannel() {
-    this.addChannelVisibleSubject.next(false);
-    this.popUpShadowVisibleSubject.next(false);
-  }
-  openAddChannel() {
-    this.addChannelVisibleSubject.next(true);
-    this.popUpShadowVisibleSubject.next(true);
+  closePopUp() {
+    const currentState = this.popUpStatesAsSubject.value;
+    const newState = Object.fromEntries(
+      Object.keys(currentState).map((key) => [key, false])
+    );
+    this.popUpStatesAsSubject.next(newState);
   }
 }
