@@ -37,6 +37,11 @@
     />
   </div>
 
+  <div *ngIf="isUploadedPhoto" class="uploaded-photo-info">
+    <span>{{ uploadedPhotoName }}</span>
+    <button (click)="eraseUploadedPhoto()">X</button>
+  </div>
+
   <div class="button-container">
     <button class="primary-btn">Weiter</button>
   </div>

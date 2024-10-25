@@ -22,24 +22,33 @@ export class ChooseAvatarComponent {
 
   selectedPhoto: string | null = null; // Placeholder shown initially
   isUploadedPhoto: boolean = false;
+  uploadedPhotoName: string | null = null;
 
   selectPhoto(photo: string) {
     this.selectedPhoto = photo; // Set selected photo when clicked
     this.isUploadedPhoto = false;
+    this.uploadedPhotoName = null;
   }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const reader = new FileReader();
+      const file = input.files[0];
+      this.uploadedPhotoName = file.name;
 
+      const reader = new FileReader();
       reader.onload = (e) => {
-        // Set uploaded image as the main avatar
         this.selectedPhoto = e.target?.result as string;
         this.isUploadedPhoto = true;
       };
 
-      reader.readAsDataURL(input.files[0]);
+      reader.readAsDataURL(file);
     }
+  }
+
+  eraseUploadedPhoto() {
+    this.selectedPhoto = null;
+    this.isUploadedPhoto = false;
+    this.uploadedPhotoName = null;
   }
 }
