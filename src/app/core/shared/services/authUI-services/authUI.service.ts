@@ -8,8 +8,8 @@ export class AuthUIService {
 
   showLogin = false;
   showSignup = false;
-  showAvatarSelection = false;
-  showResetPassword = true;
+  showAvatarSelection = true;
+  showResetPassword = false;
   isChecked: boolean = false;
 
   toggleLogin() {

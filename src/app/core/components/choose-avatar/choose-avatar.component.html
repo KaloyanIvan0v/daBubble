@@ -4,20 +4,37 @@
 
   <h2>Wähle deinen Avatar</h2>
   <img
-    src="assets/img/profile-img/profile-img-placeholder.svg"
+    [src]="
+      selectedPhoto || 'assets/img/profile-img/profile-img-placeholder.svg'
+    "
     alt="profile-img-placeholder"
+    class="profile-img-preview"
   />
+
   <h3>Name Placeholder</h3>
 
   <h4 class="list-text">Aus der liste wählen.</h4>
   <div class="photos-container">
     <div class="photos" *ngFor="let photo of photos">
-      <img [src]="photo" alt="Gallery Photo" />
+      <img
+        [src]="photo"
+        class="choose-avatar"
+        alt="choose-avatar"
+        (click)="selectPhoto(photo)"
+      />
     </div>
   </div>
   <div class="upload-button">
     <h4>eigenes Bild verwenden</h4>
-    <button class="secondary-btn">Datei hochladen</button>
+    <button class="secondary-btn" (click)="fileInput.click()">
+      Datei hochladen
+    </button>
+    <input
+      type="file"
+      #fileInput
+      style="display: none"
+      (change)="onFileSelected($event)"
+    />
   </div>
 
   <div class="button-container">

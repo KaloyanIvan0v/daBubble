@@ -57,3 +57,17 @@
     margin-left: 24px;
   }
 }
+
+.profile-img-preview {
+  width: 168px;
+  height: 168px;
+  border-radius: 100px;
+}
+
+.choose-avatar {
+  box-sizing: border-box;
+  &:hover {
+    cursor: pointer;
+    border: 3.5px solid lightgray;
+  }
+}

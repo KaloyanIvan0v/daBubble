@@ -19,4 +19,27 @@ export class ChooseAvatarComponent {
     'assets/img/profile-img/Sofia-Müller.svg',
     'assets/img/profile-img/Noah-Braun.svg',
   ];
+
+  selectedPhoto: string | null = null; // Placeholder shown initially
+  isUploadedPhoto: boolean = false;
+
+  selectPhoto(photo: string) {
+    this.selectedPhoto = photo; // Set selected photo when clicked
+    this.isUploadedPhoto = false;
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        // Set uploaded image as the main avatar
+        this.selectedPhoto = e.target?.result as string;
+        this.isUploadedPhoto = true;
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
 }
