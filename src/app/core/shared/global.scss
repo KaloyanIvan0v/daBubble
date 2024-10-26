@@ -8,11 +8,18 @@ $purple3: #535af1;
 $online-green: #92c83e;
 $email-blue: #1181ff;
 $light-purple: #adb0d9;
-
+$mail-blue: #1381ff;
 * {
   font-family: "Nunito";
   box-sizing: border-box;
   transition: all 0.175s ease-in-out;
+}
+
+.dfc {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 @mixin dFlex($jc: center, $ai: center, $fd: row) {
@@ -46,9 +53,9 @@ $light-purple: #adb0d9;
   }
 }
 
-@mixin statusDot($status) {
-  width: 12px;
-  height: 12px;
+@mixin statusDot($status, $width) {
+  width: $width;
+  height: $width;
   border-radius: 50%;
   border: 2px solid white;
   @if $status == "online" {

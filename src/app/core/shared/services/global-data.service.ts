@@ -11,10 +11,10 @@ export class GlobalDataService {
     userMenu: false,
     workspaceMenu: false,
     addUserToChannel: false,
-    editChannel: true,
+    editChannel: false,
     ownProfileEdit: false,
     ownProfileView: false,
-    profileView: false,
+    profileView: true,
   });
 
   popUpStates$ = this.popUpStatesAsSubject.asObservable();

@@ -39,7 +39,10 @@
     <app-own-profile-view
       *ngIf="popUpStates['ownProfileView']"
     ></app-own-profile-view>
-    <app-profile-view *ngIf="popUpStates['profileView']"></app-profile-view>
+    <app-profile-view
+      *ngIf="popUpStates['profileView']"
+      class="pop-up-center"
+    ></app-profile-view>
     <app-user-menu *ngIf="popUpStates['userMenu']"></app-user-menu>
   </div>
   <app-pop-up *ngIf="popUpStates['popUpShadow']"></app-pop-up>
