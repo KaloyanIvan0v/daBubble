@@ -8,14 +8,10 @@ $purple3: #535af1;
 $online-green: #92c83e;
 $email-blue: #1181ff;
 $light-purple: #adb0d9;
-h1,
-h2,
-h3,
-h4,
-p,
-span,
-button {
+
+* {
   font-family: "Nunito";
+  box-sizing: border-box;
 }
 
 @mixin dFlex($jc: center, $ai: center, $fd: row) {
@@ -127,6 +123,7 @@ button:hover {
   padding: 12px 25px 12px 25px;
   border-radius: 25px;
   border: none;
+  cursor: pointer;
 
   &:disabled {
     background-color: $text-grey;
@@ -146,7 +143,7 @@ button:hover {
   font-weight: 700;
   padding: 12px 25px 12px 25px;
   border-radius: 25px;
-  box-sizing: border-box;
+  cursor: pointer;
   background-color: white;
 
   &:hover {
@@ -182,7 +179,6 @@ button:hover {
     align-items: center;
     justify-content: center;
     margin-bottom: 40px;
-    box-sizing: border-box;
 
     &:hover {
       border: 1px solid $text-grey;
@@ -214,6 +210,24 @@ button:hover {
   }
 }
 
+.pop-up-input {
+  @include dFlex();
+  width: 100%;
+  padding: 18px 20px;
+  border: 1px solid $light-purple;
+  border-radius: 40px;
+  gap: 15px;
+  input {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 400;
+  }
+  img {
+    width: 23px;
+    height: 23px;
+  }
+}
+
 .error-message {
   color: red;
   font-size: 14px;
@@ -234,4 +248,26 @@ button:hover {
     "/assets/img/buttons/arrow_back-thin.svg",
     "/assets/img/buttons/arrow_back-bold.svg"
   );
+}
+
+.font24-700 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.font18-400 {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.font18-700 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.purple3-btn {
+  color: $purple3;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
 }

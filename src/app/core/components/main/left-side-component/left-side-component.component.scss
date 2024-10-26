@@ -8,7 +8,7 @@ section {
 
 .header {
   position: sticky;
-  top: 0px;
+  top: -1px;
   @include dFlex($jc: space-between);
   width: 100%;
   height: max-content;

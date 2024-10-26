@@ -7,11 +7,11 @@ import { BehaviorSubject } from 'rxjs';
 export class GlobalDataService {
   private popUpStatesAsSubject = new BehaviorSubject<object>({
     addChannel: false,
-    popUpShadow: false,
+    popUpShadow: true,
     userMenu: false,
     workspaceMenu: false,
     addUserToChannel: false,
-    editChannel: false,
+    editChannel: true,
     ownProfileEdit: false,
     ownProfileView: false,
     profileView: false,

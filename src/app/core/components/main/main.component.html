@@ -29,7 +29,10 @@
     <app-add-user-to-channel
       *ngIf="popUpStates['addUserToChannel']"
     ></app-add-user-to-channel>
-    <app-edit-channel *ngIf="popUpStates['editChannel']"></app-edit-channel>
+    <app-edit-channel
+      *ngIf="popUpStates['editChannel']"
+      class="pop-up-center"
+    ></app-edit-channel>
     <app-own-profile-edit
       *ngIf="popUpStates['ownProfileEdit']"
     ></app-own-profile-edit>

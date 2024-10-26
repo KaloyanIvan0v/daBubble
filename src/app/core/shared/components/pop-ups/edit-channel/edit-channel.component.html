@@ -1,1 +1,64 @@
-<p>edit-channel works!</p>
+<section>
+  <div class="tittle-closse">
+    <div class="font24-700"># Entwicklerteam</div>
+    <div class="close-button" (click)="closeAddChannelPopUp()"></div>
+  </div>
+  <div class="edit-wrapper" ngClass="{{ editNameActive ? 'no-border' : '' }}">
+    <div class="inner-tittle-wrapper">
+      <div class="font18-700">Channel-Name</div>
+      <div
+        *ngIf="!editNameActive"
+        class="purple3-btn"
+        (click)="toggleEditName()"
+      >
+        Bearbeiten
+      </div>
+      <div
+        (click)="toggleEditName()"
+        *ngIf="editNameActive"
+        class="purple3-btn"
+      >
+        Speichern
+      </div>
+    </div>
+
+    <div ngClass="{{ editNameActive ? '' : 'no-border' }}" class="pop-up-input">
+      <img src="assets/img/icons/tag-grey.svg" alt="" />
+      <input placeholder="z.B Kooperationsprojekte" type="text" />
+    </div>
+  </div>
+
+  <div
+    class="edit-wrapper"
+    ngClass="{{ editDescriptionActive ? 'no-border' : '' }}"
+  >
+    <div class="inner-tittle-wrapper">
+      <div class="font18-700">Berscheibung</div>
+      <div
+        *ngIf="!editDescriptionActive"
+        class="purple3-btn"
+        (click)="toggleEditDescription()"
+      >
+        Bearbeiten
+      </div>
+      <div
+        (click)="toggleEditDescription()"
+        *ngIf="editDescriptionActive"
+        class="purple3-btn"
+      >
+        Speichern
+      </div>
+    </div>
+
+    <div
+      ngClass="{{ editDescriptionActive ? '' : 'no-border' }}"
+      class="pop-up-input"
+    >
+      <img src="assets/img/icons/tag-grey.svg" alt="" />
+      <input placeholder="dein Text hier" type="text" />
+    </div>
+  </div>
+  <div class="btn-wrapper">
+    <div class="primary-btn">Channel verlassen</div>
+  </div>
+</section>
