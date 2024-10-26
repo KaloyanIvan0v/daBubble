@@ -14,4 +14,8 @@ export class AddChannelComponent {
   private addChannelVisibleSubscription!: Subscription;
 
   constructor(public globalDataService: GlobalDataService) {}
+
+  closeAddChannelPopUp() {
+    this.globalDataService.closePopUp();
+  }
 }

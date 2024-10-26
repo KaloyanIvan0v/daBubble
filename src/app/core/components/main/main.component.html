@@ -22,13 +22,22 @@
     </div>
   </div>
   <div class="pop-up-wrapper">
-    <app-add-channel *ngIf="popUpStates['addChannel']"></app-add-channel>
-    <app-add-user-to-channel *ngIf=""></app-add-user-to-channel>
-    <app-edit-channel *ngIf=""></app-edit-channel>
-    <app-own-profile-edit *ngIf=""></app-own-profile-edit>
-    <app-own-profile-view *ngIf=""></app-own-profile-view>
-    <app-profile-view *ngIf=""></app-profile-view>
-    <app-user-menu *ngIf=""></app-user-menu>
+    <app-add-channel
+      *ngIf="popUpStates['addChannel']"
+      class="pop-up-center"
+    ></app-add-channel>
+    <app-add-user-to-channel
+      *ngIf="popUpStates['addUserToChannel']"
+    ></app-add-user-to-channel>
+    <app-edit-channel *ngIf="popUpStates['editChannel']"></app-edit-channel>
+    <app-own-profile-edit
+      *ngIf="popUpStates['ownProfileEdit']"
+    ></app-own-profile-edit>
+    <app-own-profile-view
+      *ngIf="popUpStates['ownProfileView']"
+    ></app-own-profile-view>
+    <app-profile-view *ngIf="popUpStates['profileView']"></app-profile-view>
+    <app-user-menu *ngIf="popUpStates['userMenu']"></app-user-menu>
   </div>
   <app-pop-up *ngIf="popUpStates['popUpShadow']"></app-pop-up>
 </section>

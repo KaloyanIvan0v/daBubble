@@ -18,5 +18,7 @@ export class ChannelListComponent {
     this.channelListOpen = !this.channelListOpen;
   }
 
-  openAddChannel() {}
+  openAddChannel() {
+    this.globalDataService.openPopUp('addChannel');
+  }
 }

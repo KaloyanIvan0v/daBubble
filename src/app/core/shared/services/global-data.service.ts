@@ -6,8 +6,8 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class GlobalDataService {
   private popUpStatesAsSubject = new BehaviorSubject<object>({
-    addChannel: true,
-    popUpShadow: true,
+    addChannel: false,
+    popUpShadow: false,
     userMenu: false,
     workspaceMenu: false,
     addUserToChannel: false,
