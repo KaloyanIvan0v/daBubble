@@ -12,6 +12,7 @@ $light-purple: #adb0d9;
 * {
   font-family: "Nunito";
   box-sizing: border-box;
+  transition: all 0.175s ease-in-out;
 }
 
 @mixin dFlex($jc: center, $ai: center, $fd: row) {
@@ -211,7 +212,7 @@ button:hover {
 }
 
 .pop-up-input {
-  @include dFlex();
+  @include dFlex($jc: start);
   width: 100%;
   padding: 18px 20px;
   border: 1px solid $light-purple;

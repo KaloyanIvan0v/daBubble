@@ -3,7 +3,10 @@
     <div class="font24-700"># Entwicklerteam</div>
     <div class="close-button" (click)="closeAddChannelPopUp()"></div>
   </div>
-  <div class="edit-wrapper" ngClass="{{ editNameActive ? 'no-border' : '' }}">
+  <div
+    class="edit-wrapper"
+    ngClass="{{ editNameActive ? 'edit-wrapper-no-border' : '' }}"
+  >
     <div class="inner-tittle-wrapper">
       <div class="font18-700">Channel-Name</div>
       <div
@@ -21,16 +24,20 @@
         Speichern
       </div>
     </div>
-
     <div ngClass="{{ editNameActive ? '' : 'no-border' }}" class="pop-up-input">
       <img src="assets/img/icons/tag-grey.svg" alt="" />
-      <input placeholder="z.B Kooperationsprojekte" type="text" />
+      <input
+        *ngIf="editNameActive"
+        placeholder="z.B Kooperationsprojekte"
+        type="text"
+      />
+      <div *ngIf="!editNameActive">Entwicklerteam</div>
     </div>
   </div>
 
   <div
     class="edit-wrapper"
-    ngClass="{{ editDescriptionActive ? 'no-border' : '' }}"
+    ngClass="{{ editDescriptionActive ? 'edit-wrapper-no-border' : '' }}"
   >
     <div class="inner-tittle-wrapper">
       <div class="font18-700">Berscheibung</div>
@@ -55,7 +62,14 @@
       class="pop-up-input"
     >
       <img src="assets/img/icons/tag-grey.svg" alt="" />
-      <input placeholder="dein Text hier" type="text" />
+      <input
+        *ngIf="editDescriptionActive"
+        placeholder="dein Text hier"
+        type="text"
+      />
+      <div *ngIf="!editDescriptionActive">
+        Dein Text hier, Dein Text hier, Dein Text hier
+      </div>
     </div>
   </div>
   <div class="btn-wrapper">
