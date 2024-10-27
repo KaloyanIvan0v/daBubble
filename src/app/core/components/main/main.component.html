@@ -43,7 +43,10 @@
       *ngIf="popUpStates['profileView']"
       class="pop-up-center"
     ></app-profile-view>
-    <app-user-menu *ngIf="popUpStates['userMenu']"></app-user-menu>
+    <app-user-menu
+      *ngIf="popUpStates['userMenu']"
+      class="pop-up-user-menu"
+    ></app-user-menu>
   </div>
   <app-pop-up *ngIf="popUpStates['popUpShadow']"></app-pop-up>
 </section>

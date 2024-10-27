@@ -11,4 +11,8 @@ import { GlobalDataService } from '../../../services/global-data.service';
 })
 export class ProfileViewComponent {
   constructor(public globalDataService: GlobalDataService) {}
+
+  closeProfileView() {
+    this.globalDataService.closePopUp();
+  }
 }

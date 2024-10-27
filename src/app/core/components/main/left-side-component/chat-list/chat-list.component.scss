@@ -118,6 +118,6 @@ header {
   position: absolute;
   bottom: 0px;
   right: -2px;
-  @include statusDot("online");
+  @include statusDot("online", 12px);
   z-index: 4;
 }
