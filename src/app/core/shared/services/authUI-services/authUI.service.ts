@@ -8,7 +8,7 @@ export class AuthUIService {
 
   showLogin = false;
   showSignup = false;
-  showAvatarSelection = true;
+  showAvatarSelection = false;
   showResetPassword = false;
   isChecked: boolean = false;
 

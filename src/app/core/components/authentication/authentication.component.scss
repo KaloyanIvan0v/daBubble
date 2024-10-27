@@ -57,3 +57,50 @@ section {
     line-height: 24.55px;
   }
 }
+
+#background-fade {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background: $purple1;
+  animation: opacity-fade 2s ease-in-out;
+  z-index: 10;
+}
+
+.d-none {
+  display: none;
+}
+
+#login-logo-animated {
+  width: 186.98px;
+  height: 184px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  animation: moving-to-target 1.5s ease-in-out forwards;
+}
+
+@keyframes moving-to-target {
+  from {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    top: -30px;
+    left: -30px;
+    transform: translate(0, 0) scale(0.4);
+  }
+}
+
+@keyframes opacity-fade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

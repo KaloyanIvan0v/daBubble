@@ -23,6 +23,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
   providers: [JsonPipe],
 })
 export class AuthenticationComponent {
+  removeLoginAnimation = false;
   constructor(
     private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService
@@ -41,5 +42,9 @@ export class AuthenticationComponent {
     this.users.subscribe((data) => {
       console.log('Daten:', data);
     });
+
+    setTimeout(() => {
+      this.removeLoginAnimation = true;
+    }, 2000);
   }
 }
