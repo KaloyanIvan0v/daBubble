@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GlobalDataService } from '../../services/global-data.service';
+import { GlobalDataService } from '../../services/pop-up-service/global-data.service';
 
 @Component({
   selector: 'app-pop-up',

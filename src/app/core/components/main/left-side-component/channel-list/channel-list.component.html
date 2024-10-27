@@ -27,9 +27,14 @@
     class="channel-items"
   >
     <div class="channel-list">
-      <div class="channel">
+      <div
+        *ngFor="let channel of channels"
+        class="channel"
+        (click)="goToChannel(channel.id)"
+      >
+        <div>{{ channel.id }}</div>
         <div class="channel-tag"></div>
-        <div>Entwicklerteam</div>
+        <div>{{ channel.name }}</div>
       </div>
     </div>
     <div class="add-channel" (click)="openAddChannel()">

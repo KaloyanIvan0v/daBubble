@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FirebaseServicesService } from '../../shared/services/firebase.service';
+import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
 import { Observable } from 'rxjs';
 import { JsonPipe } from '@angular/common';
 import { LoginComponent } from './login/login.component';
@@ -30,7 +30,7 @@ export class AuthenticationComponent {
     private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService
   ) {
-    this.users = this.firebaseService.getRealtimeCollectionData('users');
+    this.users = this.firebaseService.getCollection('users');
   }
 
   users: Observable<any[]>;

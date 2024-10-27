@@ -11,7 +11,7 @@ import { OwnProfileEditComponent } from '../../shared/components/pop-ups/own-pro
 import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-profile-view/own-profile-view.component';
 import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-view/profile-view.component';
 import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/user-menu.component';
-import { GlobalDataService } from '../../shared/services/global-data.service';
+import { GlobalDataService } from '../../shared/services/pop-up-service/global-data.service';
 import { PopUpComponent } from '../../shared/components/pop-up/pop-up.component';
 import { Subscription } from 'rxjs';
 

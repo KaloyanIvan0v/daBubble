@@ -1,7 +1,7 @@
 <section>
   <div class="tittle-closse">
     <div class="font24-700">Channel erstellen</div>
-    <div class="close-button" (click)="closeAddChannelPopUp()"></div>
+    <div class="close-button" (click)="closePopUp()"></div>
   </div>
   <div class="font18-400">
     Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
@@ -10,13 +10,21 @@
   <div class="font18-700">Channel-Name</div>
   <div class="pop-up-input">
     <img src="assets/img/icons/tag-grey.svg" alt="" />
-    <input placeholder="z.B Kooperationsprojekte" type="text" />
+    <input
+      [(ngModel)]="channelName"
+      placeholder="z.B Kooperationsprojekte"
+      type="text"
+    />
   </div>
   <div class="font18-700">Beschreibung (optional)</div>
   <div class="pop-up-input">
-    <input placeholder="dein Text hier" type="text" />
+    <input
+      [(ngModel)]="chanelDescription"
+      placeholder="dein Text hier"
+      type="text"
+    />
   </div>
   <div class="btn-wrapper">
-    <div class="primary-btn">Erstellen</div>
+    <div class="primary-btn" (click)="createChannel()">Erstellen</div>
   </div>
 </section>

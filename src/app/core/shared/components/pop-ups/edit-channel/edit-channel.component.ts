@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GlobalDataService } from '../../../services/global-data.service';
+import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
 
 @Component({
   selector: 'app-edit-channel',

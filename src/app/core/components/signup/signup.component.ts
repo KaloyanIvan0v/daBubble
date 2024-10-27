@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { SharedModule } from '../../shared/shared-module';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
-import { FirebaseServicesService } from '../../shared/services/firebase.service';
+import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
 import { RouterModule } from '@angular/router';
 
 @Component({

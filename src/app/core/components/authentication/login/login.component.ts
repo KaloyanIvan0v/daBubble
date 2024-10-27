@@ -1,5 +1,5 @@
 import { SharedModule } from '../../../shared/shared-module';
-import { FirebaseServicesService } from '../../../shared/services/firebase.service';
+import { FirebaseServicesService } from '../../../shared/services/firebase/firebase.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../shared/services/auth-services/auth.service';
 import { Router } from '@angular/router';

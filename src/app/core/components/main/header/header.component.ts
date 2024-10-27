@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { GlobalDataService } from './../../../shared/services/global-data.service';
+import { GlobalDataService } from '../../../shared/services/pop-up-service/global-data.service';
 
 @Component({
   selector: 'app-header',
