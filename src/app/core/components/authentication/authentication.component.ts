@@ -24,6 +24,8 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 })
 export class AuthenticationComponent {
   removeLoginAnimation = false;
+  removeAnimationText = false;
+  showLogo = false;
   constructor(
     private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService
@@ -45,6 +47,7 @@ export class AuthenticationComponent {
 
     setTimeout(() => {
       this.removeLoginAnimation = true;
-    }, 2000);
+      this.showLogo = true;
+    }, 1350);
   }
 }

@@ -14,6 +14,7 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
+  display: none;
   img {
     width: 100%;
     height: auto;
@@ -58,7 +59,7 @@ section {
   }
 }
 
-#background-fade {
+.background-fade {
   position: absolute;
   width: 100vw;
   height: 100vh;
@@ -71,14 +72,31 @@ section {
   display: none;
 }
 
-#login-logo-animated {
-  width: 186.98px;
-  height: 184px;
+.d-block {
+  display: block;
+}
+
+.logo-animation-container {
   position: absolute;
   top: 50%;
   left: 50%;
   z-index: 10;
   animation: moving-to-target 1.5s ease-in-out forwards;
+  display: flex;
+  align-items: center;
+}
+
+.login-logo-animated {
+  width: 186.98px;
+  height: 184px;
+}
+
+.logo-text {
+  font-size: 6em;
+  color: white;
+  font-weight: 700;
+  animation: opacity-fade 1s ease-in-out;
+  animation: color-change 2s ease-in-out;
 }
 
 @keyframes moving-to-target {
@@ -90,7 +108,7 @@ section {
 
   to {
     top: -30px;
-    left: -30px;
+    left: -170px;
     transform: translate(0, 0) scale(0.4);
   }
 }
@@ -102,5 +120,16 @@ section {
 
   to {
     opacity: 0;
+  }
+}
+
+@keyframes color-change {
+  from {
+    color: white;
+  }
+
+  to {
+    color: black;
+    transform: translate(0, 0) scale(0.75);
   }
 }
