@@ -20,7 +20,6 @@ export class FirebaseServicesService implements OnDestroy {
   private unsubscribeFunctions: Map<string, () => void> = new Map();
 
   ngOnDestroy(): void {
-    // Ensure all BehaviorSubjects are completed to avoid memory leaks
     this.dataSubjects.forEach((subject) => subject.complete());
     this.unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
     this.unsubscribeFunctions.clear();
@@ -35,55 +34,51 @@ export class FirebaseServicesService implements OnDestroy {
     return doc(this.firestore, collectionName, docId);
   }
 
+  private mapDocumentData<T>(doc: any): T & { id: string } {
+    const data = doc.data() as T;
+    return { ...data, id: doc.id };
+  }
+
+  private handleSnapshot<T>(
+    snapshot: any,
+    observer: any,
+    extractData: (doc: any) => T
+  ) {
+    const data = snapshot.docs
+      ? snapshot.docs.map(extractData)
+      : snapshot.exists()
+      ? extractData(snapshot)
+      : null;
+
+    if (data) observer.next(data);
+    else observer.error('Document does not exist');
+  }
+
   getCollection<T>(collectionName: string): Observable<T[]> {
     const refCollection = this.getCollectionRef(collectionName);
-    return new Observable<T[]>((observer) => {
-      const unsubscribe = onSnapshot(
+    return new Observable((observer) =>
+      onSnapshot(
         refCollection,
-        (snapshot) => {
-          const updatedData = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as T[];
-          observer.next(updatedData);
-        },
-        (error) => {
-          console.error(`Error fetching collection ${collectionName}:`, error);
-          observer.error(error);
-        }
-      );
-      return unsubscribe;
-    });
+        (snapshot) =>
+          this.handleSnapshot(snapshot, observer, this.mapDocumentData),
+        (error) =>
+          observer.error(
+            `Error fetching collection ${collectionName}: ${error}`
+          )
+      )
+    );
   }
 
   getDoc<T>(collectionName: string, docId: string): Observable<T> {
     const docRef = this.getDocRef(collectionName, docId);
-    return new Observable<T>((observer) => {
-      const unsubscribe = onSnapshot(
+    return new Observable((observer) =>
+      onSnapshot(
         docRef,
-        (snapshot) => {
-          if (snapshot.exists()) {
-            const updatedData = {
-              id: snapshot.id,
-              ...snapshot.data(),
-            } as T;
-            observer.next(updatedData);
-          } else {
-            observer.error(
-              `Document with ID ${docId} does not exist in collection ${collectionName}`
-            );
-          }
-        },
-        (error) => {
-          console.error(
-            `Error fetching document ${docId} in collection ${collectionName}:`,
-            error
-          );
-          observer.error(error);
-        }
-      );
-      return unsubscribe;
-    });
+        (snapshot) =>
+          this.handleSnapshot(snapshot, observer, this.mapDocumentData),
+        (error) => observer.error(`Error fetching document ${docId}: ${error}`)
+      )
+    );
   }
 
   async addDoc<T extends { [x: string]: any }>(

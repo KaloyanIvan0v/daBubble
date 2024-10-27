@@ -59,7 +59,6 @@ export class MainComponent implements OnInit, OnDestroy {
     this.popUpStatesSubscription =
       this.globalDataService.popUpStates$.subscribe((states) => {
         this.popUpStates = states as { [key: string]: boolean };
-        console.log('Pop-up states updated:', this.popUpStates);
       });
   }
 

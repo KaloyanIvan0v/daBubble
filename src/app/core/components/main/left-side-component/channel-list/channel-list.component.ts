@@ -4,6 +4,8 @@ import { GlobalDataService } from '../../../../shared/services/pop-up-service/gl
 import { FirebaseServicesService } from '../../../../shared/services/firebase/firebase.service';
 import { Subscription } from 'rxjs';
 import { Channel } from '../../../../shared/models/channel.class';
+import { Router } from '@angular/router';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -19,7 +21,9 @@ export class ChannelListComponent {
 
   constructor(
     private globalDataService: GlobalDataService,
-    private firebaseService: FirebaseServicesService
+    private firebaseService: FirebaseServicesService,
+    private workspaceService: WorkspaceService,
+    private router: Router
   ) {}
 
   toggleChannelList() {
@@ -34,7 +38,7 @@ export class ChannelListComponent {
     this.subscription = this.firebaseService
       .getCollection<Channel>('channels')
       .subscribe({
-        next: (channels) => ((this.channels = channels), console.log(channels)),
+        next: (channels) => (this.channels = channels),
         error: (error) =>
           console.error('Fehler beim Laden der Channels:', error),
       });
@@ -45,10 +49,15 @@ export class ChannelListComponent {
   }
 
   goToChannel(channelId: string) {
-    // const channelData = this.firebaseService.getDoc<Channel>(
-    //   'channels',
-    //   channelId
-    // );
-    console.log(channelId);
+    this.navigateToChannelChat(channelId);
+  }
+
+  navigateToChannelChat(channelId: string) {
+    this.setCurrentChannelId(channelId);
+    this.router.navigate(['dashboard', 'channel-chat']);
+  }
+
+  setCurrentChannelId(channelId: string) {
+    this.workspaceService.setCurrentChannelId(channelId);
   }
 }
