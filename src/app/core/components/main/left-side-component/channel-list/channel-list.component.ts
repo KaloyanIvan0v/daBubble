@@ -53,11 +53,11 @@ export class ChannelListComponent {
   }
 
   navigateToChannelChat(channelId: string) {
-    this.setCurrentChannelId(channelId);
+    this.setChannelId(channelId);
     this.router.navigate(['dashboard', 'channel-chat']);
   }
 
-  setCurrentChannelId(channelId: string) {
-    this.workspaceService.setCurrentChannelId(channelId);
+  setChannelId(channelId: string) {
+    this.workspaceService.channelId.set(channelId);
   }
 }

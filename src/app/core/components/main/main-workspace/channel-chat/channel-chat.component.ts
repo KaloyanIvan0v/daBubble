@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, signal } from '@angular/core';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
@@ -15,22 +15,20 @@ import { Channel } from 'src/app/core/shared/models/channel.class';
 export class ChannelChatComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   channelData!: Channel;
-  channelName: string = 'Entwicklerteam';
-  currentChannelI!: string;
+  channelName!: string;
+  channelId: string = '';
 
   constructor(
     private workspaceService: WorkspaceService,
     private firebaseService: FirebaseServicesService
-  ) {}
-
-  ngOnInit(): void {
-    this.subscriptions.add(
-      this.workspaceService.currentChannelId$.subscribe((id) => {
-        this.currentChannelI = id;
-        this.loadChannelData(id);
-      })
-    );
+  ) {
+    effect(() => {
+      this.channelId = this.workspaceService.channelId();
+      this.loadChannelData(this.channelId);
+    });
   }
+
+  ngOnInit(): void {}
 
   private loadChannelData(channelId: string): void {
     this.subscriptions.add(

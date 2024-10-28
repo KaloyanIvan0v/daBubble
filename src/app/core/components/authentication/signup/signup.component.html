@@ -1,7 +1,7 @@
 <!-- signup.component.html -->
 <div class="signup-container">
   <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
-  <form #signupForm="ngForm">
+  <form #signupForm="ngForm" (submit)="register()">
     <h2>Konto erstellen</h2>
     <h4>
       Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues

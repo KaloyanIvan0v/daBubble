@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
+import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-choose-avatar',

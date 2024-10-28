@@ -10,10 +10,12 @@ import { FirebaseServicesService } from '../../shared/services/firebase/firebase
 import { Observable } from 'rxjs';
 import { JsonPipe } from '@angular/common';
 import { LoginComponent } from './login/login.component';
-import { SignupComponent } from '../signup/signup.component';
+import { SignupComponent } from './signup/signup.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
-import { ChooseAvatarComponent } from '../choose-avatar/choose-avatar.component';
+import { ChooseAvatarComponent } from './choose-avatar/choose-avatar.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 @Component({
   selector: 'app-authentication',
   standalone: true,
