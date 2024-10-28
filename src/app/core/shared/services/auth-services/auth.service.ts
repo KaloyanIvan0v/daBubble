@@ -7,14 +7,20 @@ import {
   onAuthStateChanged,
   User,
 } from 'firebase/auth';
+import { firstValueFrom, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private auth = getAuth();
-
-  constructor(private afAuth: AngularFireAuth) {}
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
+  constructor(private afAuth: AngularFireAuth) {
+    onAuthStateChanged(this.auth, (user) => {
+      this.currentUserSubject.next(user);
+    });
+  }
 
   async login(email: string, password: string): Promise<User> {
     return signInWithEmailAndPassword(this.auth, email, password).then(
@@ -29,7 +35,6 @@ export class AuthService {
       console.warn('Invalid email format:', email);
       return;
     }
-
     const userCredential = await createUserWithEmailAndPassword(
       this.auth,
       email,
@@ -47,6 +52,11 @@ export class AuthService {
   }
 
   get isAuthenticated(): Promise<boolean> {
-    return this.afAuth.authState.toPromise().then((user) => !!user);
+    return firstValueFrom(this.afAuth.authState).then((user) => !!user);
+  }
+
+  async getCurrentUserUID(): Promise<string | null> {
+    const user = await this.afAuth.currentUser;
+    return user ? user.uid : null;
   }
 }

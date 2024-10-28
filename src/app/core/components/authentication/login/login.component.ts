@@ -37,10 +37,12 @@ export class LoginComponent implements OnInit {
         this.user.password
       );
       if (user) {
-        this.router.navigate(['/dashboard']); // Navigate after successful login
+        this.firebaseService.userUID =
+          await this.authService.getCurrentUserUID();
+        this.router.navigate(['/dashboard']);
       }
     } catch (error) {
-      console.error('Login failed:', error); // Handle login error
+      console.error('Login failed:', error);
     }
   }
 

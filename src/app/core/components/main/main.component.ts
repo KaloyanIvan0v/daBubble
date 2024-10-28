@@ -14,6 +14,8 @@ import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/use
 import { GlobalDataService } from '../../shared/services/pop-up-service/global-data.service';
 import { PopUpComponent } from '../../shared/components/pop-up/pop-up.component';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../shared/services/auth-services/auth.service';
+import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
 
 @Component({
   selector: 'app-main',
@@ -53,15 +55,19 @@ export class MainComponent implements OnInit, OnDestroy {
   // Subscription property
   private popUpStatesSubscription!: Subscription;
 
-  constructor(private globalDataService: GlobalDataService) {}
+  constructor(
+    private globalDataService: GlobalDataService,
+    private authService: AuthService,
+    private firebaseService: FirebaseServicesService
+  ) {}
 
   ngOnInit(): void {
     this.popUpStatesSubscription =
       this.globalDataService.popUpStates$.subscribe((states) => {
         this.popUpStates = states as { [key: string]: boolean };
       });
+    this.getUID();
   }
-
   ngOnDestroy(): void {
     if (this.popUpStatesSubscription) {
       this.popUpStatesSubscription.unsubscribe();
@@ -86,5 +92,9 @@ export class MainComponent implements OnInit, OnDestroy {
 
   closeAddChannelPopUp() {
     this.globalDataService.closePopUp();
+  }
+
+  async getUID() {
+    this.firebaseService.userUID = await this.authService.getCurrentUserUID();
   }
 }

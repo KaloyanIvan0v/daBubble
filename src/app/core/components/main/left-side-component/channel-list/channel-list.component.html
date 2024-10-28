@@ -30,7 +30,7 @@
       <div
         *ngFor="let channel of channels"
         class="channel"
-        (click)="setChannelId(channel.id)"
+        (click)="navigateToChannelChat(channel.id)"
       >
         <div class="channel-tag"></div>
         <div>{{ channel.name }}</div>

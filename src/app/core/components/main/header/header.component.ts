@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-
 import { GlobalDataService } from '../../../shared/services/pop-up-service/global-data.service';
-
+import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -10,9 +9,13 @@ import { GlobalDataService } from '../../../shared/services/pop-up-service/globa
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  constructor(public globalDataService: GlobalDataService) {}
+  constructor(
+    public globalDataService: GlobalDataService,
+    public firebaseService: FirebaseServicesService
+  ) {}
 
   openPopUp() {
     this.globalDataService.openPopUp('userMenu');
+    console.log(this.firebaseService.userUID);
   }
 }

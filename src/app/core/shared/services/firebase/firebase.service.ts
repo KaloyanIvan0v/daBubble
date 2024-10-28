@@ -15,9 +15,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class FirebaseServicesService implements OnDestroy {
   private firestore: Firestore = inject(Firestore);
-
   private dataSubjects: Map<string, BehaviorSubject<any>> = new Map();
   private unsubscribeFunctions: Map<string, () => void> = new Map();
+
+  userUID: string | null = '';
 
   ngOnDestroy(): void {
     this.dataSubjects.forEach((subject) => subject.complete());
