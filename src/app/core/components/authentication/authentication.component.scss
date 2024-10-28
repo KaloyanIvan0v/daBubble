@@ -14,7 +14,6 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  display: none;
   img {
     width: 100%;
     height: auto;
@@ -64,24 +63,14 @@ section {
   width: 100vw;
   height: 100vh;
   background: $purple1;
-  animation: opacity-fade 2s ease-in-out;
   z-index: 10;
-}
-
-.d-none {
-  display: none;
-}
-
-.d-block {
-  display: block;
 }
 
 .logo-animation-container {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 45%;
+  left: 45%;
   z-index: 10;
-  animation: moving-to-target 1.5s ease-in-out forwards;
   display: flex;
   align-items: center;
 }
@@ -95,8 +84,29 @@ section {
   font-size: 6em;
   color: white;
   font-weight: 700;
-  animation: opacity-fade 1s ease-in-out;
-  animation: color-change 2s ease-in-out;
+  animation: opacity-fade 0.1s ease-in-out;
+  margin-left: -170px;
+  z-index: -1;
+}
+
+.move-to-target {
+  animation: moving-to-target 0.7s ease-in-out forwards;
+}
+
+.move-left-target {
+  animation: logo-move-left 0.3s ease-in-out forwards;
+}
+
+.text-slide-in {
+  animation: text-slide-in 0.3s ease-in-out forwards;
+}
+
+.typing-effect {
+  animation: typing 0.3s steps(20, end) forwards;
+}
+
+.opacity-fade {
+  animation: opacity-fade 0.8s ease-in-out;
 }
 
 @keyframes moving-to-target {
@@ -104,12 +114,14 @@ section {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(1);
+    opacity: (1);
   }
 
   to {
-    top: -30px;
-    left: -170px;
+    top: -40px;
+    left: -30px;
     transform: translate(0, 0) scale(0.4);
+    opacity: (0);
   }
 }
 
@@ -123,13 +135,20 @@ section {
   }
 }
 
-@keyframes color-change {
+@keyframes logo-move-left {
   from {
-    color: white;
+    transform: translateX(0);
   }
-
   to {
-    color: black;
-    transform: translate(0, 0) scale(0.75);
+    transform: translateX(-200px);
+  }
+}
+
+@keyframes text-slide-in {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
   }
 }

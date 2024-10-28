@@ -1,18 +1,23 @@
 <section class="authentication">
-  <div class="background-fade" [class.d-none]="removeLoginAnimation"></div>
+  <div
+    class="background-fade"
+    [class.d-none]="removeLoginAnimation"
+    #backgroundFade
+  ></div>
   <div class="logo-center-container" [class.d-none]="removeLoginAnimation">
-    <div class="logo-animation-container">
+    <div class="logo-animation-container" #logoContainer>
       <img
+        #logoImage
         id="login-logo-animated"
         src="assets/img/logo-short.svg"
         alt="logo-short"
       />
-      <span class="logo-text">DABubble</span>
+      <span class="logo-text d-none" #logoText>DABubble</span>
     </div>
   </div>
 
-  <div class="logo-container" [class.d-block]="showLogo">
-    <img src="assets/img/logo-long.svg" alt="logo" />
+  <div class="logo-container d-none">
+    <img src="assets/img/logo-long.svg" alt="logo" class="d-none" #mainLogo />
   </div>
   <div class="sign-in">
     <div>
