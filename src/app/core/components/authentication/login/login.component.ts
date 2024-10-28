@@ -10,9 +10,14 @@ import { AuthUIService } from 'src/app/core/shared/services/authUI-services/auth
   standalone: true,
   imports: [SharedModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  styleUrls: ['./login.component.scss'], // Changed to styleUrls
 })
 export class LoginComponent implements OnInit {
+  user = {
+    email: '',
+    password: '',
+  };
+
   constructor(
     private authService: AuthService,
     private firebaseService: FirebaseServicesService,
@@ -21,21 +26,26 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.login(this.user.email, this.user.password);
+    // Moved login call to onLogin method to control execution
   }
 
-  user = {
-    email: '',
-    password: '',
-  };
-
-  onLogin(event: Event) {
+  async onLogin(event: Event) {
     event.preventDefault();
-    this.authService.login(this.user.email, this.user.password);
+    try {
+      const user = await this.authService.login(
+        this.user.email,
+        this.user.password
+      );
+      if (user) {
+        this.router.navigate(['/dashboard']); // Navigate after successful login
+      }
+    } catch (error) {
+      console.error('Login failed:', error); // Handle login error
+    }
   }
 
-  get isAuthenticated(): boolean {
-    return this.authService.isAuthenticated;
+  async checkAuthStatus(): Promise<boolean> {
+    return await this.authService.isAuthenticated;
   }
 
   guestLogin() {

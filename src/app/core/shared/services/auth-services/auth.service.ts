@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { initializeApp, FirebaseApp } from 'firebase/app';
-import { environment } from 'src/app/environments/environment';
 import {
   getAuth,
-  Auth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -15,17 +12,9 @@ import {
   providedIn: 'root',
 })
 export class AuthService {
-  private app: FirebaseApp;
-  private auth: Auth;
+  private auth = getAuth();
 
-  constructor(private afAuth: AngularFireAuth) {
-    this.app = initializeApp(environment.firebaseConfig);
-    this.auth = getAuth(this.getApp());
-  }
-
-  getApp(): FirebaseApp {
-    return this.app;
-  }
+  constructor(private afAuth: AngularFireAuth) {}
 
   async login(email: string, password: string): Promise<User> {
     return signInWithEmailAndPassword(this.auth, email, password).then(
@@ -34,34 +23,30 @@ export class AuthService {
   }
 
   async register(email: string, password: string): Promise<User | void> {
-    // Simple regex for email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Check if the email format is valid
     if (!emailRegex.test(email)) {
       console.warn('Invalid email format:', email);
-      return; // Exit the method if the email format is invalid
+      return;
     }
 
-    // Proceed to create the user if the email format is valid
     const userCredential = await createUserWithEmailAndPassword(
       this.auth,
       email,
       password
     );
-    return userCredential.user; // Return the user object upon successful registration
+    return userCredential.user;
   }
 
   observeAuthState(callback: (user: User | null) => void): void {
     onAuthStateChanged(this.auth, callback);
   }
 
-  logoutUser(): Promise<void> {
-    return this.auth.signOut();
+  async logoutUser(): Promise<void> {
+    return this.afAuth.signOut();
   }
 
-  // isAuthenticated Getter hinzufügen
-  get isAuthenticated(): boolean {
-    return this.afAuth.authState !== null;
+  get isAuthenticated(): Promise<boolean> {
+    return this.afAuth.authState.toPromise().then((user) => !!user);
   }
 }
