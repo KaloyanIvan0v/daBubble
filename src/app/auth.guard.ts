@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './core/shared/services/auth-services/auth.service';
-import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 @Injectable({
@@ -16,7 +15,7 @@ export class AuthGuard implements CanActivate {
       tap((isLoggedIn) => {
         if (!isLoggedIn) {
           console.log('Kein Login, Umleitung zur Login-Seite');
-          this.router.navigate(['/app-login']);
+          this.router.navigate(['']);
         }
       })
     );

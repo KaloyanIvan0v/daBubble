@@ -50,7 +50,17 @@ export class LoginComponent implements OnInit {
     return await this.authService.isAuthenticated;
   }
 
-  guestLogin() {
-    this.router.navigate(['/dashboard']);
+  async guestLogin(event: Event) {
+    event.preventDefault();
+    try {
+      const user = await this.authService.login('guest@mail.de', '12345678');
+      if (user) {
+        this.firebaseService.userUID =
+          await this.authService.getCurrentUserUID();
+        this.router.navigate(['/dashboard']);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   }
 }

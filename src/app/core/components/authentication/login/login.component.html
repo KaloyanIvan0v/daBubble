@@ -75,7 +75,9 @@
       <button class="primary-btn" [disabled]="!loginForm.valid">
         Anmelden
       </button>
-      <button class="secondary-btn" (click)="guestLogin()">Gäste-Login</button>
+      <button class="secondary-btn" (click)="guestLogin($event)">
+        Gäste-Login
+      </button>
     </div>
   </form>
 </div>

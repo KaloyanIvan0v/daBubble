@@ -1,31 +1,34 @@
+// auth.service.ts
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
-  getAuth,
+  Auth,
+  User,
+  authState,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  User,
-} from 'firebase/auth';
-import { firstValueFrom, BehaviorSubject } from 'rxjs';
+} from '@angular/fire/auth';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private auth = getAuth();
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
-  constructor(private afAuth: AngularFireAuth) {
-    onAuthStateChanged(this.auth, (user) => {
+
+  constructor(private auth: Auth) {
+    authState(this.auth).subscribe((user: User | null) => {
       this.currentUserSubject.next(user);
     });
   }
 
   async login(email: string, password: string): Promise<User> {
-    return signInWithEmailAndPassword(this.auth, email, password).then(
-      (userCredential) => userCredential.user
+    const userCredential = await signInWithEmailAndPassword(
+      this.auth,
+      email,
+      password
     );
+    return userCredential.user;
   }
 
   async register(email: string, password: string): Promise<User | void> {
@@ -43,20 +46,24 @@ export class AuthService {
     return userCredential.user;
   }
 
-  observeAuthState(callback: (user: User | null) => void): void {
-    onAuthStateChanged(this.auth, callback);
-  }
-
   async logoutUser(): Promise<void> {
-    return this.afAuth.signOut();
+    return this.auth.signOut();
   }
 
   get isAuthenticated(): Promise<boolean> {
-    return firstValueFrom(this.afAuth.authState).then((user) => !!user);
+    return new Promise((resolve) => {
+      authState(this.auth).subscribe((user: User | null) => {
+        resolve(!!user);
+      });
+    });
   }
 
   async getCurrentUserUID(): Promise<string | null> {
-    const user = await this.afAuth.currentUser;
+    const user = this.auth.currentUser;
     return user ? user.uid : null;
+  }
+
+  observeAuthState(callback: (user: User | null) => void): Subscription {
+    return authState(this.auth).subscribe(callback);
   }
 }
