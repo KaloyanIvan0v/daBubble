@@ -1,0 +1,91 @@
+@import "global.scss";
+
+section {
+  @include dFlex($fd: column, $ai: start);
+  width: 500px;
+  max-width: 100%;
+  height: 600px;
+  padding: 40px;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 30px;
+  border-top-right-radius: 0px;
+  gap: 45px;
+  box-shadow: 0px 6px 10px 0px #00000033;
+}
+
+.header {
+  @include dFlex($jc: space-between);
+  width: 100%;
+}
+
+.close-button {
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/close-black.svg",
+    "/assets/img/buttons/close-blue.svg"
+  );
+}
+
+.user-img {
+  @include dFlex($jc: center, $ai: center);
+  width: 100%;
+  img {
+    width: 200px;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+.user-name-wrapper {
+  @include dFlex($fd: column, $jc: center, $ai: start);
+  gap: 15px;
+  width: 100%;
+}
+
+.user-name {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.user-status-wrapper {
+  @include dFlex($fd: row, $jc: center, $ai: center);
+  gap: 15px;
+}
+
+.status-dot {
+  @include statusDot("offline", 16px);
+}
+
+.user-status {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.email-wrapper-tittle {
+  @include dFlex($fd: row, $jc: center, $ai: center);
+  gap: 20px;
+}
+
+.user-email-wrapper {
+  @include dFlex($fd: column, $jc: center, $ai: start);
+  gap: 15px;
+}
+
+.user-email-tittle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.user-email {
+  font-size: 18px;
+  font-weight: 400;
+  color: $mail-blue;
+  padding-left: 50px;
+}
+
+.send-message-btn {
+  @include dFlex($jc: center, $ai: center);
+  gap: 10px;
+}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GlobalDataService } from '../../../../shared/services/pop-up-service/global-data.service';
 import { FirebaseServicesService } from '../../../../shared/services/firebase/firebase.service';
@@ -17,6 +17,7 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
 export class ChannelListComponent {
   channelListOpen: boolean = false;
   channels: Channel[] = [];
+  currentActiveUnitId: string = '';
   private subscription: Subscription | undefined;
 
   constructor(
@@ -24,7 +25,9 @@ export class ChannelListComponent {
     private firebaseService: FirebaseServicesService,
     private workspaceService: WorkspaceService,
     private router: Router
-  ) {}
+  ) {
+    this.currentActiveUnitId = this.workspaceService.currentActiveUnitId();
+  }
 
   toggleChannelList() {
     this.channelListOpen = !this.channelListOpen;
@@ -48,16 +51,17 @@ export class ChannelListComponent {
     this.subscription?.unsubscribe();
   }
 
-  goToChannel(channelId: string) {
-    this.navigateToChannelChat(channelId);
+  goToChannel(currentActiveUnitId: string) {
+    this.navigateToChannelChat(currentActiveUnitId);
   }
 
-  navigateToChannelChat(channelId: string) {
-    this.setChannelId(channelId);
+  navigateToChannelChat(currentActiveUnitId: string) {
+    this.setChannelId(currentActiveUnitId);
     this.router.navigate(['dashboard', 'channel-chat']);
+    this.currentActiveUnitId = this.workspaceService.currentActiveUnitId();
   }
 
-  setChannelId(channelId: string) {
-    this.workspaceService.channelId.set(channelId);
+  setChannelId(currentActiveUnitId: string) {
+    this.workspaceService.currentActiveUnitId.set(currentActiveUnitId);
   }
 }

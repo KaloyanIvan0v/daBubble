@@ -28,4 +28,10 @@ section {
   font-size: 24px;
   font-weight: 600;
   cursor: pointer;
+  padding: 10px 45px;
+  &:hover {
+    background-color: $bg-color;
+    border-radius: 100px;
+    color: $purple3;
+  }
 }

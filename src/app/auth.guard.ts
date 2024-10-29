@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
       take(1),
       map((user) => {
         if (user) {
-          return true; // Zugriff erlauben
+          return true;
         } else {
           return this.router.createUrlTree(['']);
         }

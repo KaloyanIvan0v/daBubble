@@ -1,5 +1,5 @@
 // auth.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {
   Auth,
   User,
@@ -14,6 +14,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 })
 export class AuthService {
   currentUser$: BehaviorSubject<User | null>;
+  authStatusChanged = signal<boolean>(false);
 
   constructor(private auth: Auth) {
     this.currentUser$ = authState(this.auth);
@@ -25,6 +26,7 @@ export class AuthService {
       email,
       password
     );
+    this.authStatusChanged.set(true);
     return userCredential.user;
   }
 
@@ -44,6 +46,7 @@ export class AuthService {
   }
 
   async logoutUser(): Promise<void> {
+    this.authStatusChanged.set(false);
     return this.auth.signOut();
   }
 

@@ -23,7 +23,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     private firebaseService: FirebaseServicesService
   ) {
     effect(() => {
-      this.channelId = this.workspaceService.channelId();
+      this.channelId = this.workspaceService.currentActiveUnitId();
       this.loadChannelData(this.channelId);
     });
   }

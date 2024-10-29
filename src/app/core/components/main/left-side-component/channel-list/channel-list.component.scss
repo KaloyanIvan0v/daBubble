@@ -141,3 +141,16 @@ header {
     }
   }
 }
+
+.channel.selected {
+  background-color: $bg-color;
+  color: $purple3;
+  border-radius: 20px;
+  .channel-tag {
+    @include iconButton(
+      "/assets/img/icons/tag-blue.svg",
+      "/assets/img/icons/tag-blue.svg"
+    );
+  }
+  font-weight: 600;
+}

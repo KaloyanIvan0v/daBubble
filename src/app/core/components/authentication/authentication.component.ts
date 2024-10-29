@@ -54,9 +54,7 @@ export class AuthenticationComponent {
   // }
 
   ngOnInit(): void {
-    this.users.subscribe((data) => {
-      console.log('Daten:', data);
-    });
+    this.users.subscribe((data) => {});
 
     setTimeout(() => {
       this.removeLoginAnimation = true;
