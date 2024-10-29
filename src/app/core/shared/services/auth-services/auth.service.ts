@@ -13,13 +13,10 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  currentUser$ = this.currentUserSubject.asObservable();
+  currentUser$: BehaviorSubject<User | null>;
 
   constructor(private auth: Auth) {
-    authState(this.auth).subscribe((user: User | null) => {
-      this.currentUserSubject.next(user);
-    });
+    this.currentUser$ = authState(this.auth);
   }
 
   async login(email: string, password: string): Promise<User> {
