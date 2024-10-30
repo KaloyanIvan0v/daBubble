@@ -37,11 +37,17 @@ export class SignupComponent {
 
   register() {
     const { email, password, name } = this.user;
-
-    console.log('Email before registration:', email); // Log email
+    console.log('Register method called with:', this.user);
 
     if (!email || !password || !name) {
       console.error('All fields are required.');
+      return;
+    }
+
+    // Optional: Validate email format using regex
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      console.error('Invalid email format');
       return;
     }
 
@@ -51,14 +57,17 @@ export class SignupComponent {
 
   finalizeRegistration() {
     const { email, password, name, avatar } = this.user;
+    console.log('Sending to Firebase:', { email, password, name, avatar }); // Log data sent
 
     if (!avatar) {
       console.error('Avatar must be selected.');
       return;
     }
 
+    console.log('Finalizing registration for email:', email); // Log email
+
     this.authService
-      .register(name, email, password, avatar)
+      .register(email, password)
       .then((user) => {
         if (user) {
           console.log('Registration successful:', user.uid);
