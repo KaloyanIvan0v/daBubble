@@ -49,10 +49,8 @@ export class MainComponent implements OnInit, OnDestroy {
   profileViewVisible: boolean = false;
   userMenuVisible: boolean = false;
 
-  // Local object to hold the pop-up states
   popUpStates: { [key: string]: boolean } = {};
 
-  // Subscription property
   private popUpStatesSubscription!: Subscription;
 
   constructor(

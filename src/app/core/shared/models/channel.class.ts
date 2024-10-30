@@ -1,23 +1,25 @@
+import { Message } from './message.class';
+
 export class Channel {
+  uid: string[];
   id: string;
   name: string;
   description: string;
-  users: object;
   creator: string;
-  messages: object;
+  messages: Message[];
 
   constructor(
     id: string,
     name: string,
     description: string,
-    users: object,
-    messages: object,
-    creator: string
+    messages: Message[],
+    creator: string,
+    uid: []
   ) {
+    this.uid = uid;
     this.id = id;
     this.name = name;
     this.description = description;
-    this.users = users;
     this.creator = creator;
     this.messages = messages;
   }

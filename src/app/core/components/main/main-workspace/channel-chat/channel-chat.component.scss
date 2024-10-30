@@ -31,12 +31,37 @@ app-input-box {
 .header-left {
   @include dFlex();
   gap: 10px;
+  &:hover {
+    cursor: pointer;
+    background-color: $bg-color;
+    border-radius: 20px;
+    color: $purple3;
+    .drop-down-icon {
+      @include iconButton(
+        "/assets/img/buttons/arrow-down-blue.svg",
+        "/assets/img/buttons/arrow-down-blue.svg"
+      );
+    }
+    .header-tag {
+      @include iconButton(
+        "/assets/img/icons/tag-blue.svg",
+        "/assets/img/icons/tag-blue.svg"
+      );
+    }
+  }
 }
 
 .drop-down-icon {
   @include iconButton(
     "/assets/img/buttons/arrow-down-black.svg",
     "/assets/img/buttons/arrow-down-blue.svg"
+  );
+}
+
+.header-tag {
+  @include iconButton(
+    "/assets/img/icons/tag-black.svg",
+    "/assets/img/icons/tag-blue.svg"
   );
 }
 

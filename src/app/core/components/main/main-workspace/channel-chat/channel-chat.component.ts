@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, effect, signal } from '@angular/core';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
+import { GlobalDataService } from 'src/app/core/shared/services/pop-up-service/global-data.service';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 
@@ -20,7 +21,8 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService
+    private firebaseService: FirebaseServicesService,
+    private globalDataService: GlobalDataService
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
@@ -45,5 +47,9 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  openEditChannelPopUp() {
+    this.globalDataService.openPopUp('editChannel');
   }
 }

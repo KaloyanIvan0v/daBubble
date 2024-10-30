@@ -9,16 +9,25 @@ import {
   CollectionReference,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { where, query } from 'firebase/firestore';
+import { AuthService } from '../auth-services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirebaseServicesService implements OnDestroy {
   private firestore: Firestore = inject(Firestore);
+  private authService: AuthService = inject(AuthService);
   private dataSubjects: Map<string, BehaviorSubject<any>> = new Map();
   private unsubscribeFunctions: Map<string, () => void> = new Map();
 
-  userUID: string | null = '';
+  userUID!: string | null;
+
+  constructor() {
+    this.authService.getCurrentUserUID().then((uid) => {
+      this.userUID = uid;
+    });
+  }
 
   ngOnDestroy(): void {
     this.dataSubjects.forEach((subject) => subject.complete());
@@ -57,9 +66,15 @@ export class FirebaseServicesService implements OnDestroy {
 
   getCollection<T>(collectionName: string): Observable<T[]> {
     const refCollection = this.getCollectionRef(collectionName);
+    const userSpecificQuery = query(
+      refCollection,
+      where('uid', 'array-contains', this.userUID)
+    );
+    console.log('uid', this.userUID);
+
     return new Observable((observer) =>
       onSnapshot(
-        refCollection,
+        userSpecificQuery,
         (snapshot) =>
           this.handleSnapshot(snapshot, observer, this.mapDocumentData),
         (error) =>

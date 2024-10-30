@@ -1,6 +1,6 @@
 <section>
   <div class="tittle-closse">
-    <div class="font24-700"># Entwicklerteam</div>
+    <div class="font24-700"># {{ (channelData$ | async)?.name }}</div>
     <div class="close-button" (click)="closeAddChannelPopUp()"></div>
   </div>
   <div
@@ -17,7 +17,7 @@
         Bearbeiten
       </div>
       <div
-        (click)="toggleEditName()"
+        (click)="toggleEditName(); saveChanges()"
         *ngIf="editNameActive"
         class="purple3-btn"
       >
@@ -30,8 +30,9 @@
         *ngIf="editNameActive"
         placeholder="z.B Kooperationsprojekte"
         type="text"
+        [(ngModel)]="channelData.name"
       />
-      <div *ngIf="!editNameActive">Entwicklerteam</div>
+      <div *ngIf="!editNameActive">{{ (channelData$ | async)?.name }}</div>
     </div>
   </div>
 
@@ -49,7 +50,7 @@
         Bearbeiten
       </div>
       <div
-        (click)="toggleEditDescription()"
+        (click)="toggleEditDescription(); saveChanges()"
         *ngIf="editDescriptionActive"
         class="purple3-btn"
       >
@@ -66,9 +67,10 @@
         *ngIf="editDescriptionActive"
         placeholder="dein Text hier"
         type="text"
+        [(ngModel)]="channelData.description"
       />
       <div *ngIf="!editDescriptionActive">
-        Dein Text hier, Dein Text hier, Dein Text hier
+        {{ (channelData$ | async)?.description }}
       </div>
     </div>
   </div>
