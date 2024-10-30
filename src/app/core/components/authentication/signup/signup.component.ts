@@ -17,9 +17,10 @@ export class SignupComponent {
     name: '',
     email: '',
     password: '',
+    avatar: '',
   };
+
   constructor(
-    // private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService,
     private authService: AuthService
   ) {}
@@ -37,15 +38,38 @@ export class SignupComponent {
   register() {
     const { email, password, name } = this.user;
 
-    // Registriere den Benutzer mit Email und Passwort
+    console.log('Email before registration:', email); // Log email
+
+    if (!email || !password || !name) {
+      console.error('All fields are required.');
+      return;
+    }
+
+    // Proceed to the avatar selection
+    this.authUIService.toggleAvatarSelection();
+  }
+
+  finalizeRegistration() {
+    const { email, password, name, avatar } = this.user;
+
+    if (!avatar) {
+      console.error('Avatar must be selected.');
+      return;
+    }
+
     this.authService
-      .register(email, password)
+      .register(name, email, password, avatar)
       .then((user) => {
-        // Optional: Benutzername separat speichern, z.B. in Firestore
-        // this.firebaseService.saveUserProfile(user.uid, { name, email });
+        if (user) {
+          console.log('Registration successful:', user.uid);
+          // Automatically log in the user after successful registration
+          this.authService.login(email, password).then(() => {
+            console.log('User logged in');
+          });
+        }
       })
       .catch((error) => {
-        console.error('Fehler bei der Registrierung:', error.message);
+        console.error('Registration error:', error.message);
       });
   }
 }

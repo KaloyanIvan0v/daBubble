@@ -1,5 +1,5 @@
-// auth.service.ts
 import { Injectable, signal } from '@angular/core';
+import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import {
   Auth,
   User,
@@ -16,33 +16,52 @@ export class AuthService {
   currentUser$: BehaviorSubject<User | null>;
   authStatusChanged = signal<boolean>(false);
 
-  constructor(private auth: Auth) {
+  constructor(private auth: Auth, private firestore: Firestore) {
+    // Observing the auth state and updating currentUser$ accordingly
     this.currentUser$ = authState(this.auth);
   }
 
   async login(email: string, password: string): Promise<User> {
-    const userCredential = await signInWithEmailAndPassword(
-      this.auth,
-      email,
-      password
-    );
-    this.authStatusChanged.set(true);
-    return userCredential.user;
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        this.auth,
+        email,
+        password
+      );
+      this.authStatusChanged.set(true);
+      return userCredential.user;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error; // Rethrow the error for handling in the component
+    }
   }
 
-  async register(email: string, password: string): Promise<User | void> {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  async register(
+    name: string,
+    email: string,
+    password: string,
+    imgPath: string
+  ): Promise<User | void> {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        this.auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
 
-    if (!emailRegex.test(email)) {
-      console.warn('Invalid email format:', email);
-      return;
+      // Store user data in Firestore
+      await setDoc(doc(this.firestore, 'users', user.uid), {
+        name: name,
+        email: email,
+        imgPath: imgPath,
+      });
+
+      return user;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error; // Rethrow the error for handling in the component
     }
-    const userCredential = await createUserWithEmailAndPassword(
-      this.auth,
-      email,
-      password
-    );
-    return userCredential.user;
   }
 
   async logoutUser(): Promise<void> {

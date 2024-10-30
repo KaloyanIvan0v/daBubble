@@ -1,48 +1,49 @@
 <!-- choose-avatar.component.html -->
 <div class="choose-avatar-container">
   <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
+  <form #chooseAvatarForm="ngForm">
+    <h2>Wähle deinen Avatar</h2>
+    <img
+      [src]="
+        selectedPhoto || 'assets/img/profile-img/profile-img-placeholder.svg'
+      "
+      alt="profile-img-placeholder"
+      class="profile-img-preview"
+    />
 
-  <h2>Wähle deinen Avatar</h2>
-  <img
-    [src]="
-      selectedPhoto || 'assets/img/profile-img/profile-img-placeholder.svg'
-    "
-    alt="profile-img-placeholder"
-    class="profile-img-preview"
-  />
+    <h3>Name Placeholder</h3>
 
-  <h3>Name Placeholder</h3>
-
-  <h4 class="list-text">Aus der liste wählen.</h4>
-  <div class="photos-container">
-    <div class="photos" *ngFor="let photo of photos">
-      <img
-        [src]="photo"
-        class="choose-avatar"
-        alt="choose-avatar"
-        (click)="selectPhoto(photo)"
+    <h4 class="list-text">Aus der liste wählen.</h4>
+    <div class="photos-container">
+      <div class="photos" *ngFor="let photo of photos">
+        <img
+          [src]="photo"
+          class="choose-avatar"
+          alt="choose-avatar"
+          (click)="selectPhoto(photo)"
+        />
+      </div>
+    </div>
+    <div class="upload-button">
+      <h4>eigenes Bild verwenden</h4>
+      <button class="secondary-btn" (click)="fileInput.click()">
+        Datei hochladen
+      </button>
+      <input
+        type="file"
+        #fileInput
+        style="display: none"
+        (change)="onFileSelected($event)"
       />
     </div>
-  </div>
-  <div class="upload-button">
-    <h4>eigenes Bild verwenden</h4>
-    <button class="secondary-btn" (click)="fileInput.click()">
-      Datei hochladen
-    </button>
-    <input
-      type="file"
-      #fileInput
-      style="display: none"
-      (change)="onFileSelected($event)"
-    />
-  </div>
 
-  <div *ngIf="isUploadedPhoto" class="uploaded-photo-info">
-    <span>{{ uploadedPhotoName }}</span>
-    <button (click)="eraseUploadedPhoto()">X</button>
-  </div>
+    <div *ngIf="isUploadedPhoto" class="uploaded-photo-info">
+      <span>{{ uploadedPhotoName }}</span>
+      <button (click)="eraseUploadedPhoto()">X</button>
+    </div>
 
-  <div class="button-container">
-    <button class="primary-btn">Weiter</button>
-  </div>
+    <div class="button-container">
+      <button class="primary-btn" (click)="finalizeSignup()">Weiter</button>
+    </div>
+  </form>
 </div>

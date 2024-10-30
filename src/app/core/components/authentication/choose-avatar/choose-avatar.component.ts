@@ -1,14 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
-import { CommonModule } from '@angular/common';
+import { SharedModule } from 'src/app/core/shared/shared-module';
+import { SignupComponent } from '../signup/signup.component';
+
 @Component({
   selector: 'app-choose-avatar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [SharedModule],
   templateUrl: './choose-avatar.component.html',
   styleUrl: './choose-avatar.component.scss',
 })
 export class ChooseAvatarComponent {
+  @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
   constructor(public authUIService: AuthUIService) {}
 
   photos: string[] = [
@@ -25,23 +28,22 @@ export class ChooseAvatarComponent {
   uploadedPhotoName: string | null = null;
 
   selectPhoto(photo: string) {
-    this.selectedPhoto = photo; // Set selected photo when clicked
+    this.selectedPhoto = photo;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
+    this.signUpComponent.user.avatar = photo; // Set the avatar in signup component
   }
 
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      this.uploadedPhotoName = file.name;
-
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        this.selectedPhoto = e.target?.result as string;
+      reader.onload = () => {
+        this.selectedPhoto = reader.result as string;
+        this.signUpComponent.user.avatar = this.selectedPhoto; // Update the avatar in signup component
         this.isUploadedPhoto = true;
+        this.uploadedPhotoName = file.name;
       };
-
       reader.readAsDataURL(file);
     }
   }
@@ -50,5 +52,11 @@ export class ChooseAvatarComponent {
     this.selectedPhoto = null;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
+    this.signUpComponent.user.avatar = ''; // Clear avatar in signup component
+  }
+
+  finalizeSignup() {
+    // This function can be triggered to finalize signup after choosing an avatar
+    this.signUpComponent.finalizeRegistration(); // Call finalize registration from signup component
   }
 }
