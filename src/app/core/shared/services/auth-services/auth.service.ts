@@ -40,7 +40,7 @@ export class AuthService {
     name: string,
     email: string,
     password: string,
-    imgPath: string
+    avatar: string
   ): Promise<User | void> {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -51,10 +51,10 @@ export class AuthService {
       const user = userCredential.user;
 
       // Store user data in Firestore
-      await setDoc(doc(this.firestore, 'users', user.uid), {
+      await setDoc(doc(this.firestore, 'userAccounts', user.uid), {
         name: name,
         email: email,
-        imgPath: imgPath,
+        avatar: avatar,
       });
 
       return user;
