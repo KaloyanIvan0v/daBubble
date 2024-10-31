@@ -23,6 +23,5 @@ export class HeaderComponent {
 
   openPopUp() {
     this.globalDataService.openPopUp('userMenu');
-    console.log(this.firebaseService.userUID);
   }
 }

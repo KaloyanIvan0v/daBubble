@@ -6,6 +6,7 @@ import { WorkspaceService } from '../../../services/workspace-service/workspace.
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { User } from 'src/app/core/shared/models/user.class';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-add-user-to-channel',
@@ -16,7 +17,7 @@ import { FirebaseServicesService } from '../../../services/firebase/firebase.ser
 })
 export class AddUserToChannelComponent {
   currentChannelId: string;
-  channelData!: Channel;
+  channelData$!: Observable<Channel>;
   searchText: string = '';
   users: User[] = [];
   userSelected: boolean = false;
@@ -26,9 +27,7 @@ export class AddUserToChannelComponent {
     public firebaseService: FirebaseServicesService
   ) {
     this.currentChannelId = this.workspaceService.currentActiveUnitId();
-    this.firebaseService.getChannels().subscribe((channelData) => {
-      this.channelData = channelData;
-    });
+    this.channelData$ = this.firebaseService.getChannel(this.currentChannelId);
     this.firebaseService.getUsers().subscribe((users) => {
       this.users = users;
     });

@@ -14,8 +14,6 @@ import { LoginComponent } from './login/login.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
 import { ChooseAvatarComponent } from './choose-avatar/choose-avatar.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 import { SignupComponent } from './signup/signup.component';
 import { AuthService } from '../../shared/services/auth-services/auth.service';
 
@@ -64,11 +62,6 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   // }
 
   ngOnInit(): void {
-    // Initialize the observable and log user data without @ViewChild dependency
-    this.users.subscribe((data) => {
-      console.log('User data:', data);
-    });
-
     setTimeout(() => {
       this.removeLoginAnimation = true;
     }, 2600);

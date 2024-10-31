@@ -37,8 +37,8 @@ export class LoginComponent implements OnInit {
         this.user.password
       );
       if (user) {
-        this.firebaseService.userUID =
-          await this.authService.getCurrentUserUID();
+        const uid = await this.authService.getCurrentUserUID();
+        this.firebaseService.setUserUID(uid);
         this.router.navigate(['/dashboard']);
       }
     } catch (error) {
@@ -55,8 +55,8 @@ export class LoginComponent implements OnInit {
     try {
       const user = await this.authService.login('guest@mail.de', '12345678');
       if (user) {
-        this.firebaseService.userUID =
-          await this.authService.getCurrentUserUID();
+        const uid = await this.authService.getCurrentUserUID();
+        this.firebaseService.setUserUID(uid);
         this.router.navigate(['/dashboard']);
       }
     } catch (error) {

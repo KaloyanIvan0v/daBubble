@@ -5,7 +5,7 @@
   </div>
   <div class="channel-name">
     <img src="assets/img/icons/tag-thin.svg" alt="" />
-    <div *ngIf="channelData" class="font18-400">{{ channelData.name }}</div>
+    <div class="font18-400">{{ (channelData$ | async)?.name }}</div>
   </div>
   <div class="pop-up-input">
     <input [(ngModel)]="searchText" placeholder="Name eingeben" type="text" />

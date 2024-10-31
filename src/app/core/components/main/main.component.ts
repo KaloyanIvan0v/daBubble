@@ -49,8 +49,10 @@ export class MainComponent implements OnInit, OnDestroy {
   profileViewVisible: boolean = false;
   userMenuVisible: boolean = false;
 
+  // Local object to hold the pop-up states
   popUpStates: { [key: string]: boolean } = {};
 
+  // Subscription property
   private popUpStatesSubscription!: Subscription;
 
   constructor(
@@ -64,7 +66,9 @@ export class MainComponent implements OnInit, OnDestroy {
       this.globalDataService.popUpStates$.subscribe((states) => {
         this.popUpStates = states as { [key: string]: boolean };
       });
-    this.getUID();
+    this.authService.getCurrentUserUID().then((uid) => {
+      this.firebaseService.setUserUID(uid);
+    });
   }
   ngOnDestroy(): void {
     if (this.popUpStatesSubscription) {
@@ -90,9 +94,5 @@ export class MainComponent implements OnInit, OnDestroy {
 
   closeAddChannelPopUp() {
     this.globalDataService.closePopUp();
-  }
-
-  async getUID() {
-    this.firebaseService.userUID = await this.authService.getCurrentUserUID();
   }
 }

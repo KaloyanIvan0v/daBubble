@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, effect, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
@@ -16,7 +16,7 @@ import { Channel } from 'src/app/core/shared/models/channel.class';
 export class ChannelChatComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   channelData!: Channel;
-  channelName!: string;
+  channelName: string = '';
   channelId: string = '';
   userAmount: number = 0;
 
@@ -27,7 +27,11 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
-      this.loadChannelData(this.channelId);
+      if (this.channelId) {
+        this.loadChannelData(this.channelId);
+      } else {
+        console.warn('Keine gültige channelId verfügbar.');
+      }
     });
   }
 
@@ -37,12 +41,14 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.firebaseService.getDoc<Channel>('channels', channelId).subscribe({
         next: (channel) => {
-          this.channelData = channel;
-          this.channelName = channel.name;
-          this.userAmount = channel.uid.length;
+          if (channel) {
+            this.channelData = channel;
+            this.channelName = channel.name;
+            this.userAmount = channel.uid.length;
+          }
         },
         error: (error) =>
-          console.error('Fehler beim Laden der Channels:', error),
+          console.error('Fehler beim Laden des Channels:', error),
       })
     );
   }

@@ -14,7 +14,7 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(),
     provideRouter(routes),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-    provideAuth(() => getAuth()), // Add this line
+    provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideAnimations(),
   ],

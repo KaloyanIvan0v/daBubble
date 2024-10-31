@@ -7,10 +7,12 @@ import {
   addDoc,
   updateDoc,
   CollectionReference,
+  docData,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { where, query } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
+import { Channel } from 'src/app/core/shared/models/channel.class';
 
 @Injectable({
   providedIn: 'root',
@@ -20,12 +22,11 @@ export class FirebaseServicesService implements OnDestroy {
   private authService: AuthService = inject(AuthService);
   private dataSubjects: Map<string, BehaviorSubject<any>> = new Map();
   private unsubscribeFunctions: Map<string, () => void> = new Map();
-
-  userUID!: string | null;
+  private userUIDSubject = new BehaviorSubject<string | null>(null);
 
   constructor() {
     this.authService.getCurrentUserUID().then((uid) => {
-      this.userUID = uid;
+      this.userUIDSubject.next(uid);
     });
   }
 
@@ -34,6 +35,10 @@ export class FirebaseServicesService implements OnDestroy {
     this.unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
     this.unsubscribeFunctions.clear();
     this.dataSubjects.clear();
+  }
+
+  public setUserUID(uid: string | null): void {
+    this.userUIDSubject.next(uid);
   }
 
   private getCollectionRef(collectionName: string): CollectionReference {
@@ -49,55 +54,69 @@ export class FirebaseServicesService implements OnDestroy {
     return { ...data, id: doc.id };
   }
 
-  private handleSnapshot<T>(
-    snapshot: any,
-    observer: any,
-    extractData: (doc: any) => T
-  ) {
-    const data = snapshot.docs
-      ? snapshot.docs.map(extractData)
-      : snapshot.exists()
-      ? extractData(snapshot)
-      : null;
-
-    if (data) observer.next(data);
-    else observer.error('Document does not exist');
-  }
-
   getCollection<T>(
     collectionName: string,
     uidAccess: boolean
   ): Observable<T[]> {
     const refCollection = this.getCollectionRef(collectionName);
-    const userSpecificQuery = query(
-      refCollection,
-      where('uid', 'array-contains', this.userUID)
-    );
-    console.log('uid', this.userUID);
 
-    return new Observable((observer) =>
-      onSnapshot(
-        uidAccess ? userSpecificQuery : refCollection,
-        (snapshot) =>
-          this.handleSnapshot(snapshot, observer, this.mapDocumentData),
-        (error) =>
-          observer.error(
-            `Error fetching collection ${collectionName}: ${error}`
-          )
-      )
+    return this.userUIDSubject.pipe(
+      switchMap((uid) => {
+        const userSpecificQuery =
+          uidAccess && uid
+            ? query(refCollection, where('uid', 'array-contains', uid))
+            : refCollection;
+        return new Observable<T[]>((observer) => {
+          const unsubscribe = onSnapshot(
+            userSpecificQuery,
+            (snapshot) => {
+              const data = snapshot.docs.map((doc) =>
+                this.mapDocumentData<T>(doc)
+              );
+              observer.next(data);
+            },
+            (error) => {
+              observer.error(
+                `Error fetching collection ${collectionName}: ${error}`
+              );
+            }
+          );
+          return () => {
+            unsubscribe();
+          };
+        });
+      })
     );
   }
 
   getDoc<T>(collectionName: string, docId: string): Observable<T> {
-    const docRef = this.getDocRef(collectionName, docId);
-    return new Observable((observer) =>
-      onSnapshot(
+    const cacheKey = `${collectionName}-${docId}`;
+
+    if (!this.dataSubjects.has(cacheKey)) {
+      const subject = new BehaviorSubject<T | null>(null);
+      this.dataSubjects.set(cacheKey, subject);
+
+      const docRef = this.getDocRef(collectionName, docId);
+
+      const unsubscribe = onSnapshot(
         docRef,
-        (snapshot) =>
-          this.handleSnapshot(snapshot, observer, this.mapDocumentData),
-        (error) => observer.error(`Error fetching document ${docId}: ${error}`)
-      )
-    );
+        (snapshot) => {
+          if (snapshot.exists()) {
+            const data = this.mapDocumentData<T>(snapshot);
+            subject.next(data);
+          } else {
+            subject.next(null);
+          }
+        },
+        (error) => {
+          subject.error(`Error fetching document ${docId}: ${error}`);
+        }
+      );
+
+      this.unsubscribeFunctions.set(cacheKey, unsubscribe);
+    }
+
+    return this.dataSubjects.get(cacheKey)!.asObservable();
   }
 
   async addDoc<T extends { [x: string]: any }>(
@@ -134,8 +153,9 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getDoc('users', uid);
   }
 
-  getChannel(id: string): Observable<any> {
-    return this.getDoc('channels', id);
+  getChannel(channelId: string): Observable<Channel> {
+    const channelDocRef = doc(this.firestore, 'channels', channelId);
+    return docData<Channel>(channelDocRef);
   }
 
   getChat(id: string): Observable<any> {
