@@ -1,0 +1,42 @@
+@import "global.scss";
+section {
+  @include dFlex($fd: column, $jc: start);
+  width: 514px;
+  max-width: 100%;
+  height: 294px;
+  padding: 40px;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 30px;
+  border-top-right-radius: 0px;
+  gap: 20px;
+  box-shadow: 0px 6px 10px 0px #00000033;
+}
+
+.tittle-closse {
+  @include dFlex($jc: space-between);
+  width: 100%;
+}
+
+.close-button {
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/close-black.svg",
+    "/assets/img/buttons/close-blue.svg"
+  );
+}
+
+.channel-name {
+  @include dFlex($jc: start);
+  width: 100%;
+  gap: 15px;
+  color: $purple2;
+  img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.btn-wrapper {
+  width: 100%;
+  @include dFlex($jc: end);
+}

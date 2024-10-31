@@ -1,1 +1,22 @@
-<p>add-user-to-channel works!</p>
+<section>
+  <div class="tittle-closse">
+    <div class="font24-700">Leute hinzufügen</div>
+    <div class="close-button" (click)="closePopUp()"></div>
+  </div>
+  <div class="channel-name">
+    <img src="assets/img/icons/tag-thin.svg" alt="" />
+    <div *ngIf="channelData" class="font18-400">{{ channelData.name }}</div>
+  </div>
+  <div class="pop-up-input">
+    <input [(ngModel)]="searchText" placeholder="Name eingeben" type="text" />
+  </div>
+  <div class="btn-wrapper">
+    <button
+      class="primary-btn"
+      [disabled]="!userSelected"
+      (click)="!userSelected && addUsers()"
+    >
+      Hinzufügen
+    </button>
+  </div>
+</section>

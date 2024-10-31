@@ -163,6 +163,14 @@ p {
   max-width: 100%;
 }
 
+.popUpAddUserToChannel {
+  position: absolute;
+  right: 575px;
+  top: 220px;
+  z-index: 1050;
+  max-width: 100%;
+}
+
 .own-profile-view {
   position: absolute;
   right: 20px;

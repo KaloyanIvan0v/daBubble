@@ -44,7 +44,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private renderer: Renderer2
   ) {
-    this.users = this.firebaseService.getCollection('users');
+    this.users = this.firebaseService.getUsers();
     this.signupComponent = new SignupComponent(
       this.authUIService,
       this.authService

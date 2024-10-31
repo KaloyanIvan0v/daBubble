@@ -18,6 +18,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   channelData!: Channel;
   channelName!: string;
   channelId: string = '';
+  userAmount: number = 0;
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -38,6 +39,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
         next: (channel) => {
           this.channelData = channel;
           this.channelName = channel.name;
+          this.userAmount = channel.uid.length;
         },
         error: (error) =>
           console.error('Fehler beim Laden der Channels:', error),
@@ -51,5 +53,9 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   openEditChannelPopUp() {
     this.globalDataService.openPopUp('editChannel');
+  }
+
+  openAddUserToChannelPopUp() {
+    this.globalDataService.openPopUp('addUserToChannel');
   }
 }

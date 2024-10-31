@@ -73,3 +73,41 @@ app-input-box {
   background-color: $bg-color;
   border-radius: 50%;
 }
+
+.header-right {
+  @include dFlex();
+  gap: 10px;
+}
+
+.channel-users {
+  @include dFlex();
+  gap: 10px;
+  padding: 3px 10px;
+  &:hover {
+    cursor: pointer;
+    background-color: $bg-color;
+    border-radius: 30px;
+    color: $purple3;
+  }
+}
+
+.user-imgs {
+  @include dFlex();
+}
+
+.user-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+}
+
+.user-amount {
+  font-size: 20px;
+  font-weight: 600;
+}

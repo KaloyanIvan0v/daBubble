@@ -38,13 +38,10 @@ export class ChannelListComponent {
   }
 
   ngOnInit(): void {
-    this.subscription = this.firebaseService
-      .getCollection<Channel>('channels')
-      .subscribe({
-        next: (channels) => (this.channels = channels),
-        error: (error) =>
-          console.error('Fehler beim Laden der Channels:', error),
-      });
+    this.subscription = this.firebaseService.getChannels().subscribe({
+      next: (channels) => (this.channels = channels),
+      error: (error) => console.error('Fehler beim Laden der Channels:', error),
+    });
   }
 
   ngOnDestroy(): void {

@@ -64,7 +64,10 @@ export class FirebaseServicesService implements OnDestroy {
     else observer.error('Document does not exist');
   }
 
-  getCollection<T>(collectionName: string): Observable<T[]> {
+  getCollection<T>(
+    collectionName: string,
+    uidAccess: boolean
+  ): Observable<T[]> {
     const refCollection = this.getCollectionRef(collectionName);
     const userSpecificQuery = query(
       refCollection,
@@ -74,7 +77,7 @@ export class FirebaseServicesService implements OnDestroy {
 
     return new Observable((observer) =>
       onSnapshot(
-        userSpecificQuery,
+        uidAccess ? userSpecificQuery : refCollection,
         (snapshot) =>
           this.handleSnapshot(snapshot, observer, this.mapDocumentData),
         (error) =>
@@ -113,5 +116,29 @@ export class FirebaseServicesService implements OnDestroy {
   ): Promise<void> {
     const docRef = this.getDocRef(collectionName, docId);
     return updateDoc(docRef, data);
+  }
+
+  getUsers(): Observable<any> {
+    return this.getCollection('users', false);
+  }
+
+  getChannels(): Observable<any> {
+    return this.getCollection('channels', true);
+  }
+
+  getChats(): Observable<any> {
+    return this.getCollection('chats', true);
+  }
+
+  getUser(uid: string): Observable<any> {
+    return this.getDoc('users', uid);
+  }
+
+  getChannel(id: string): Observable<any> {
+    return this.getDoc('channels', id);
+  }
+
+  getChat(id: string): Observable<any> {
+    return this.getDoc('chats', id);
   }
 }
