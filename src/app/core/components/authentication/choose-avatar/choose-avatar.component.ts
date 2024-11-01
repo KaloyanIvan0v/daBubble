@@ -54,9 +54,4 @@ export class ChooseAvatarComponent {
     this.uploadedPhotoName = null;
     this.signUpComponent.user.avatar = ''; // Clear avatar in signup component
   }
-
-  finalizeSignup() {
-    // This function can be triggered to finalize signup after choosing an avatar
-    this.signUpComponent.finalizeRegistration(); // Call finalize registration from signup component
-  }
 }

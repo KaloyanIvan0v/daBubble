@@ -16,6 +16,7 @@ import { ChooseAvatarComponent } from './choose-avatar/choose-avatar.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SignupComponent } from './signup/signup.component';
 import { AuthService } from '../../shared/services/auth-services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-authentication',
@@ -40,12 +41,14 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService,
     private authService: AuthService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private router: Router
   ) {
     this.users = this.firebaseService.getUsers();
     this.signupComponent = new SignupComponent(
       this.authUIService,
-      this.authService
+      this.authService,
+      this.router
     );
   }
 

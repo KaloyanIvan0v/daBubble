@@ -1,17 +1,19 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import {
   Auth,
   User,
   authState,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
 } from '@angular/fire/auth';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, Observable, from } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  firebaseAuth = inject(Auth);
   currentUser$: BehaviorSubject<User | null>;
   authStatusChanged = signal<boolean>(false);
 
@@ -30,19 +32,13 @@ export class AuthService {
     return userCredential.user;
   }
 
-  async register(email: string, password: string): Promise<User | void> {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email)) {
-      console.warn('Invalid email format:', email);
-      return;
-    }
-    const userCredential = await createUserWithEmailAndPassword(
-      this.auth,
+  register(email: string, name: string, password: string): Observable<void> {
+    const promise = createUserWithEmailAndPassword(
+      this.firebaseAuth,
       email,
       password
-    );
-    return userCredential.user;
+    ).then((response) => updateProfile(response.user, { displayName: name }));
+    return from(promise);
   }
 
   async logoutUser(): Promise<void> {
