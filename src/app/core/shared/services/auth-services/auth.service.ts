@@ -48,15 +48,15 @@ export class AuthService {
     return from(promise);
   }
 
-  async updateAvatar(user: User, avatarUrl: string): Promise<void> {
+  async updateAvatar(user: User, photoURL: string): Promise<void> {
     // Update the photoURL in Firebase Auth
-    await updateProfile(user, { photoURL: avatarUrl });
+    await updateProfile(user, { photoURL: photoURL });
 
     // Also update the avatar URL in Firestore
     const userUID = user.uid;
     await setDoc(
       doc(this.firestore, 'users', userUID),
-      { photoURL: avatarUrl },
+      { photoURL: photoURL },
       { merge: true }
     );
   }
@@ -72,6 +72,10 @@ export class AuthService {
         resolve(!!user);
       });
     });
+  }
+
+  getCurrentUser(): Observable<User | null> {
+    return authState(this.firebaseAuth);
   }
 
   async getCurrentUserUID(): Promise<string | null> {
