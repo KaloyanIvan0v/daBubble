@@ -3,6 +3,7 @@ import { GlobalDataService } from '../../../shared/services/pop-up-service/globa
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -13,6 +14,7 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 })
 export class HeaderComponent {
   userData = signal<any>(null);
+  private userSubscription!: Subscription; // Store subscription for cleanup
 
   constructor(
     public globalDataService: GlobalDataService,
@@ -23,11 +25,19 @@ export class HeaderComponent {
     this.userData = this.workspaceService.loggedInUserData;
   }
   ngOnInit() {
-    // Subscribe to user data from AuthService
-    this.authService.getCurrentUser().subscribe((user) => {
-      this.userData.set(user); // Update signal value with the current user
-      console.log('User Avatar:', this.userData()?.photoURL); // Log user photo URL for debugging
-    });
+    this.userSubscription = this.authService
+      .getCurrentUser()
+      .subscribe((user) => {
+        this.userData.set(user); // Update signal value with the current user
+        console.log('User Avatar:', this.userData()?.photoURL);
+      });
+  }
+
+  ngOnDestroy() {
+    // Cleanup the subscription to avoid memory leaks
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 
   openPopUp() {

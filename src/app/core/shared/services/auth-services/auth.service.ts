@@ -16,12 +16,16 @@ import { BehaviorSubject, Subscription, Observable, from } from 'rxjs';
 export class AuthService {
   firebaseAuth = inject(Auth);
   firestore = inject(Firestore);
-  currentUser$: BehaviorSubject<User | null>;
+  currentUser$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(
+    null
+  );
   authStatusChanged = signal<boolean>(false);
 
   constructor(private auth: Auth) {
     // Observing the auth state and updating currentUser$ accordingly
-    this.currentUser$ = authState(this.auth);
+    authState(this.auth).subscribe((user: User | null) => {
+      this.currentUser$.next(user); // Emit user changes
+    });
   }
 
   async login(email: string, password: string): Promise<User> {
@@ -79,6 +83,9 @@ export class AuthService {
       { photoURL: photoURL },
       { merge: true }
     );
+
+    // Emit the updated user data
+    this.currentUser$.next({ ...user, photoURL }); // Emit updated user data
   }
 
   async logoutUser(): Promise<void> {
