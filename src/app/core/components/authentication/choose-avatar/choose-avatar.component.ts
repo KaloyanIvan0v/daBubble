@@ -2,6 +2,10 @@ import { Component, Input } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
 import { SignupComponent } from '../signup/signup.component';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { authState, User } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-choose-avatar',
@@ -12,7 +16,16 @@ import { SignupComponent } from '../signup/signup.component';
 })
 export class ChooseAvatarComponent {
   @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
-  constructor(public authUIService: AuthUIService) {}
+
+  currentUser!: User | null;
+
+  constructor(
+    public authUIService: AuthUIService,
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.init();
+  }
 
   photos: string[] = [
     'assets/img/profile-img/Elise-Roth.svg',
@@ -27,11 +40,21 @@ export class ChooseAvatarComponent {
   isUploadedPhoto: boolean = false;
   uploadedPhotoName: string | null = null;
 
+  async init() {
+    // Use authState to get the full User object
+    const userObservable: Observable<User | null> = authState(
+      this.authService.firebaseAuth
+    );
+    userObservable.subscribe((user) => {
+      this.currentUser = user;
+    });
+  }
+
   selectPhoto(photo: string) {
     this.selectedPhoto = photo;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
-    this.signUpComponent.user.avatar = photo; // Set the avatar in signup component
+    this.signUpComponent.user.avatar = photo;
   }
 
   onFileSelected(event: any) {
@@ -52,6 +75,19 @@ export class ChooseAvatarComponent {
     this.selectedPhoto = null;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
-    this.signUpComponent.user.avatar = ''; // Clear avatar in signup component
+    this.signUpComponent.user.avatar = '';
+  }
+
+  saveAvatar() {
+    if (this.selectedPhoto && this.currentUser) {
+      this.authService
+        .updateAvatar(this.currentUser, this.selectedPhoto) // Pass the User object
+        .then(() => {
+          console.log('Avatar updated successfully!');
+          this.authUIService.toggleAvatarSelection();
+          this.router.navigate(['/dashboard']);
+        })
+        .catch((error) => console.error('Error updating avatar:', error));
+    }
   }
 }

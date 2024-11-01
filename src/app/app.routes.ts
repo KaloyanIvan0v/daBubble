@@ -6,6 +6,7 @@ import { LoginComponent } from './core/components/authentication/login/login.com
 import { ResetPasswordComponent } from './core/components/authentication/reset-password/reset-password.component';
 import { MainWorkspaceRoutes } from './core/components/main/main-workspace/main-workspace-routing';
 import { AuthGuard } from './auth.guard';
+import { ChooseAvatarComponent } from './core/components/authentication/choose-avatar/choose-avatar.component';
 
 export const routes: Routes = [
   {
@@ -31,5 +32,7 @@ export const routes: Routes = [
     path: 'reset-password',
     component: ResetPasswordComponent,
   },
+
+ 
   { path: '**', redirectTo: '' },
 ];

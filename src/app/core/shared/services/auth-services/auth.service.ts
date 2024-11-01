@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from '@angular/fire/auth';
+import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { BehaviorSubject, Subscription, Observable, from } from 'rxjs';
 
 @Injectable({
@@ -14,6 +15,7 @@ import { BehaviorSubject, Subscription, Observable, from } from 'rxjs';
 })
 export class AuthService {
   firebaseAuth = inject(Auth);
+  firestore = inject(Firestore);
   currentUser$: BehaviorSubject<User | null>;
   authStatusChanged = signal<boolean>(false);
 
@@ -37,8 +39,17 @@ export class AuthService {
       this.firebaseAuth,
       email,
       password
-    ).then((response) => updateProfile(response.user, { displayName: name }));
+    ).then((response) => {
+      // Update profile with display name
+      return updateProfile(response.user, {
+        displayName: name,
+      });
+    });
     return from(promise);
+  }
+
+  async updateAvatar(user: User, avatarUrl: string): Promise<void> {
+    return updateProfile(user, { photoURL: avatarUrl });
   }
 
   async logoutUser(): Promise<void> {

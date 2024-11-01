@@ -37,15 +37,12 @@ export class SignupComponent {
   }
 
   onSubmit(): void {
-    if (!this.user.email || !this.user.password) {
-      console.error('Form data is incomplete.');
-      return;
-    }
-
     this.authService
       .register(this.user.email, this.user.name, this.user.password)
       .subscribe({
-        next: () => this.router.navigate(['choose-avatar']),
+        next: () => {
+          this.authUIService.toggleAvatarSelection();
+        },
         error: (err) => console.error('Registration error:', err),
       });
   }

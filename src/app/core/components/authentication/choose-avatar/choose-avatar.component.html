@@ -1,7 +1,7 @@
 <!-- choose-avatar.component.html -->
 <div class="choose-avatar-container">
   <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
-  <form #chooseAvatarForm="ngForm">
+  <form #chooseAvatarForm="ngForm" (ngSubmit)="saveAvatar()">
     <h2>Wähle deinen Avatar</h2>
     <img
       [src]="
@@ -43,7 +43,7 @@
     </div>
 
     <div class="button-container">
-      <button class="primary-btn">Weiter</button>
+      <button class="primary-btn" type="submit">Weiter</button>
     </div>
   </form>
 </div>
