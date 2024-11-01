@@ -39,8 +39,13 @@ export class WorkspaceService {
       const userUID: string | null = await this.authService.getCurrentUserUID();
       if (userUID) {
         this.firebaseService.getDoc('users', userUID).subscribe({
-          next: (data) => {
+          next: (data: any) => {
             this.loggedInUserData.set(data);
+            console.log('Fetched user data:', data);
+
+            if (data && data.avatar) {
+              this.loggedInUserData.set({ ...data, avatar: data.avatar });
+            }
           },
           error: (error) => console.error('Error fetching user data:', error),
         });

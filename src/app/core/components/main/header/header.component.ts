@@ -20,6 +20,10 @@ export class HeaderComponent {
   ) {
     this.userData = this.workspaceService.loggedInUserData;
   }
+  ngOnInit() {
+    this.userData = this.workspaceService.loggedInUserData;
+    console.log('User Avatar:', this.userData()?.photoURL);
+  }
 
   openPopUp() {
     this.globalDataService.openPopUp('userMenu');

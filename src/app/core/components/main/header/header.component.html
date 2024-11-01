@@ -10,7 +10,7 @@
   <div class="user-wrapper" (click)="openPopUp()">
     <div class="user-name">{{ userData()?.name }}</div>
     <div class="user-img">
-      <img src="assets/img/profile-img/Frederik-Beck.svg" alt="" />
+      <img [src]="userData()?.photoURL" alt="avatar" />
     </div>
     <div class="user-menu"></div>
   </div>

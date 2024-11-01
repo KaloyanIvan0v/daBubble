@@ -54,7 +54,7 @@ export class ChooseAvatarComponent {
     this.selectedPhoto = photo;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
-    this.signUpComponent.user.avatar = photo;
+    this.signUpComponent.user.photoURL = photo;
   }
 
   onFileSelected(event: any) {
@@ -63,7 +63,7 @@ export class ChooseAvatarComponent {
       const reader = new FileReader();
       reader.onload = () => {
         this.selectedPhoto = reader.result as string;
-        this.signUpComponent.user.avatar = this.selectedPhoto; // Update the avatar in signup component
+        this.signUpComponent.user.photoURL = this.selectedPhoto; // Update the avatar in signup component
         this.isUploadedPhoto = true;
         this.uploadedPhotoName = file.name;
       };
@@ -75,7 +75,7 @@ export class ChooseAvatarComponent {
     this.selectedPhoto = null;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
-    this.signUpComponent.user.avatar = '';
+    this.signUpComponent.user.photoURL = '';
   }
 
   saveAvatar() {

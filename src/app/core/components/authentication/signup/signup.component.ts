@@ -17,7 +17,7 @@ export class SignupComponent {
     name: '',
     email: '',
     password: '',
-    avatar: '',
+    photoURL: '',
   };
 
   constructor(

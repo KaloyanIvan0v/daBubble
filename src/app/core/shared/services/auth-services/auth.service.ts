@@ -49,7 +49,16 @@ export class AuthService {
   }
 
   async updateAvatar(user: User, avatarUrl: string): Promise<void> {
-    return updateProfile(user, { photoURL: avatarUrl });
+    // Update the photoURL in Firebase Auth
+    await updateProfile(user, { photoURL: avatarUrl });
+
+    // Also update the avatar URL in Firestore
+    const userUID = user.uid;
+    await setDoc(
+      doc(this.firestore, 'users', userUID),
+      { photoURL: avatarUrl },
+      { merge: true }
+    );
   }
 
   async logoutUser(): Promise<void> {
@@ -67,6 +76,8 @@ export class AuthService {
 
   async getCurrentUserUID(): Promise<string | null> {
     const user = this.auth.currentUser;
+    console.log('Current User:', user); // Debugging line
+
     return user ? user.uid : null;
   }
 
