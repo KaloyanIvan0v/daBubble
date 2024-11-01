@@ -39,13 +39,33 @@ export class AuthService {
       this.firebaseAuth,
       email,
       password
-    ).then((response) => {
+    ).then(async (response) => {
+      const user: User = response.user;
       // Update profile with display name
-      return updateProfile(response.user, {
-        displayName: name,
-      });
+      await updateProfile(user, { displayName: name });
+
+      await this.saveUserDataToFirestore(user, name, email);
     });
+
     return from(promise);
+  }
+
+  private async saveUserDataToFirestore(
+    user: User,
+    name: string,
+    email: string
+  ): Promise<void> {
+    const userData = {
+      uid: user.uid,
+      name: name,
+      email: email,
+      photoURL: user.photoURL || '',
+      contacts: [],
+      status: true,
+    };
+
+    // Save user data to Firestore
+    await setDoc(doc(this.firestore, 'users', user.uid), userData);
   }
 
   async updateAvatar(user: User, photoURL: string): Promise<void> {
