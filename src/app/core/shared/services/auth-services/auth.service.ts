@@ -115,4 +115,8 @@ export class AuthService {
   observeAuthState(callback: (user: User | null) => void): Subscription {
     return authState(this.auth).subscribe(callback);
   }
+
+  getAuthState(): Observable<User | null> {
+    return authState(this.auth);
+  }
 }

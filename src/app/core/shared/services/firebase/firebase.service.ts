@@ -20,6 +20,7 @@ import { Channel } from 'src/app/core/shared/models/channel.class';
 export class FirebaseServicesService implements OnDestroy {
   private firestore: Firestore = inject(Firestore);
   private authService: AuthService = inject(AuthService);
+
   private dataSubjects: Map<string, BehaviorSubject<any>> = new Map();
   private unsubscribeFunctions: Map<string, () => void> = new Map();
   private userUIDSubject = new BehaviorSubject<string | null>(null);

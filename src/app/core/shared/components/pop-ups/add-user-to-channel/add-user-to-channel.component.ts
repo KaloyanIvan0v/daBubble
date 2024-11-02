@@ -20,7 +20,9 @@ export class AddUserToChannelComponent {
   channelData$!: Observable<Channel>;
   searchText: string = '';
   users: User[] = [];
-  userSelected: boolean = false;
+  filteredUsers: User[] = [];
+  selectedUsers: User[] = [];
+
   constructor(
     public globalDataService: GlobalDataService,
     public workspaceService: WorkspaceService,
@@ -39,5 +41,26 @@ export class AddUserToChannelComponent {
 
   addUsers() {
     this.globalDataService.closePopUp();
+  }
+
+  addUserChip(user: User) {
+    this.selectedUsers.push(user);
+  }
+
+  removeUserChip(user: User) {
+    const index = this.selectedUsers.indexOf(user);
+    if (index !== -1) {
+      this.selectedUsers.splice(index, 1);
+    }
+  }
+
+  filterUsers() {
+    this.filteredUsers = this.users.filter((user) =>
+      user.name.toLowerCase().includes(this.searchText.toLowerCase())
+    );
+  }
+
+  onSearchTextChange() {
+    this.filterUsers();
   }
 }

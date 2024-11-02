@@ -7,14 +7,41 @@
     <img src="assets/img/icons/tag-thin.svg" alt="" />
     <div class="font18-400">{{ (channelData$ | async)?.name }}</div>
   </div>
+  <div class="selected-users-chips">
+    <div class="user-chip" *ngFor="let user of selectedUsers">
+      <img src="{{ user?.photoURL }}" alt="" />
+      <div>{{ user?.name }}</div>
+      <div class="close-chip" (click)="removeUserChip(user)"></div>
+    </div>
+  </div>
   <div class="pop-up-input">
-    <input [(ngModel)]="searchText" placeholder="Name eingeben" type="text" />
+    <input
+      [(ngModel)]="searchText"
+      (input)="onSearchTextChange()"
+      placeholder="Name eingeben"
+      type="text"
+    />
+  </div>
+  <div class="search-results" *ngIf="searchText.length > 0">
+    <div class="scroll-content">
+      <div
+        class="filtered-user"
+        *ngFor="let user of filteredUsers"
+        (click)="addUserChip(user)"
+      >
+        <img src="{{ user?.photoURL }}" alt="" />
+        <div>{{ user?.name }}</div>
+      </div>
+    </div>
+    <div class="font18-400" *ngIf="filteredUsers.length === 0">
+      Keine Ergebnisse gefunden
+    </div>
   </div>
   <div class="btn-wrapper">
     <button
       class="primary-btn"
-      [disabled]="!userSelected"
-      (click)="!userSelected && addUsers()"
+      [disabled]="selectedUsers.length === 0"
+      (click)="selectedUsers.length > 0 && addUsers()"
     >
       Hinzufügen
     </button>

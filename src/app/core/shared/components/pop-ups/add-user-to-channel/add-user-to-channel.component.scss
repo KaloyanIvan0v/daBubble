@@ -1,9 +1,11 @@
 @import "global.scss";
 section {
+  position: relative;
   @include dFlex($fd: column, $jc: start);
   width: 514px;
   max-width: 100%;
-  height: 294px;
+  min-height: 294px;
+  height: max-content;
   padding: 40px;
   box-sizing: border-box;
   background-color: white;
@@ -39,4 +41,99 @@ section {
 .btn-wrapper {
   width: 100%;
   @include dFlex($jc: end);
+}
+
+.search-results {
+  position: absolute;
+  bottom: 105px;
+  left: 60px;
+  width: 335px;
+  max-height: 300px;
+  border-radius: 20px;
+  border-top-left-radius: 0px;
+  background-color: white;
+  border: 1px solid $light-purple;
+  padding: 10px;
+  box-sizing: border-box;
+  transform: translateY(100%);
+}
+
+.scroll-content {
+  max-height: 280px;
+  overflow-y: scroll; /* Scrollen nur im inneren Container */
+  scrollbar-width: thin;
+  scrollbar-color: $light-purple transparent;
+}
+
+/* Scrollbar-Stile für Webkit (Chrome, Safari, Edge) */
+.scroll-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-content::-webkit-scrollbar-thumb {
+  background-color: $light-purple;
+  border-radius: 20px;
+}
+
+.filtered-user {
+  @include dFlex($jc: start);
+  padding: 10px 15px;
+  box-sizing: border-box;
+  cursor: pointer;
+  gap: 15px;
+  font-size: 18px;
+  font-weight: 400;
+  &:hover {
+    background-color: $bg-color;
+    border-radius: 35px;
+  }
+  img {
+    width: 50px;
+    height: auto;
+    border-radius: 50%;
+  }
+}
+
+.selected-users-chips {
+  @include dFlex($jc: start);
+  flex-wrap: wrap;
+  max-height: 200px;
+  overflow-y: scroll;
+  width: 100%;
+  gap: 10px;
+}
+
+.user-chip {
+  @include dFlex();
+  width: max-content;
+  font-size: 18px;
+  font-weight: 400;
+  background-color: $bg-color;
+  border-radius: 35px;
+  padding: 3px 20px;
+
+  img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+}
+
+.close-chip {
+  margin-left: 5px;
+  @include iconButton(
+    "/assets/img/buttons/close-black.svg",
+    "/assets/img/buttons/close-blue.svg"
+  );
+  &:hover {
+    @include iconButton(
+      "/assets/img/buttons/close-blue.svg",
+      "/assets/img/buttons/close-blue.svg"
+    );
+  }
 }
