@@ -8,6 +8,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { environment } from './app/environments/environment';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideStorage, getStorage } from '@angular/fire/storage';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -16,6 +17,7 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
     provideAnimations(),
   ],
 }).catch((err) => console.error(err));

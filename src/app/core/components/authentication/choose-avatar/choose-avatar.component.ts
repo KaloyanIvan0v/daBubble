@@ -6,6 +6,12 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 import { authState, User } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import {
+  Storage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from '@angular/fire/storage'; // Ensure correct import
 
 @Component({
   selector: 'app-choose-avatar',
@@ -18,15 +24,6 @@ export class ChooseAvatarComponent {
   @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
 
   currentUser!: User | null;
-
-  constructor(
-    public authUIService: AuthUIService,
-    private authService: AuthService,
-    private router: Router
-  ) {
-    this.init();
-  }
-
   photos: string[] = [
     'assets/img/profile-img/Elise-Roth.svg',
     'assets/img/profile-img/Elias-Neumann.svg',
@@ -40,8 +37,16 @@ export class ChooseAvatarComponent {
   isUploadedPhoto: boolean = false;
   uploadedPhotoName: string | null = null;
 
+  constructor(
+    public authUIService: AuthUIService,
+    private authService: AuthService,
+    private router: Router,
+    private storage: Storage // Inject Storage here
+  ) {
+    this.init();
+  }
+
   async init() {
-    // Use authState to get the full User object
     const userObservable: Observable<User | null> = authState(
       this.authService.firebaseAuth
     );
@@ -62,10 +67,25 @@ export class ChooseAvatarComponent {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.selectedPhoto = reader.result as string;
-        this.signUpComponent.user.photoURL = this.selectedPhoto; // Update the avatar in signup component
+        this.selectedPhoto = reader.result as string; // Preview image
         this.isUploadedPhoto = true;
         this.uploadedPhotoName = file.name;
+
+        // Create a storage reference
+        const storageRef = ref(this.storage, `avatars/${file.name}`);
+        uploadBytes(storageRef, file)
+          .then((snapshot) => {
+            console.log('Uploaded a blob or file!');
+
+            // Get the download URL after upload
+            getDownloadURL(snapshot.ref).then((downloadURL) => {
+              this.signUpComponent.user.photoURL = downloadURL; // Update with the storage URL
+              console.log('File available at', downloadURL); // Log the download URL
+            });
+          })
+          .catch((error) => {
+            console.error('Error uploading file:', error);
+          });
       };
       reader.readAsDataURL(file);
     }
@@ -81,7 +101,7 @@ export class ChooseAvatarComponent {
   saveAvatar() {
     if (this.selectedPhoto && this.currentUser) {
       this.authService
-        .updateAvatar(this.currentUser, this.selectedPhoto) // Pass the User object
+        .updateAvatar(this.currentUser, this.signUpComponent.user.photoURL)
         .then(() => {
           console.log('Avatar updated successfully!');
           this.authUIService.toggleAvatarSelection();
