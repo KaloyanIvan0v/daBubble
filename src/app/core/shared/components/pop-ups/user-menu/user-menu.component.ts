@@ -21,7 +21,7 @@ export class UserMenuComponent {
   logOut() {
     this.authService.logoutUser().then(() => {
       this.globalDataService.closePopUp();
-      this.router.navigate(['']);
+      this.router.navigate(['app-authentication']);
     });
   }
 

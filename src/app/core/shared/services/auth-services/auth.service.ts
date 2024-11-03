@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { inject, Injectable, signal } from '@angular/core';
 import {
   Auth,
@@ -7,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   signInWithPopup,
+  getAdditionalUserInfo,
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { GoogleAuthProvider } from 'firebase/auth';
@@ -27,7 +29,11 @@ export class AuthService {
   provider = new GoogleAuthProvider();
   private popupOpen = false; // Tracks if a popup is already open
 
-  constructor(private auth: Auth, public authUIService: AuthUIService) {
+  constructor(
+    private auth: Auth,
+    public authUIService: AuthUIService,
+    private router: Router
+  ) {
     // Observing the auth state and updating currentUser$ accordingly
     authState(this.auth).subscribe((user: User | null) => {
       this.currentUser$.next(user); // Emit user changes
@@ -80,19 +86,34 @@ export class AuthService {
 
   async googleSignIn(): Promise<void> {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({
+      prompt: 'select_account', // Forces account selection every time
+    });
     try {
       const result = await signInWithPopup(this.auth, provider);
       const user = result.user;
 
-      console.log('Signed-in user info:', user);
+      // Check if this is a new user
+      const additionalUserInfo = getAdditionalUserInfo(result);
+      const isNewUser = additionalUserInfo?.isNewUser;
 
-      // Redirect to the dashboard upon successful sign-in
-      this.authUIService.toggleAvatarSelection();
+      // Toggle avatar selection only if the user is new
+      if (isNewUser) {
+        this.authUIService.toggleAvatarSelection();
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
 
       // Update current user observable
       this.currentUser$.next(user);
-    } catch (error) {
-      console.error('Error signing in with Google:', error);
+    } catch (error: any) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.warn('User closed the Google Sign-In popup.');
+      } else if (error.code === 'auth/network-request-failed') {
+        console.warn('Network error during sign-in. Check your connection.');
+      } else {
+        console.error('Error signing in with Google:', error);
+      }
     }
   }
 

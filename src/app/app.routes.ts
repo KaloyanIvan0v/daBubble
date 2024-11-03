@@ -20,6 +20,10 @@ export const routes: Routes = [
     children: MainWorkspaceRoutes,
   },
   {
+    path: 'app-authentication',
+    component: AuthenticationComponent,
+  },
+  {
     path: 'app-login',
     component: LoginComponent,
   },
