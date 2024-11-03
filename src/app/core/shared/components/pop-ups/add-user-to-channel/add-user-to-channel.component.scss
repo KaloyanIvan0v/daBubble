@@ -45,7 +45,7 @@ section {
 
 .search-results {
   position: absolute;
-  bottom: 105px;
+  bottom: 125px;
   left: 60px;
   width: 335px;
   max-height: 300px;
@@ -60,23 +60,6 @@ section {
 
 .scroll-content {
   max-height: 280px;
-  overflow-y: scroll; /* Scrollen nur im inneren Container */
-  scrollbar-width: thin;
-  scrollbar-color: $light-purple transparent;
-}
-
-/* Scrollbar-Stile für Webkit (Chrome, Safari, Edge) */
-.scroll-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scroll-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scroll-content::-webkit-scrollbar-thumb {
-  background-color: $light-purple;
-  border-radius: 20px;
 }
 
 .filtered-user {

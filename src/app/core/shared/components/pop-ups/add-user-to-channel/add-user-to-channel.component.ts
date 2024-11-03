@@ -1,4 +1,10 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  Renderer2,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
@@ -18,6 +24,7 @@ import { Observable } from 'rxjs';
 export class AddUserToChannelComponent {
   currentChannelId: string;
   channelData$!: Observable<Channel>;
+  channelData!: Channel;
   searchText: string = '';
   users: User[] = [];
   filteredUsers: User[] = [];
@@ -26,14 +33,20 @@ export class AddUserToChannelComponent {
   constructor(
     public globalDataService: GlobalDataService,
     public workspaceService: WorkspaceService,
-    public firebaseService: FirebaseServicesService
+    public firebaseService: FirebaseServicesService,
+    private renderer: Renderer2
   ) {
     this.currentChannelId = this.workspaceService.currentActiveUnitId();
     this.channelData$ = this.firebaseService.getChannel(this.currentChannelId);
     this.firebaseService.getUsers().subscribe((users) => {
       this.users = users;
     });
+    this.channelData$.subscribe((channel) => {
+      this.channelData = channel;
+    });
   }
+
+  @ViewChildren('userChip') userChips!: QueryList<ElementRef>;
 
   closePopUp() {
     this.globalDataService.closePopUp();
@@ -41,10 +54,34 @@ export class AddUserToChannelComponent {
 
   addUsers() {
     this.globalDataService.closePopUp();
+    const newUids = this.selectedUsers.map((user) => user.uid);
+    this.channelData.uid = [...new Set([...this.channelData.uid, ...newUids])];
+    this.firebaseService.updateDoc('channels', this.currentChannelId, {
+      uid: this.channelData.uid,
+    });
   }
 
-  addUserChip(user: User) {
-    this.selectedUsers.push(user);
+  addUserChip(user: any) {
+    const userExists = this.selectedUsers.some(
+      (existingUser) => existingUser.uid === user.uid
+    );
+
+    if (!userExists) {
+      this.selectedUsers.push(user);
+      this.searchText = '';
+    } else {
+      console.log('User already exists');
+      const userChip = this.userChips.find(
+        (chip) => chip.nativeElement.id === user.uid
+      );
+
+      if (userChip) {
+        this.renderer.addClass(userChip.nativeElement, 'shake-div');
+        setTimeout(() => {
+          this.renderer.removeClass(userChip.nativeElement, 'shake-div');
+        }, 300);
+      }
+    }
   }
 
   removeUserChip(user: User) {
@@ -55,8 +92,10 @@ export class AddUserToChannelComponent {
   }
 
   filterUsers() {
-    this.filteredUsers = this.users.filter((user) =>
-      user.name.toLowerCase().includes(this.searchText.toLowerCase())
+    this.filteredUsers = this.users.filter(
+      (user) =>
+        user.name.toLowerCase().includes(this.searchText.toLowerCase()) &&
+        !this.channelData.uid.includes(user.uid)
     );
   }
 

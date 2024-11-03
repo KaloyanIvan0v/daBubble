@@ -7,8 +7,13 @@
     <img src="assets/img/icons/tag-thin.svg" alt="" />
     <div class="font18-400">{{ (channelData$ | async)?.name }}</div>
   </div>
-  <div class="selected-users-chips">
-    <div class="user-chip" *ngFor="let user of selectedUsers">
+  <div class="selected-users-chips overflow-y-scroll">
+    <div
+      #userChip
+      id="{{ user?.uid }}"
+      class="user-chip"
+      *ngFor="let user of selectedUsers"
+    >
       <img src="{{ user?.photoURL }}" alt="" />
       <div>{{ user?.name }}</div>
       <div class="close-chip" (click)="removeUserChip(user)"></div>
@@ -23,7 +28,7 @@
     />
   </div>
   <div class="search-results" *ngIf="searchText.length > 0">
-    <div class="scroll-content">
+    <div class="scroll-content overflow-y-scroll">
       <div
         class="filtered-user"
         *ngFor="let user of filteredUsers"

@@ -9,8 +9,8 @@
     <div class="header-right">
       <div class="channel-users">
         <div class="user-imgs">
-          <div class="user-img">
-            <img src="assets/img/profile-img/Frederik-Beck.svg" alt="" />
+          <div *ngFor="let user of channelUsers" class="user-img">
+            <img src="{{ user?.photoURL }}" alt="" />
           </div>
         </div>
         <div class="user-amount">{{ userAmount }}</div>

@@ -288,3 +288,45 @@ button:hover {
   justify-content: space-between;
   width: 100%;
 }
+
+.shake-div {
+  animation: shake 0.5s ease-in-out infinite;
+  background-color: rgb(182, 203, 240) !important;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(10px);
+  }
+  50% {
+    transform: translateX(0px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: $light-purple transparent;
+}
+
+.overflow-y-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-scroll::-webkit-scrollbar-thumb {
+  background-color: $light-purple;
+  border-radius: 20px;
+}

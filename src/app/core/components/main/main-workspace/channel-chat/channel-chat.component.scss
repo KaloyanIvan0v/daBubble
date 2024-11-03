@@ -100,6 +100,8 @@ app-input-box {
   height: 40px;
   border-radius: 50%;
   border: 2px solid white;
+  position: relative;
+  margin-left: -10px;
   img {
     width: 100%;
     height: 100%;
