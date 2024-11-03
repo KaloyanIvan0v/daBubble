@@ -6,9 +6,12 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  signInWithPopup,
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { GoogleAuthProvider } from 'firebase/auth';
 import { BehaviorSubject, Subscription, Observable, from } from 'rxjs';
+import { AuthUIService } from '../authUI-services/authUI.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,11 +24,32 @@ export class AuthService {
   );
   authStatusChanged = signal<boolean>(false);
 
-  constructor(private auth: Auth) {
+  provider = new GoogleAuthProvider();
+  private popupOpen = false; // Tracks if a popup is already open
+
+  constructor(private auth: Auth, public authUIService: AuthUIService) {
     // Observing the auth state and updating currentUser$ accordingly
     authState(this.auth).subscribe((user: User | null) => {
       this.currentUser$.next(user); // Emit user changes
     });
+  }
+
+  private async saveUserDataToFirestore(
+    user: User,
+    name: string,
+    email: string
+  ): Promise<void> {
+    const userData = {
+      uid: user.uid,
+      name: name,
+      email: email,
+      photoURL: user.photoURL || '',
+      contacts: [],
+      status: true,
+    };
+
+    // Save user data to Firestore
+    await setDoc(doc(this.firestore, 'users', user.uid), userData);
   }
 
   async login(email: string, password: string): Promise<User> {
@@ -54,22 +78,22 @@ export class AuthService {
     return from(promise);
   }
 
-  private async saveUserDataToFirestore(
-    user: User,
-    name: string,
-    email: string
-  ): Promise<void> {
-    const userData = {
-      uid: user.uid,
-      name: name,
-      email: email,
-      photoURL: user.photoURL || '',
-      contacts: [],
-      status: true,
-    };
+  async googleSignIn(): Promise<void> {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(this.auth, provider);
+      const user = result.user;
 
-    // Save user data to Firestore
-    await setDoc(doc(this.firestore, 'users', user.uid), userData);
+      console.log('Signed-in user info:', user);
+
+      // Redirect to the dashboard upon successful sign-in
+      this.authUIService.toggleAvatarSelection();
+
+      // Update current user observable
+      this.currentUser$.next(user);
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+    }
   }
 
   async updateAvatar(user: User, photoURL: string): Promise<void> {
