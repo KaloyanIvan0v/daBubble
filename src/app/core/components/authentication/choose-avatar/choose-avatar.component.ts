@@ -6,12 +6,7 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 import { authState, User } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import {
-  Storage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from '@angular/fire/storage'; // Ensure correct import
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-choose-avatar',
@@ -37,11 +32,15 @@ export class ChooseAvatarComponent {
   isUploadedPhoto: boolean = false;
   uploadedPhotoName: string | null = null;
 
+  uploadcareApiKey = '969c17c5a52163c20fd3';
+  isUploading: boolean = false;
+  uploadComplete: boolean = false;
+
   constructor(
     public authUIService: AuthUIService,
     private authService: AuthService,
     private router: Router,
-    private storage: Storage // Inject Storage here
+    private http: HttpClient
   ) {
     this.init();
   }
@@ -70,25 +69,39 @@ export class ChooseAvatarComponent {
         this.selectedPhoto = reader.result as string; // Preview image
         this.isUploadedPhoto = true;
         this.uploadedPhotoName = file.name;
-
-        // Create a storage reference
-        const storageRef = ref(this.storage, `avatars/${file.name}`);
-        uploadBytes(storageRef, file)
-          .then((snapshot) => {
-            console.log('Uploaded a blob or file!');
-
-            // Get the download URL after upload
-            getDownloadURL(snapshot.ref).then((downloadURL) => {
-              this.signUpComponent.user.photoURL = downloadURL; // Update with the storage URL
-              console.log('File available at', downloadURL); // Log the download URL
-            });
-          })
-          .catch((error) => {
-            console.error('Error uploading file:', error);
-          });
+        this.isUploading = true;
+        this.uploadToUploadcare(file);
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  uploadToUploadcare(file: File) {
+    const formData = new FormData();
+    formData.append('UPLOADCARE_PUB_KEY', this.uploadcareApiKey);
+    formData.append('UPLOADCARE_STORE', 'auto');
+    formData.append('file', file);
+
+    const uploadUrl = 'https://upload.uploadcare.com/base/'; // Uploadcare API endpoint
+
+    this.http.post(uploadUrl, formData).subscribe(
+      (response: any) => {
+        console.log('File uploaded successfully:', response);
+        this.selectedPhoto = `https://ucarecdn.com/${response.file}/`; // URL of the uploaded image
+        this.isUploadedPhoto = true;
+        this.uploadedPhotoName = file.name;
+        this.signUpComponent.user.photoURL = this.selectedPhoto; // Set photo URL in signup component
+        this.uploadComplete = true; // Mark upload as complete
+        this.isUploading = false; // Uploading is done
+        console.log(
+          'Photo URL after upload:',
+          this.signUpComponent.user.photoURL
+        );
+      },
+      (error) => {
+        console.error('Error uploading to Uploadcare:', error);
+      }
+    );
   }
 
   eraseUploadedPhoto() {
@@ -100,6 +113,11 @@ export class ChooseAvatarComponent {
 
   saveAvatar() {
     if (this.selectedPhoto && this.currentUser) {
+      console.log(
+        'Saving avatar with photoURL:',
+        this.signUpComponent.user.photoURL
+      );
+
       this.authService
         .updateAvatar(this.currentUser, this.signUpComponent.user.photoURL)
         .then(() => {
@@ -108,6 +126,10 @@ export class ChooseAvatarComponent {
           this.router.navigate(['/dashboard']);
         })
         .catch((error) => console.error('Error updating avatar:', error));
+    } else {
+      console.error(
+        'Cannot save avatar: Upload incomplete or no photo selected.'
+      );
     }
   }
 }
