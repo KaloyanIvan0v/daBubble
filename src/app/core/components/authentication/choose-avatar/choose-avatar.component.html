@@ -37,14 +37,22 @@
       />
     </div>
 
-    <div *ngIf="isUploadedPhoto">
-      <p>Uploaded photo: {{ uploadedPhotoName }}</p>
+    <div *ngIf="isUploadedPhoto" class="uploading-container">
+      <p>
+        {{ uploadedPhotoName | slice : 0 : 10
+        }}{{ (uploadedPhotoName ?? "").length > 10 ? "..." : "" }}
+      </p>
 
-      <span *ngIf="isUploading" class="spinner"></span>
+      <div class="uploading">
+        <div
+          *ngIf="isUploading || uploadComplete"
+          class="loader"
+          [class.complete]="uploadComplete"
+        ></div>
 
-      <button *ngIf="uploadComplete" (click)="eraseUploadedPhoto()">X</button>
+        <button *ngIf="uploadComplete" (click)="eraseUploadedPhoto()">X</button>
+      </div>
     </div>
-
     <div class="button-container">
       <button class="primary-btn" type="submit">Weiter</button>
     </div>

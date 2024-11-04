@@ -70,6 +70,12 @@ export class ChooseAvatarComponent {
         this.isUploadedPhoto = true;
         this.uploadedPhotoName = file.name;
         this.isUploading = true;
+
+        setTimeout(() => {
+          this.isUploading = false;
+          this.uploadComplete = true;
+        }, 3000);
+
         this.uploadToUploadcare(file);
       };
       reader.readAsDataURL(file);
