@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
 import { SignupComponent } from '../signup/signup.component';
@@ -7,6 +7,7 @@ import { authState, User } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-choose-avatar',
@@ -17,6 +18,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ChooseAvatarComponent {
   @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
+  userData = signal<any>(null);
 
   currentUser!: User | null;
   photos: string[] = [
@@ -35,14 +37,18 @@ export class ChooseAvatarComponent {
   uploadcareApiKey = '969c17c5a52163c20fd3';
   isUploading: boolean = false;
   uploadComplete: boolean = false;
+  uploadErrorMessage: string | null = null;
+  isFileSizeValid: boolean = false;
 
   constructor(
     public authUIService: AuthUIService,
     private authService: AuthService,
+    public workspaceService: WorkspaceService,
     private router: Router,
     private http: HttpClient
   ) {
     this.init();
+    this.userData = this.workspaceService.loggedInUserData;
   }
 
   async init() {
@@ -63,51 +69,90 @@ export class ChooseAvatarComponent {
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.selectedPhoto = reader.result as string; // Preview image
-        this.isUploadedPhoto = true;
-        this.uploadedPhotoName = file.name;
-        this.isUploading = true;
+    if (!file) return;
 
-        setTimeout(() => {
-          this.isUploading = false;
-          this.uploadComplete = true;
-        }, 3000);
-
-        this.uploadToUploadcare(file);
-      };
-      reader.readAsDataURL(file);
+    if (!this.validateFileSize(file)) {
+      this.isUploadedPhoto = false;
+      return;
     }
+
+    this.readFile(file);
+  }
+
+  private validateFileSize(file: File): boolean {
+    const maxFileSize = 2 * 1024 * 1024; // 2MB size limit
+    if (file.size > maxFileSize) {
+      this.uploadErrorMessage =
+        'File size exceeds the 2MB limit. Please choose a smaller file.';
+      return false;
+    }
+    this.uploadErrorMessage = null;
+    return true;
+  }
+
+  private readFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = () =>
+      this.handleFileLoadSuccess(reader.result as string, file);
+    reader.readAsDataURL(file);
+  }
+
+  private handleFileLoadSuccess(result: string, file: File) {
+    this.selectedPhoto = result;
+    this.isUploadedPhoto = true;
+    this.uploadedPhotoName = file.name;
+    this.isUploading = true;
+
+    // Simulate upload completion
+    setTimeout(() => {
+      this.isUploading = false;
+      this.uploadComplete = true;
+    }, 3000);
+
+    this.uploadToUploadcare(file); // Call the upload function
   }
 
   uploadToUploadcare(file: File) {
+    const formData = this.createUploadcareFormData(file);
+    const uploadUrl = 'https://upload.uploadcare.com/base/';
+
+    this.http.post(uploadUrl, formData).subscribe(
+      (response: any) => this.handleUploadSuccess(response, file),
+      (error) => this.handleUploadError(error)
+    );
+  }
+
+  private createUploadcareFormData(file: File): FormData {
     const formData = new FormData();
     formData.append('UPLOADCARE_PUB_KEY', this.uploadcareApiKey);
     formData.append('UPLOADCARE_STORE', 'auto');
     formData.append('file', file);
+    return formData;
+  }
 
-    const uploadUrl = 'https://upload.uploadcare.com/base/'; // Uploadcare API endpoint
+  private handleUploadSuccess(response: any, file: File) {
+    this.selectedPhoto = `https://ucarecdn.com/${response.file}/`;
+    this.isUploadedPhoto = true;
+    this.uploadedPhotoName = file.name;
+    this.uploadComplete = true;
+    this.isUploading = false;
+    this.signUpComponent.user.photoURL = this.selectedPhoto;
+  }
 
-    this.http.post(uploadUrl, formData).subscribe(
-      (response: any) => {
-        console.log('File uploaded successfully:', response);
-        this.selectedPhoto = `https://ucarecdn.com/${response.file}/`; // URL of the uploaded image
-        this.isUploadedPhoto = true;
-        this.uploadedPhotoName = file.name;
-        this.signUpComponent.user.photoURL = this.selectedPhoto; // Set photo URL in signup component
-        this.uploadComplete = true; // Mark upload as complete
-        this.isUploading = false; // Uploading is done
-        console.log(
-          'Photo URL after upload:',
-          this.signUpComponent.user.photoURL
-        );
-      },
-      (error) => {
-        console.error('Error uploading to Uploadcare:', error);
-      }
-    );
+  private handleUploadError(error: any) {
+    this.isUploading = false;
+    this.uploadComplete = false;
+
+    if (error.status === 404) {
+      this.uploadErrorMessage =
+        'Uploadcare API not found. Please check the API endpoint.';
+    } else if (error.status === 413) {
+      this.uploadErrorMessage =
+        'File is too large. Please choose a smaller file.';
+    } else {
+      this.uploadErrorMessage =
+        'Error uploading to Uploadcare. Please try again.';
+    }
   }
 
   eraseUploadedPhoto() {

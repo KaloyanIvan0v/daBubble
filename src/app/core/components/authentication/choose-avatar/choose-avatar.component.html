@@ -11,7 +11,7 @@
       class="profile-img-preview"
     />
 
-    <h3>Name Placeholder</h3>
+    <h3>{{ userData()?.name }}</h3>
 
     <h4 class="list-text">Aus der liste wählen.</h4>
     <div class="photos-container">
@@ -51,10 +51,15 @@
         ></div>
 
         <button *ngIf="uploadComplete" (click)="eraseUploadedPhoto()">X</button>
+        <p *ngIf="uploadErrorMessage" class="error-message">
+          {{ uploadErrorMessage }}
+        </p>
       </div>
     </div>
     <div class="button-container">
-      <button class="primary-btn" type="submit">Weiter</button>
+      <button class="primary-btn" type="submit" [disabled]="!isFileSizeValid">
+        Weiter
+      </button>
     </div>
   </form>
 </div>
