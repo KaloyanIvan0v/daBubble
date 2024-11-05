@@ -61,7 +61,7 @@
       {{ uploadErrorMessage }}
     </p>
     <div class="button-container">
-      <button class="primary-btn" type="submit" [disabled]="!isFileSizeValid">
+      <button class="primary-btn" type="submit" [disabled]="!canProceed()">
         Weiter
       </button>
     </div>

@@ -38,7 +38,6 @@ export class ChooseAvatarComponent {
   isUploading: boolean = false;
   uploadComplete: boolean = false;
   uploadErrorMessage: string | null = null;
-  isFileSizeValid: boolean = false;
 
   constructor(
     public authUIService: AuthUIService,
@@ -84,12 +83,10 @@ export class ChooseAvatarComponent {
     if (file.size > maxFileSize) {
       this.uploadErrorMessage =
         'File size exceeds the 2MB limit. Please choose a smaller file.';
-      this.isFileSizeValid = false; // Mark as invalid
       this.resetSelectedPhoto(); // Reset selected photo to placeholder
       return false;
     } else {
       this.uploadErrorMessage = null;
-      this.isFileSizeValid = true; // Mark as valid
       return true;
     }
   }
@@ -194,5 +191,10 @@ export class ChooseAvatarComponent {
         'Cannot save avatar: Upload incomplete or no photo selected.'
       );
     }
+  }
+
+  canProceed(): boolean {
+    // The "Weiter" button is enabled if a photo is selected or a valid file is uploaded
+    return this.selectedPhoto !== null || this.isUploadedPhoto;
   }
 }
