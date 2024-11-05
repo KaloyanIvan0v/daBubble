@@ -30,7 +30,7 @@ export class ChooseAvatarComponent {
     'assets/img/profile-img/Noah-Braun.svg',
   ];
 
-  selectedPhoto: string | null = null; // Placeholder shown initially
+  selectedPhoto: string | null = null;
   isUploadedPhoto: boolean = false;
   uploadedPhotoName: string | null = null;
 
@@ -84,10 +84,21 @@ export class ChooseAvatarComponent {
     if (file.size > maxFileSize) {
       this.uploadErrorMessage =
         'File size exceeds the 2MB limit. Please choose a smaller file.';
+      this.isFileSizeValid = false; // Mark as invalid
+      this.resetSelectedPhoto(); // Reset selected photo to placeholder
       return false;
+    } else {
+      this.uploadErrorMessage = null;
+      this.isFileSizeValid = true; // Mark as valid
+      return true;
     }
-    this.uploadErrorMessage = null;
-    return true;
+  }
+
+  private resetSelectedPhoto() {
+    this.selectedPhoto = null;
+    this.isUploadedPhoto = false;
+    this.uploadedPhotoName = null;
+    this.signUpComponent.user.photoURL = '';
   }
 
   private readFile(file: File) {
@@ -142,6 +153,8 @@ export class ChooseAvatarComponent {
   private handleUploadError(error: any) {
     this.isUploading = false;
     this.uploadComplete = false;
+    this.isUploadedPhoto = false; // Prevent showing any uploaded image
+    this.selectedPhoto = null; // Clear any previous preview
 
     if (error.status === 404) {
       this.uploadErrorMessage =
@@ -157,7 +170,6 @@ export class ChooseAvatarComponent {
 
   eraseUploadedPhoto() {
     this.selectedPhoto = null;
-    this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
     this.signUpComponent.user.photoURL = '';
   }

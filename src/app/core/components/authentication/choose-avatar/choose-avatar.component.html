@@ -51,11 +51,15 @@
         ></div>
 
         <button *ngIf="uploadComplete" (click)="eraseUploadedPhoto()">X</button>
-        <p *ngIf="uploadErrorMessage" class="error-message">
-          {{ uploadErrorMessage }}
-        </p>
       </div>
     </div>
+    <p
+      *ngIf="uploadErrorMessage"
+      class="error-message"
+      style="margin-top: 10px; width: 100%"
+    >
+      {{ uploadErrorMessage }}
+    </p>
     <div class="button-container">
       <button class="primary-btn" type="submit" [disabled]="!isFileSizeValid">
         Weiter
