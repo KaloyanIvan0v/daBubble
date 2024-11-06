@@ -99,6 +99,12 @@ export class AuthService {
 
       // Toggle avatar selection only if the user is new
       if (isNewUser) {
+        await this.saveUserDataToFirestore(
+          user,
+          user.displayName || '',
+          user.email || ''
+        );
+
         this.authUIService.toggleAvatarSelection();
       } else {
         this.router.navigate(['/dashboard']);
