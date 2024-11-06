@@ -85,33 +85,42 @@ export class AuthService {
   }
 
   async googleSignIn(): Promise<void> {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({
-      prompt: 'select_account', // Forces account selection every time
-    });
+    const provider = this.configureGoogleProvider();
     try {
       const result = await signInWithPopup(this.auth, provider);
       const user = result.user;
 
-      const additionalUserInfo = getAdditionalUserInfo(result);
-      const isNewUser = additionalUserInfo?.isNewUser;
-
-      if (isNewUser) {
-        await this.saveUserDataToFirestore(
-          user,
-          user.displayName || '',
-          user.email || ''
-        );
-
-        this.authUIService.toggleAvatarSelection();
-      } else {
-        this.router.navigate(['/dashboard']);
-      }
-
-      this.currentUser$.next(user);
+      await this.handleGoogleSignInResult(user, result);
     } catch (error) {
       console.error('Error signing in with Google:', error);
     }
+  }
+
+  private configureGoogleProvider(): GoogleAuthProvider {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    return provider;
+  }
+
+  private async handleGoogleSignInResult(
+    user: User,
+    result: any
+  ): Promise<void> {
+    const isNewUser = getAdditionalUserInfo(result)?.isNewUser;
+    if (isNewUser) {
+      // Wait until the email is populated after the popup closes
+      if (user.email) {
+        await this.saveUserDataToFirestore(
+          user,
+          user.displayName || '',
+          user.email
+        );
+        this.authUIService.toggleAvatarSelection();
+      }
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
+    this.currentUser$.next(user);
   }
 
   async updateAvatar(user: User, photoURL: string): Promise<void> {

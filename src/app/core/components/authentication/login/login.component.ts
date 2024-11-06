@@ -31,6 +31,11 @@ export class LoginComponent implements OnInit {
 
   async onLogin(event: Event) {
     event.preventDefault();
+
+    if (!this.user.email || !this.user.password) {
+      return; // Don't proceed if email or password is empty
+    }
+
     try {
       const user = await this.authService.login(
         this.user.email,
