@@ -1,12 +1,27 @@
-import { Component } from '@angular/core';
+import { FirebaseServicesService } from './../../services/firebase/firebase.service';
+import { Component, Input } from '@angular/core';
+import { InputBoxData } from 'src/app/core/shared/models/input.class';
+import { FormsModule } from '@angular/forms';
+import { MainService } from 'src/app/core/components/main/main.service';
 
 @Component({
   selector: 'app-input-box',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './input-box.component.html',
-  styleUrl: './input-box.component.scss'
+  styleUrl: './input-box.component.scss',
 })
 export class InputBoxComponent {
+  @Input() channelId: string = '';
+  inputData = new InputBoxData('', []);
 
+  constructor(
+    private firebaseService: FirebaseServicesService,
+    private mainService: MainService
+  ) {}
+
+  sendMessage() {
+    this.mainService.sendMessage('channels', this.channelId, this.inputData);
+    this.inputData = new InputBoxData('', []);
+  }
 }

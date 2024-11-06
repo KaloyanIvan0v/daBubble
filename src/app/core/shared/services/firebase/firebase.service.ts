@@ -8,12 +8,13 @@ import {
   updateDoc,
   CollectionReference,
   docData,
+  arrayUnion,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { where, query } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
-
+import { Message } from 'src/app/core/shared/models/message.class';
 @Injectable({
   providedIn: 'root',
 })
@@ -138,6 +139,13 @@ export class FirebaseServicesService implements OnDestroy {
     return updateDoc(docRef, data);
   }
 
+  async sendMessage(collectionName: string, docId: string, message: Message) {
+    const docRef = this.getDocRef(collectionName, docId);
+    return updateDoc(docRef, {
+      messages: arrayUnion(message),
+    });
+  }
+
   getUsers(): Observable<any> {
     return this.getCollection('users', false);
   }
@@ -161,5 +169,10 @@ export class FirebaseServicesService implements OnDestroy {
 
   getChat(id: string): Observable<any> {
     return this.getDoc('chats', id);
+  }
+
+  getUniqueId() {
+    const id = doc(collection(this.firestore, 'dummyCollection')).id;
+    return id;
   }
 }

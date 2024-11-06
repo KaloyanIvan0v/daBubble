@@ -6,6 +6,7 @@ import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/f
 import { GlobalDataService } from 'src/app/core/shared/services/pop-up-service/global-data.service';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/core/shared/models/channel.class';
+import { InputBoxData } from 'src/app/core/shared/models/input.class';
 
 @Component({
   selector: 'app-channel-chat',
@@ -58,6 +59,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   }
 
   loadUsers() {
+    this.channelUsers = [];
     const channelUids = this.channelData.uid;
     for (let i = 0; i < channelUids.length; i++) {
       const uid = channelUids[i];
