@@ -46,11 +46,11 @@ export class ChooseAvatarComponent {
     private router: Router,
     private http: HttpClient
   ) {
-    this.init();
+    this.ngOnInit();
     this.userData = this.workspaceService.loggedInUserData;
   }
 
-  async init() {
+  async ngOnInit() {
     const userObservable: Observable<User | null> = authState(
       this.authService.firebaseAuth
     );
@@ -115,7 +115,7 @@ export class ChooseAvatarComponent {
     setTimeout(() => {
       this.isUploading = false;
       this.uploadComplete = true;
-    }, 3000);
+    }, 5000);
 
     this.uploadToUploadcare(file); // Call the upload function
   }
@@ -139,6 +139,7 @@ export class ChooseAvatarComponent {
   }
 
   private handleUploadSuccess(response: any, file: File) {
+    console.log('Uploadcare response:', response); // Add this to see response details
     this.selectedPhoto = `https://ucarecdn.com/${response.file}/`;
     this.isUploadedPhoto = true;
     this.uploadedPhotoName = file.name;

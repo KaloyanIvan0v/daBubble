@@ -91,7 +91,7 @@
   width: 100px;
   height: 10px;
   background: linear-gradient(#00ff22 0 0) 0/0% no-repeat #ddd;
-  animation: loading 2s infinite linear;
+  animation: loading 5s infinite linear;
 
   &.complete {
     background-size: 100% 100%;
