@@ -18,6 +18,7 @@ section {
   padding: 25px 20px;
   box-sizing: border-box;
   background-color: $bg-color;
+  z-index: auto;
 }
 
 .pop-up-wrapper {
@@ -42,6 +43,7 @@ p {
 
 .main-container {
   display: flex;
+  z-index: auto;
   width: 100%;
   box-sizing: border-box;
   flex-grow: 1;
@@ -68,6 +70,7 @@ p {
     border-radius: 30px;
     margin-right: 20px;
     max-height: 100%;
+    z-index: auto;
   }
 
   app-right-side-container {
@@ -148,7 +151,6 @@ p {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1050;
   max-width: 100%;
 }
 
@@ -156,16 +158,6 @@ p {
   position: absolute;
   right: 10px;
   top: 120px;
-
-  z-index: 1050;
-  max-width: 100%;
-}
-
-.popUpAddUserToChannel {
-  position: absolute;
-  right: 575px;
-  top: 220px;
-  z-index: 1050;
   max-width: 100%;
 }
 
@@ -173,8 +165,6 @@ p {
   position: absolute;
   right: 20px;
   top: 120px;
-
-  z-index: 1050;
   max-width: 100%;
 }
 

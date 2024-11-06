@@ -14,22 +14,21 @@
       <app-left-side-component
         [ngClass]="{
           'width-0': !workSpaceOpen,
-
         }"
       ></app-left-side-component>
-      <app-main-workspace> </app-main-workspace>
+      <app-main-workspace></app-main-workspace>
       <app-right-side-container></app-right-side-container>
     </div>
   </div>
+  <!-- <app-pop-up
+    *ngIf="popUpStates['popUpShadow']"
+    class="pop-up-shadow"
+  ></app-pop-up> -->
   <div class="pop-up-wrapper">
     <app-add-channel
       *ngIf="popUpStates['addChannel']"
       class="pop-up-center"
     ></app-add-channel>
-    <app-add-user-to-channel
-      class="popUpAddUserToChannel"
-      *ngIf="popUpStates['addUserToChannel']"
-    ></app-add-user-to-channel>
     <app-edit-channel
       *ngIf="popUpStates['editChannel']"
       class="pop-up-center"
@@ -50,5 +49,4 @@
       class="pop-up-user-menu"
     ></app-user-menu>
   </div>
-  <app-pop-up *ngIf="popUpStates['popUpShadow']"></app-pop-up>
 </section>

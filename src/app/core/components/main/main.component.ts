@@ -10,12 +10,14 @@ import { EditChannelComponent } from '../../shared/components/pop-ups/edit-chann
 import { OwnProfileEditComponent } from '../../shared/components/pop-ups/own-profile-edit/own-profile-edit.component';
 import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-profile-view/own-profile-view.component';
 import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-view/profile-view.component';
+import { ChannelMembersViewComponent } from '../../shared/components/pop-ups/channel-members-view/channel-members-view.component';
 import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/user-menu.component';
 import { GlobalDataService } from '../../shared/services/pop-up-service/global-data.service';
 import { PopUpComponent } from '../../shared/components/pop-up/pop-up.component';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
+import { ChannelChatComponent } from './main-workspace/channel-chat/channel-chat.component';
 
 @Component({
   selector: 'app-main',
@@ -34,6 +36,8 @@ import { FirebaseServicesService } from '../../shared/services/firebase/firebase
     OwnProfileViewComponent,
     ProfileViewComponent,
     UserMenuComponent,
+    ChannelMembersViewComponent,
+    ChannelChatComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
@@ -49,10 +53,8 @@ export class MainComponent implements OnInit, OnDestroy {
   profileViewVisible: boolean = false;
   userMenuVisible: boolean = false;
 
-  // Local object to hold the pop-up states
   popUpStates: { [key: string]: boolean } = {};
 
-  // Subscription property
   private popUpStatesSubscription!: Subscription;
 
   constructor(

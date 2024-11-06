@@ -1,11 +1,13 @@
 @import "global.scss";
 section {
+  position: relative;
   box-sizing: border-box;
   @include dFlex($fd: column);
   width: 100%;
   height: calc(100vh - 140px);
   padding-bottom: 40px;
   box-sizing: border-box;
+  z-index: auto;
 }
 
 .header {
@@ -112,4 +114,36 @@ app-input-box {
 .user-amount {
   font-size: 20px;
   font-weight: 600;
+}
+
+.pop-up-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100vh;
+  max-width: 1980px;
+  pointer-events: none;
+  z-index: auto;
+
+  * {
+    pointer-events: all;
+  }
+}
+
+.popUpAddUserToChannel {
+  position: absolute;
+  right: 40px;
+  top: 155px;
+  max-width: 100%;
+  z-index: 2050;
+}
+
+.channel-members-view {
+  position: absolute;
+  right: 90px;
+  top: 155px;
+  max-width: 100%;
+  z-index: 2050;
 }

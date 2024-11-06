@@ -8,10 +8,17 @@ import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 
+import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
+import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
 @Component({
   selector: 'app-channel-chat',
   standalone: true,
-  imports: [InputBoxComponent, CommonModule],
+  imports: [
+    InputBoxComponent,
+    CommonModule,
+    AddUserToChannelComponent,
+    ChannelMembersViewComponent,
+  ],
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
 })
@@ -22,7 +29,8 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   channelId: string = '';
   userAmount: number = 0;
   channelUsers: any[] = [];
-
+  popUpStates: { [key: string]: boolean } = {};
+  private popUpStatesSubscription!: Subscription;
   constructor(
     private workspaceService: WorkspaceService,
     private firebaseService: FirebaseServicesService,
@@ -38,7 +46,12 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.popUpStatesSubscription =
+      this.globalDataService.popUpStates$.subscribe((states) => {
+        this.popUpStates = states as { [key: string]: boolean };
+      });
+  }
 
   private loadChannelData(channelId: string): void {
     this.channelUsers = [];
@@ -73,6 +86,9 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    if (this.popUpStatesSubscription) {
+      this.popUpStatesSubscription.unsubscribe();
+    }
   }
 
   openEditChannelPopUp() {
@@ -81,5 +97,9 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   openAddUserToChannelPopUp() {
     this.globalDataService.openPopUp('addUserToChannel');
+  }
+
+  openChannelUsersViewPopUp() {
+    this.globalDataService.openPopUp('channelMembersView');
   }
 }

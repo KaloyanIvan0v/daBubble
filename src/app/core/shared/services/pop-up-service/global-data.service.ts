@@ -15,6 +15,7 @@ export class GlobalDataService {
     ownProfileEdit: false,
     ownProfileView: false,
     profileView: false,
+    channelMembersView: false,
   });
 
   popUpStates$ = this.popUpStatesAsSubject.asObservable();

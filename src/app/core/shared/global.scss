@@ -238,6 +238,15 @@ button:hover {
   }
 }
 
+.pop-up-shadow {
+  color: rgba(0, 0, 0, 0.813);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
 .error-message {
   color: red;
   font-size: 14px;
