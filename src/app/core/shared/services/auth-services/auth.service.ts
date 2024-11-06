@@ -34,9 +34,12 @@ export class AuthService {
     public authUIService: AuthUIService,
     private router: Router
   ) {
-    // Observing the auth state and updating currentUser$ accordingly
+    this.initAuthState();
+  }
+
+  private initAuthState(): void {
     authState(this.auth).subscribe((user: User | null) => {
-      this.currentUser$.next(user); // Emit user changes
+      this.currentUser$.next(user);
     });
   }
 
@@ -75,12 +78,9 @@ export class AuthService {
       password
     ).then(async (response) => {
       const user: User = response.user;
-      // Update profile with display name
       await updateProfile(user, { displayName: name });
-
       await this.saveUserDataToFirestore(user, name, email);
     });
-
     return from(promise);
   }
 
@@ -93,11 +93,9 @@ export class AuthService {
       const result = await signInWithPopup(this.auth, provider);
       const user = result.user;
 
-      // Check if this is a new user
       const additionalUserInfo = getAdditionalUserInfo(result);
       const isNewUser = additionalUserInfo?.isNewUser;
 
-      // Toggle avatar selection only if the user is new
       if (isNewUser) {
         await this.saveUserDataToFirestore(
           user,
@@ -110,33 +108,21 @@ export class AuthService {
         this.router.navigate(['/dashboard']);
       }
 
-      // Update current user observable
       this.currentUser$.next(user);
-    } catch (error: any) {
-      if (error.code === 'auth/popup-closed-by-user') {
-        console.warn('User closed the Google Sign-In popup.');
-      } else if (error.code === 'auth/network-request-failed') {
-        console.warn('Network error during sign-in. Check your connection.');
-      } else {
-        console.error('Error signing in with Google:', error);
-      }
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
     }
   }
 
   async updateAvatar(user: User, photoURL: string): Promise<void> {
-    // Update the photoURL in Firebase Auth
     await updateProfile(user, { photoURL: photoURL });
-
-    // Also update the avatar URL in Firestore
     const userUID = user.uid;
     await setDoc(
       doc(this.firestore, 'users', userUID),
       { photoURL: photoURL },
       { merge: true }
     );
-
-    // Emit the updated user data
-    this.currentUser$.next({ ...user, photoURL }); // Emit updated user data
+    this.currentUser$.next({ ...user, photoURL });
   }
 
   async logoutUser(): Promise<void> {
@@ -158,7 +144,7 @@ export class AuthService {
 
   async getCurrentUserUID(): Promise<string | null> {
     const user = this.auth.currentUser;
-    console.log('Current User:', user); // Debugging line
+    console.log('Current User:', user);
 
     return user ? user.uid : null;
   }
