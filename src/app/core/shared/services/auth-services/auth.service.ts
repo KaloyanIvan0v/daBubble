@@ -9,6 +9,7 @@ import {
   updateProfile,
   signInWithPopup,
   getAdditionalUserInfo,
+  sendPasswordResetEmail,
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { GoogleAuthProvider } from 'firebase/auth';
@@ -137,6 +138,16 @@ export class AuthService {
   async logoutUser(): Promise<void> {
     this.authStatusChanged.set(false);
     return this.auth.signOut();
+  }
+
+  async resetPassword(email: string): Promise<void> {
+    try {
+      await sendPasswordResetEmail(this.auth, email);
+      console.log('Password reset email sent');
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      throw error;
+    }
   }
 
   get isAuthenticated(): Promise<boolean> {
