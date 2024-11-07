@@ -133,6 +133,7 @@ export class AuthUIService {
     name: false,
     email: false,
     password: false,
+    confirmPassword: false,
   };
 
   onFocus(inputType: string): void {

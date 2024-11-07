@@ -14,5 +14,12 @@ export class ResetPasswordLinkComponent {
 
   user = {
     password: '',
+    confirmPassword: '',
   };
+
+  passwordsMatch: boolean = false;
+
+  checkPasswordsMatch(): void {
+    this.passwordsMatch = this.user.password === this.user.confirmPassword;
+  }
 }
