@@ -19,15 +19,16 @@ export class ResetPasswordComponent {
     email: '',
   };
 
+  resetLinkSent = false;
+
   async onResetPassword() {
     if (!this.user.email) return;
 
     try {
       await this.authService.resetPassword(this.user.email);
-      alert('A password reset link has been sent to your email.');
+      this.resetLinkSent = true;
     } catch (error) {
       console.error('Reset Password Error:', error);
-      alert('Failed to send reset email. Please try again later.');
     }
   }
 }
