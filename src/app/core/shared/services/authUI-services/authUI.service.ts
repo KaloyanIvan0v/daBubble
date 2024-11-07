@@ -9,7 +9,8 @@ export class AuthUIService {
   showLogin = false;
   showSignup = false;
   showAvatarSelection = false;
-  showResetPassword = true;
+  showResetPassword = false;
+  showResetPasswordLink = true;
   isChecked: boolean = false;
 
   toggleLogin() {
@@ -18,6 +19,7 @@ export class AuthUIService {
       this.showAvatarSelection = false;
       this.showSignup = false;
       this.showResetPassword = false;
+      this.showResetPasswordLink = false;
     }
   }
 
@@ -26,18 +28,29 @@ export class AuthUIService {
     if (this.showSignup) {
       this.showAvatarSelection = false;
       this.showResetPassword = false;
+      this.showResetPasswordLink = false;
     }
   }
 
   toggleAvatarSelection() {
     this.showAvatarSelection = true;
     this.showSignup = false;
+    this.showResetPasswordLink = false;
   }
 
   toggleResetPassword() {
     this.showResetPassword = true;
     this.showSignup = false;
     this.showAvatarSelection = false;
+    this.showResetPasswordLink = false;
+  }
+
+  toggleResetPasswordLink() {
+    this.showResetPasswordLink = true;
+    this.showResetPassword = false;
+    this.showSignup = false;
+    this.showAvatarSelection = false;
+    this.showResetPassword = false;
   }
 
   toggleCheckbox() {
@@ -53,6 +66,13 @@ export class AuthUIService {
       return '469px';
     } else if (this.showSignup || this.showAvatarSelection) {
       return '669px';
+    } else if (
+      this.showResetPasswordLink &&
+      !this.showResetPassword &&
+      !this.showSignup &&
+      !this.showAvatarSelection
+    ) {
+      return '423px';
     } else {
       return '769px';
     }
@@ -67,6 +87,13 @@ export class AuthUIService {
       return '698px';
     } else if (this.showSignup || this.showAvatarSelection) {
       return '606px';
+    } else if (
+      this.showResetPasswordLink &&
+      !this.showResetPassword &&
+      !this.showSignup &&
+      !this.showAvatarSelection
+    ) {
+      return '692px';
     } else {
       return '606px';
     }
@@ -74,13 +101,19 @@ export class AuthUIService {
 
   shouldShowLogin(): boolean {
     return (
-      !this.showSignup && !this.showAvatarSelection && !this.showResetPassword
+      !this.showSignup &&
+      !this.showAvatarSelection &&
+      !this.showResetPassword &&
+      !this.showResetPasswordLink
     );
   }
 
   shouldShowSignup(): boolean {
     return (
-      this.showSignup && !this.showAvatarSelection && !this.showResetPassword
+      this.showSignup &&
+      !this.showAvatarSelection &&
+      !this.showResetPassword &&
+      !this.showResetPasswordLink
     );
   }
 
@@ -90,6 +123,10 @@ export class AuthUIService {
 
   shouldShowResetPassword(): boolean {
     return this.showResetPassword && !this.showAvatarSelection;
+  }
+
+  shouldShowResetPasswordLink(): boolean {
+    return this.showResetPasswordLink && !this.showAvatarSelection;
   }
 
   focused: { [key: string]: boolean } = {

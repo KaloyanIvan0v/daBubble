@@ -18,6 +18,7 @@ import { SignupComponent } from './signup/signup.component';
 import { AuthService } from '../../shared/services/auth-services/auth.service';
 import { Router } from '@angular/router';
 import { WorkspaceService } from '../../shared/services/workspace-service/workspace.service';
+import { ResetPasswordLinkComponent } from './reset-password-link/reset-password-link.component';
 
 @Component({
   selector: 'app-authentication',
@@ -28,6 +29,7 @@ import { WorkspaceService } from '../../shared/services/workspace-service/worksp
     SignupComponent,
     ChooseAvatarComponent,
     ResetPasswordComponent,
+    ResetPasswordLinkComponent,
   ],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss',

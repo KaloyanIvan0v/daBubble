@@ -45,5 +45,8 @@
     <app-reset-password
       *ngIf="authUIService.shouldShowResetPassword()"
     ></app-reset-password>
+    <app-reset-password-link
+    *ngIf="authUIService.shouldShowResetPasswordLink()"
+  ></app-reset-password-link>
   </div>
 </section>
