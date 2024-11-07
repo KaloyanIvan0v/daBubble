@@ -31,6 +31,7 @@ export class ResetPasswordLinkComponent {
   successMessage: string = '';
   oobCode: string = ''; // The password reset code from the URL
   codeVerified = false;
+  resetPasswordSubmitted = false;
 
   ngOnInit() {
     // Get the 'oobCode' from the URL query parameters
@@ -72,6 +73,7 @@ export class ResetPasswordLinkComponent {
 
         // Reset the password using Firebase's confirmPasswordReset function
         await confirmPasswordReset(auth, this.oobCode, this.user.password);
+        this.resetPasswordSubmitted = true;
 
         this.successMessage = 'Your password has been successfully reset.';
         this.errorMessage = ''; // Reset any error message

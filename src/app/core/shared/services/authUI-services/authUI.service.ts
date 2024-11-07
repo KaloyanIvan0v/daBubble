@@ -6,11 +6,11 @@ import { Injectable } from '@angular/core';
 export class AuthUIService {
   constructor() {}
 
-  showLogin = false;
+  showLogin = true;
   showSignup = false;
   showAvatarSelection = false;
   showResetPassword = false;
-  showResetPasswordLink = true;
+  showResetPasswordLink = false;
   isChecked: boolean = false;
 
   toggleLogin() {
