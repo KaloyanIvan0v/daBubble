@@ -1,5 +1,4 @@
 import { Component, signal } from '@angular/core';
-import { GlobalDataService } from '../../../shared/services/pop-up-service/global-data.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
@@ -17,7 +16,6 @@ export class HeaderComponent {
   private userSubscription!: Subscription; // Store subscription for cleanup
 
   constructor(
-    public globalDataService: GlobalDataService,
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     private authService: AuthService
@@ -40,7 +38,5 @@ export class HeaderComponent {
     }
   }
 
-  openPopUp() {
-    this.globalDataService.openPopUp('userMenu');
-  }
+  openPopUp() {}
 }

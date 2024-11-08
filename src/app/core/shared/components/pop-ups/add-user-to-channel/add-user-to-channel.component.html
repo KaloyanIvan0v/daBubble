@@ -1,54 +1,57 @@
-<section>
-  <div class="tittle-closse">
-    <div class="font24-700">Leute hinzufügen</div>
-    <div class="close-button" (click)="closePopUp()"></div>
-  </div>
-  <div class="channel-name">
-    <img src="assets/img/icons/tag-thin.svg" alt="" />
-    <div class="font18-400">{{ (channelData$ | async)?.name }}</div>
-  </div>
-  <div class="selected-users-chips overflow-y-scroll">
-    <div
-      #userChip
-      id="{{ user?.uid }}"
-      class="user-chip"
-      *ngFor="let user of selectedUsers"
-    >
-      <img src="{{ user?.photoURL }}" alt="" />
-      <div>{{ user?.name }}</div>
-      <div class="close-chip" (click)="removeUserChip(user)"></div>
+<section *ngIf="popUpVisible">
+  <div class="pop-up-wrapper">
+    <div class="tittle-closse">
+      <div class="font24-700">Leute hinzufügen</div>
+      <div class="close-button" (click)="closePopUp()"></div>
     </div>
-  </div>
-  <div class="pop-up-input">
-    <input
-      [(ngModel)]="searchText"
-      (input)="onSearchTextChange()"
-      placeholder="Name eingeben"
-      type="text"
-    />
-  </div>
-  <div class="search-results" *ngIf="searchText.length > 0">
-    <div class="scroll-content overflow-y-scroll">
+    <div class="channel-name">
+      <img src="assets/img/icons/tag-thin.svg" alt="" />
+      <div class="font18-400">{{ (channelData$ | async)?.name }}</div>
+    </div>
+    <div class="selected-users-chips overflow-y-scroll">
       <div
-        class="filtered-user"
-        *ngFor="let user of filteredUsers"
-        (click)="addUserChip(user)"
+        #userChip
+        id="{{ user?.uid }}"
+        class="user-chip"
+        *ngFor="let user of selectedUsers"
       >
         <img src="{{ user?.photoURL }}" alt="" />
         <div>{{ user?.name }}</div>
+        <div class="close-chip" (click)="removeUserChip(user)"></div>
       </div>
     </div>
-    <div class="font18-400" *ngIf="filteredUsers.length === 0">
-      Keine Ergebnisse gefunden
+    <div class="pop-up-input">
+      <input
+        [(ngModel)]="searchText"
+        (input)="onSearchTextChange()"
+        placeholder="Name eingeben"
+        type="text"
+      />
+    </div>
+    <div class="search-results" *ngIf="searchText.length > 0">
+      <div class="scroll-content overflow-y-scroll">
+        <div
+          class="filtered-user"
+          *ngFor="let user of filteredUsers"
+          (click)="addUserChip(user)"
+        >
+          <img src="{{ user?.photoURL }}" alt="" />
+          <div>{{ user?.name }}</div>
+        </div>
+      </div>
+      <div class="font18-400" *ngIf="filteredUsers.length === 0">
+        Keine Ergebnisse gefunden
+      </div>
+    </div>
+    <div class="btn-wrapper">
+      <button
+        class="primary-btn"
+        [disabled]="selectedUsers.length === 0"
+        (click)="selectedUsers.length > 0 && addUsers()"
+      >
+        Hinzufügen
+      </button>
     </div>
   </div>
-  <div class="btn-wrapper">
-    <button
-      class="primary-btn"
-      [disabled]="selectedUsers.length === 0"
-      (click)="selectedUsers.length > 0 && addUsers()"
-    >
-      Hinzufügen
-    </button>
-  </div>
+  <div class="pop-up-shadow" (click)="closePopUp()"></div>
 </section>

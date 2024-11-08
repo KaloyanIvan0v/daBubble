@@ -1,7 +1,7 @@
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
+
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 @Component({
@@ -15,7 +15,6 @@ export class ChannelMembersViewComponent {
   channelData!: Channel;
   channelUsers: any[] = [];
   constructor(
-    public globalDataService: GlobalDataService,
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService
   ) {
@@ -44,16 +43,9 @@ export class ChannelMembersViewComponent {
     }
     return [];
   }
-  closePopUp() {
-    this.globalDataService.closePopUp();
-  }
+  closePopUp() {}
 
-  openProfileView(user: any) {
-    this.globalDataService.openPopUp('profileView');
-  }
+  openProfileView(user: any) {}
 
-  openAddUserToChannelPopUp() {
-    this.globalDataService.closePopUp();
-    this.globalDataService.openPopUp('addUserToChannel');
-  }
+  openAddUserToChannelPopUp() {}
 }

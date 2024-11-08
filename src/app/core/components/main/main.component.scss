@@ -1,14 +1,16 @@
 @import "./../../shared/global.scss";
 section {
+  @include dFlex();
   height: 100vh;
   width: 100%;
 }
 
+app-header {
+  width: 100%;
+}
+
 .inner-section {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  @include dFlex();
   width: 100%;
   height: 100vh;
   max-width: 1980px;
@@ -42,6 +44,7 @@ p {
 }
 
 .main-container {
+  position: relative;
   display: flex;
   z-index: auto;
   width: 100%;
@@ -82,13 +85,13 @@ p {
 }
 
 .workspace-menu-btn {
-  position: fixed;
-  top: 80vh;
-  left: 0px;
+  position: absolute;
+  top: 70vh;
+  left: -20px;
   display: flex;
   gap: 10px;
   padding: 14px 23px;
-  z-index: 6;
+  z-index: 2;
   cursor: pointer;
   transform: rotate(-90deg) translateY(50%);
   transform-origin: left center;

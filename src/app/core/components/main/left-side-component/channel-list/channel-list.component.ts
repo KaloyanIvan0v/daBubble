@@ -1,6 +1,5 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GlobalDataService } from '../../../../shared/services/pop-up-service/global-data.service';
 import { FirebaseServicesService } from '../../../../shared/services/firebase/firebase.service';
 import { Subscription } from 'rxjs';
 import { Channel } from '../../../../shared/models/channel.class';
@@ -21,7 +20,6 @@ export class ChannelListComponent {
   private subscription: Subscription | undefined;
 
   constructor(
-    private globalDataService: GlobalDataService,
     private firebaseService: FirebaseServicesService,
     private workspaceService: WorkspaceService,
     private router: Router
@@ -33,9 +31,7 @@ export class ChannelListComponent {
     this.channelListOpen = !this.channelListOpen;
   }
 
-  openAddChannel() {
-    this.globalDataService.openPopUp('addChannel');
-  }
+  openAddChannel() {}
 
   ngOnInit(): void {
     this.subscription = this.firebaseService.getChannels().subscribe({

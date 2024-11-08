@@ -2,6 +2,10 @@
 
 section {
   @include dFlex($fd: column, $jc: space-between, $ai: start);
+}
+
+.pop-up-wrapper {
+  @include dFlex($fd: column, $jc: space-between, $ai: start);
   width: 872px;
   max-width: 100%;
   height: 539px;

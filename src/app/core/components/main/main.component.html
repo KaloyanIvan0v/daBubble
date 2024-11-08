@@ -20,33 +20,4 @@
       <app-right-side-container></app-right-side-container>
     </div>
   </div>
-  <!-- <app-pop-up
-    *ngIf="popUpStates['popUpShadow']"
-    class="pop-up-shadow"
-  ></app-pop-up> -->
-  <div class="pop-up-wrapper">
-    <app-add-channel
-      *ngIf="popUpStates['addChannel']"
-      class="pop-up-center"
-    ></app-add-channel>
-    <app-edit-channel
-      *ngIf="popUpStates['editChannel']"
-      class="pop-up-center"
-    ></app-edit-channel>
-    <app-own-profile-edit
-      *ngIf="popUpStates['ownProfileEdit']"
-    ></app-own-profile-edit>
-    <app-own-profile-view
-      class="own-profile-view"
-      *ngIf="popUpStates['ownProfileView']"
-    ></app-own-profile-view>
-    <app-profile-view
-      *ngIf="popUpStates['profileView']"
-      class="pop-up-center"
-    ></app-profile-view>
-    <app-user-menu
-      *ngIf="popUpStates['userMenu']"
-      class="pop-up-user-menu"
-    ></app-user-menu>
-  </div>
 </section>

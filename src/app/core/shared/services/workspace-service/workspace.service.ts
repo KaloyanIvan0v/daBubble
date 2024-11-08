@@ -1,4 +1,7 @@
-import { Injectable, inject, signal, effect } from '@angular/core';
+import { UserMenuComponent } from './../../components/pop-ups/user-menu/user-menu.component';
+import { AddChannelComponent } from './../../components/pop-ups/add-channel/add-channel.component';
+import { EditChannelComponent } from './../../components/pop-ups/edit-channel/edit-channel.component';
+import { Injectable, inject, signal, effect, Signal } from '@angular/core';
 import { AuthService } from '../auth-services/auth.service';
 import { FirebaseServicesService } from './../firebase/firebase.service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
@@ -17,6 +20,15 @@ export class WorkspaceService {
 
   currentActiveUnitId = signal('');
   loggedInUserData = signal<any>(null);
+  popUpShadowVisible = signal(false);
+  addChannelPopUp = signal(false);
+  addUserToChannelPopUp = signal(false);
+  channelMembersPopUp = signal(false);
+  editChannelPopUp = signal(false);
+  ownProfileEditPopUp = signal(false);
+  ownProfileViewPopUp = signal(false);
+  profileViewPopUp = signal(false);
+  UserMenuPopUp = signal(false);
 
   constructor() {
     this.loadUserData();
@@ -32,6 +44,10 @@ export class WorkspaceService {
     this.currentActiveUnitId.set(
       this.sessionStorageService.getItem('activeUnit') ?? ''
     );
+  }
+
+  setPopUp(popUpName: any, visible: boolean) {
+    popUpName.set(visible);
   }
 
   private async loadUserData() {

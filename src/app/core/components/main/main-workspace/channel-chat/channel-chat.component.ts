@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { GlobalDataService } from 'src/app/core/shared/services/pop-up-service/global-data.service';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
-
 import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
 import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
+import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edit-channel/edit-channel.component';
+
 @Component({
   selector: 'app-channel-chat',
   standalone: true,
@@ -18,6 +18,7 @@ import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-
     CommonModule,
     AddUserToChannelComponent,
     ChannelMembersViewComponent,
+    EditChannelComponent,
   ],
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
@@ -33,8 +34,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   private popUpStatesSubscription!: Subscription;
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService,
-    private globalDataService: GlobalDataService
+    private firebaseService: FirebaseServicesService
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
@@ -46,12 +46,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    this.popUpStatesSubscription =
-      this.globalDataService.popUpStates$.subscribe((states) => {
-        this.popUpStates = states as { [key: string]: boolean };
-      });
-  }
+  ngOnInit(): void {}
 
   private loadChannelData(channelId: string): void {
     this.channelUsers = [];
@@ -91,15 +86,11 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  openEditChannelPopUp() {
-    this.globalDataService.openPopUp('editChannel');
-  }
+  openEditChannelPopUp() {}
 
   openAddUserToChannelPopUp() {
-    this.globalDataService.openPopUp('addUserToChannel');
+    this.workspaceService.addUserToChannelPopUp.set(true);
   }
 
-  openChannelUsersViewPopUp() {
-    this.globalDataService.openPopUp('channelMembersView');
-  }
+  openChannelUsersViewPopUp() {}
 }

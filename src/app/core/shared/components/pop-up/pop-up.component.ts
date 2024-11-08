@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { GlobalDataService } from '../../services/pop-up-service/global-data.service';
 
 @Component({
   selector: 'app-pop-up',
@@ -9,9 +8,7 @@ import { GlobalDataService } from '../../services/pop-up-service/global-data.ser
   styleUrl: './pop-up.component.scss',
 })
 export class PopUpComponent {
-  constructor(public globalDataService: GlobalDataService) {}
+  constructor() {}
 
-  closePopUp() {
-    this.globalDataService.closePopUp();
-  }
+  closePopUp() {}
 }

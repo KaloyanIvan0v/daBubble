@@ -1,6 +1,5 @@
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Component, Input } from '@angular/core';
-import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
@@ -16,15 +15,15 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 })
 export class AddChannelComponent {
   constructor(
-    public globalDataService: GlobalDataService,
     public firebaseService: FirebaseServicesService,
     public authService: AuthService
   ) {}
   channelName: string = '';
   chanelDescription: string = '';
+  @Input() popUpOpen: boolean = true;
 
   closePopUp() {
-    this.globalDataService.closePopUp();
+    this.popUpOpen = false;
   }
 
   async createChannel() {
@@ -40,6 +39,5 @@ export class AddChannelComponent {
     };
 
     this.firebaseService.addDoc('channels', newChannel);
-    this.globalDataService.closePopUp();
   }
 }

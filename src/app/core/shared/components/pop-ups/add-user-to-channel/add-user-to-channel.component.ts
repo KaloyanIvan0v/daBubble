@@ -4,20 +4,22 @@ import {
   ViewChildren,
   QueryList,
   ElementRef,
+  Input,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { User } from 'src/app/core/shared/models/user.class';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
 import { Observable } from 'rxjs';
+import { AddChannelComponent } from '../add-channel/add-channel.component';
 
 @Component({
   selector: 'app-add-user-to-channel',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, AddChannelComponent],
   templateUrl: './add-user-to-channel.component.html',
   styleUrl: './add-user-to-channel.component.scss',
 })
@@ -31,7 +33,6 @@ export class AddUserToChannelComponent {
   selectedUsers: User[] = [];
 
   constructor(
-    public globalDataService: GlobalDataService,
     public workspaceService: WorkspaceService,
     public firebaseService: FirebaseServicesService,
     private renderer: Renderer2
@@ -48,12 +49,15 @@ export class AddUserToChannelComponent {
 
   @ViewChildren('userChip') userChips!: QueryList<ElementRef>;
 
+  get popUpVisible() {
+    return this.workspaceService.addUserToChannelPopUp();
+  }
+
   closePopUp() {
-    this.globalDataService.closePopUp();
+    this.workspaceService.addUserToChannelPopUp.set(false);
   }
 
   addUsers() {
-    this.globalDataService.closePopUp();
     const newUids = this.selectedUsers.map((user) => user.uid);
     this.channelData.uid = [...new Set([...this.channelData.uid, ...newUids])];
     this.firebaseService.updateDoc('channels', this.currentChannelId, {

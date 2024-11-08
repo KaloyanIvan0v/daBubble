@@ -4,21 +4,11 @@ import { MainWorkspaceComponent } from './main-workspace/main-workspace.componen
 import { LeftSideComponentComponent } from './left-side-component/left-side-component.component';
 import { RightSideContainerComponent } from './right-side-container/right-side-container.component';
 import { HeaderComponent } from './header/header.component';
-import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel/add-channel.component';
-import { AddUserToChannelComponent } from '../../shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
-import { EditChannelComponent } from '../../shared/components/pop-ups/edit-channel/edit-channel.component';
-import { OwnProfileEditComponent } from '../../shared/components/pop-ups/own-profile-edit/own-profile-edit.component';
-import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-profile-view/own-profile-view.component';
-import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-view/profile-view.component';
-import { ChannelMembersViewComponent } from '../../shared/components/pop-ups/channel-members-view/channel-members-view.component';
-import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/user-menu.component';
-import { GlobalDataService } from '../../shared/services/pop-up-service/global-data.service';
-import { PopUpComponent } from '../../shared/components/pop-up/pop-up.component';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
 import { ChannelChatComponent } from './main-workspace/channel-chat/channel-chat.component';
-
+import { WorkspaceService } from '../../shared/services/workspace-service/workspace.service';
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -28,15 +18,6 @@ import { ChannelChatComponent } from './main-workspace/channel-chat/channel-chat
     RightSideContainerComponent,
     HeaderComponent,
     CommonModule,
-    AddChannelComponent,
-    PopUpComponent,
-    AddUserToChannelComponent,
-    EditChannelComponent,
-    OwnProfileEditComponent,
-    OwnProfileViewComponent,
-    ProfileViewComponent,
-    UserMenuComponent,
-    ChannelMembersViewComponent,
     ChannelChatComponent,
   ],
   templateUrl: './main.component.html',
@@ -45,29 +26,18 @@ import { ChannelChatComponent } from './main-workspace/channel-chat/channel-chat
 export class MainComponent implements OnInit, OnDestroy {
   workSpaceOpen: boolean = false;
   workspaceButtonText: string = 'Workspace-Menu öffnen';
-  addChannelVisible: boolean = false;
-  addUserToChannelVisible: boolean = false;
-  editChannelVisible: boolean = false;
-  ownProfileEditVisible: boolean = false;
-  ownProfileViewVisible: boolean = false;
-  profileViewVisible: boolean = false;
-  userMenuVisible: boolean = false;
-
-  popUpStates: { [key: string]: boolean } = {};
-
+  popUpShadowVisible: boolean = false;
   private popUpStatesSubscription!: Subscription;
 
   constructor(
-    private globalDataService: GlobalDataService,
     private authService: AuthService,
-    private firebaseService: FirebaseServicesService
-  ) {}
+    private firebaseService: FirebaseServicesService,
+    public workspaceService: WorkspaceService
+  ) {
+    this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
+  }
 
   ngOnInit(): void {
-    this.popUpStatesSubscription =
-      this.globalDataService.popUpStates$.subscribe((states) => {
-        this.popUpStates = states as { [key: string]: boolean };
-      });
     this.authService.getCurrentUserUID().then((uid) => {
       this.firebaseService.setUserUID(uid);
     });
@@ -90,11 +60,4 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   // Example methods to open and close pop-ups
-  openAddChannelPopUp() {
-    this.globalDataService.openPopUp('addChannel');
-  }
-
-  closeAddChannelPopUp() {
-    this.globalDataService.closePopUp();
-  }
 }

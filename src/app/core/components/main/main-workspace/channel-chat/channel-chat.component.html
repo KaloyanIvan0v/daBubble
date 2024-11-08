@@ -20,14 +20,7 @@
   </div>
   <div class="message-container">nachrichten</div>
   <app-input-box [channelId]="channelId"></app-input-box>
-  <div class="pop-up-wrapper">
-    <app-add-user-to-channel
-      class="popUpAddUserToChannel"
-      *ngIf="popUpStates['addUserToChannel']"
-    ></app-add-user-to-channel>
-    <app-channel-members-view
-      class="channel-members-view"
-      *ngIf="popUpStates['channelMembersView']"
-    ></app-channel-members-view>
-  </div>
+  <app-add-user-to-channel></app-add-user-to-channel>
+  <app-channel-members-view></app-channel-members-view>
+  <app-edit-channel></app-edit-channel>
 </section>

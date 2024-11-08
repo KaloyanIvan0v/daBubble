@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
@@ -19,7 +18,6 @@ export class EditChannelComponent {
   channelData!: Channel;
   currentChannelId: string = '';
   constructor(
-    public globalDataService: GlobalDataService,
     public workspaceService: WorkspaceService,
     public firebaseService: FirebaseServicesService
   ) {
@@ -46,9 +44,7 @@ export class EditChannelComponent {
   toggleEditDescription() {
     this.editDescriptionActive = !this.editDescriptionActive;
   }
-  closeAddChannelPopUp() {
-    this.globalDataService.closePopUp();
-  }
+  closeAddChannelPopUp() {}
 
   saveChanges() {
     console.log('gesperrt');
