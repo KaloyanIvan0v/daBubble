@@ -1,20 +1,40 @@
+import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { Observable, Subscription, firstValueFrom, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
+import { User } from '../../../models/user.class';
+import { first } from 'rxjs/operators';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 
 @Component({
   selector: 'app-own-profile-edit',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './own-profile-edit.component.html',
   styleUrl: './own-profile-edit.component.scss',
 })
 export class OwnProfileEditComponent {
-  userData$: Observable<any>;
-  constructor(public workspaceService: WorkspaceService) {
-    this.userData$ = this.workspaceService.loggedInUserData;
+  userData: User = new User('', '', '', '', [], true);
+
+  constructor(
+    public workspaceService: WorkspaceService,
+    public firebaseService: FirebaseServicesService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    this.authService.getCurrentUserUID().then((userId) => {
+      if (userId) {
+        this.firebaseService.getUser(userId).subscribe((user: User) => {
+          this.userData = { ...user };
+        });
+      }
+    });
   }
+
+  ngOnDestroy() {}
 
   closePopUp() {
     this.workspaceService.ownProfileEditPopUp.set(false);
@@ -26,5 +46,14 @@ export class OwnProfileEditComponent {
 
   get popUpVisible() {
     return this.workspaceService.ownProfileEditPopUp();
+  }
+
+  cancelEdit() {
+    this.workspaceService.ownProfileEditPopUp.set(false);
+  }
+
+  async saveEdit() {
+    this.firebaseService.updateDoc('users', this.userData.uid, this.userData);
+    this.workspaceService.ownProfileEditPopUp.set(false);
   }
 }

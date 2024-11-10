@@ -1,33 +1,35 @@
-<!-- own-profile-view.component.html -->
 <section *ngIf="popUpVisible">
-  <!-- Subscribe to userData$ and assign emitted value to userData -->
-  <div class="pop-up-wrapper" *ngIf="userData$ | async as userData">
+  <!-- Use 'userData' as the variable after the async pipe -->
+  <div class="pop-up-wrapper">
     <div class="header">
-      <div class="font24-700">Profile</div>
+      <div class="font24-700">Dein Profil bearbeiten</div>
       <div class="close-button" (click)="closePopUp()"></div>
     </div>
     <div class="user-img">
       <img [src]="userData.photoURL" alt="avatar" />
     </div>
-    <div class="user-name-wrapper">
-      <div class="df-sb-100">
-        <div class="user-name">{{ userData.name }}</div>
-        <div class="purple3-btn">Bearbeiten</div>
+    <div class="edit-section-wrapper">
+      <div class="title">
+        <img src="/assets/img/icons/account_circle-black.svg" alt="" />
+        <div class="font20-700">Vollständiger Name</div>
       </div>
-
-      <div class="user-status-wrapper">
-        <div class="status-dot"></div>
-        <div class="user-status">Abwesend</div>
+      <div class="input-wrapper">
+        <input [(ngModel)]="userData.name" type="text" />
       </div>
     </div>
-
-    <div class="user-email-wrapper">
-      <div class="email-wrapper-tittle">
+    <div class="edit-section-wrapper">
+      <div class="title">
         <img src="/assets/img/icons/mail-black.svg" alt="" />
-        <div class="user-email-tittle">E-Mail-Adresse</div>
+        <div class="font20-700">E-Mail-Adresse</div>
       </div>
-      <div class="user-email">{{ userData.email }}</div>
+      <div class="pop-up-input">
+        <input [(ngModel)]="userData.email" type="text" />
+      </div>
+    </div>
+    <div class="btn-wrapper">
+      <button class="secondary-btn" (click)="cancelEdit()">Abbrechen</button>
+      <button class="primary-btn" (click)="saveEdit()">Speichern</button>
     </div>
   </div>
-  <div class="pop-up-shadow" (click)="closePopUp()"></div>
+  <div class="pop-up-shadow-sec-layer" (click)="closePopUp()"></div>
 </section>

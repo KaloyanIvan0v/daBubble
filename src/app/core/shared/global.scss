@@ -248,6 +248,16 @@ button:hover {
   z-index: 3;
 }
 
+.pop-up-shadow-sec-layer {
+  background-color: rgba(0, 0, 0, 0.34);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 5;
+}
+
 .error-message {
   color: red;
   font-size: 14px;

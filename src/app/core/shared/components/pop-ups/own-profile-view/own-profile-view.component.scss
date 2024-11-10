@@ -60,12 +60,13 @@ section {
 }
 
 .status-dot {
-  @include statusDot("offline", 16px);
+  @include statusDot("online", 16px);
 }
 
 .user-status {
   font-size: 20px;
   font-weight: 400;
+  color: $online-green;
 }
 
 .email-wrapper-tittle {

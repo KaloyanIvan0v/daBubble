@@ -34,7 +34,6 @@ export class UserMenuComponent {
   }
 
   openProfilePopUp() {
-    this.closePopUp();
     this.workspaceService.ownProfileViewPopUp.set(true);
   }
 }

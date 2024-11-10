@@ -23,7 +23,8 @@ export class OwnProfileViewComponent {
   }
 
   openEditProfilePopUp() {
-    this.workspaceService.ownProfileViewPopUp.set(true);
+    this.closePopUp();
+    this.workspaceService.ownProfileEditPopUp.set(true);
   }
 
   get popUpVisible() {

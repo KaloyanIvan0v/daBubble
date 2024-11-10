@@ -18,8 +18,7 @@ export class HeaderComponent {
 
   constructor(
     public firebaseService: FirebaseServicesService,
-    public workspaceService: WorkspaceService,
-    private authService: AuthService
+    public workspaceService: WorkspaceService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
   }

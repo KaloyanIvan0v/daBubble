@@ -169,7 +169,13 @@ p {
   right: 20px;
   top: 120px;
   max-width: 100%;
-  z-index: 4;
+}
+
+.own-profile-edit {
+  position: absolute;
+  right: 20px;
+  top: 120px;
+  max-width: 100%;
 }
 
 @media (min-width: 1980px) {
