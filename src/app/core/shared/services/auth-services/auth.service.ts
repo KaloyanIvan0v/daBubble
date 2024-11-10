@@ -164,7 +164,6 @@ export class AuthService {
 
   async getCurrentUserUID(): Promise<string | null> {
     const user = this.auth.currentUser;
-    console.log('Current User:', user);
 
     return user ? user.uid : null;
   }

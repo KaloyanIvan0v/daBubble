@@ -47,7 +47,7 @@ export class ChooseAvatarComponent {
     private http: HttpClient
   ) {
     this.ngOnInit();
-    this.userData = this.workspaceService.loggedInUserData;
+    this.userData = signal(this.workspaceService.loggedInUserData);
   }
 
   async ngOnInit() {

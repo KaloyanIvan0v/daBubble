@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 
@@ -10,9 +11,9 @@ import { WorkspaceService } from '../../../services/workspace-service/workspace.
   styleUrl: './own-profile-edit.component.scss',
 })
 export class OwnProfileEditComponent {
-  userData = signal<any>(null);
+  userData$: Observable<any>;
   constructor(public workspaceService: WorkspaceService) {
-    this.userData = this.workspaceService.loggedInUserData;
+    this.userData$ = this.workspaceService.loggedInUserData;
   }
 
   closePopUp() {

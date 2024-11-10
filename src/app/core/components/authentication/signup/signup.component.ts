@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { SharedModule } from '../../../shared/shared-module';
+import { Observable } from 'rxjs';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
@@ -9,7 +10,7 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
   standalone: true,
   imports: [SharedModule],
   templateUrl: './signup.component.html',
-  styleUrl: './signup.component.scss',
+  styleUrls: ['./signup.component.scss'], // Corrected 'styleUrl' to 'styleUrls'
 })
 export class SignupComponent {
   user = {
@@ -19,20 +20,23 @@ export class SignupComponent {
     photoURL: '',
   };
 
-  userData = signal<any>(null);
+  userData$: Observable<any>;
 
   constructor(
     public authUIService: AuthUIService,
     private authService: AuthService,
     public workspaceService: WorkspaceService
-  ) {}
+  ) {
+    // Assign the Observable from the service
+    this.userData$ = this.workspaceService.loggedInUserData;
+  }
 
   ngOnInit() {
     this.authService.observeAuthState((user) => {
       if (user) {
-        console.log('Benutzer angemeldet, UID:', user.uid);
+        console.log('User logged in, UID:', user.uid);
       } else {
-        console.log('Benutzer abgemeldet');
+        console.log('User logged out');
       }
     });
   }
@@ -41,8 +45,10 @@ export class SignupComponent {
     this.authService
       .register(this.user.email, this.user.name, this.user.password)
       .subscribe({
-        next: () => {
-          this.workspaceService.loggedInUserData = this.userData;
+        next: (registeredUser) => {
+          // Update the user data in the workspace service
+          this.workspaceService.updateLoggedInUserData(registeredUser);
+          // Proceed with the next steps
           this.authUIService.toggleAvatarSelection();
         },
         error: (err) => console.error('Registration error:', err),

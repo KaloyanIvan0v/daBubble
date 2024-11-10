@@ -59,6 +59,7 @@ section {
 }
 
 .user-img {
+  position: relative;
   img {
     width: auto;
     height: 70px;
@@ -71,4 +72,11 @@ section {
     "/assets/img/buttons/arrow-down-black.svg",
     "/assets/img/buttons/arrow-down-blue.svg"
   );
+}
+
+.user-status {
+  position: absolute;
+  bottom: 8px;
+  right: 0px;
+  @include statusDot("online", 16px);
 }

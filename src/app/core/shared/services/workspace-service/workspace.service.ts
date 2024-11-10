@@ -1,7 +1,11 @@
-import { Injectable, inject, signal, effect } from '@angular/core';
+import { UserMenuComponent } from './../../components/pop-ups/user-menu/user-menu.component';
+import { AddChannelComponent } from './../../components/pop-ups/add-channel/add-channel.component';
+import { EditChannelComponent } from './../../components/pop-ups/edit-channel/edit-channel.component';
+import { Injectable, inject, signal, effect, Signal } from '@angular/core';
 import { AuthService } from '../auth-services/auth.service';
 import { FirebaseServicesService } from './../firebase/firebase.service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +20,8 @@ export class WorkspaceService {
   );
 
   currentActiveUnitId = signal('');
-  loggedInUserData = signal<any>(null);
+  loggedInUserData = new BehaviorSubject<any>(null);
+  loggedInUserData$ = this.loggedInUserData.asObservable();
   popUpShadowVisible = signal(false);
   addChannelPopUp = signal(false);
   addUserToChannelPopUp = signal(false);
@@ -53,11 +58,10 @@ export class WorkspaceService {
       if (userUID) {
         this.firebaseService.getDoc('users', userUID).subscribe({
           next: (data: any) => {
-            this.loggedInUserData.set(data);
-            console.log('Fetched user data:', data);
+            this.loggedInUserData.next(data);
 
             if (data && data.avatar) {
-              this.loggedInUserData.set({ ...data, avatar: data.avatar });
+              this.loggedInUserData.next({ ...data, avatar: data.avatar });
             }
           },
           error: (error) => console.error('Error fetching user data:', error),
@@ -66,5 +70,9 @@ export class WorkspaceService {
     } catch (error) {
       console.error('Error initializing user data:', error);
     }
+  }
+
+  updateLoggedInUserData(userData: any) {
+    this.loggedInUserData.next(userData);
   }
 }

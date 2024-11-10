@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 
@@ -7,12 +8,14 @@ import { WorkspaceService } from '../../../services/workspace-service/workspace.
   standalone: true,
   imports: [CommonModule],
   templateUrl: './own-profile-view.component.html',
-  styleUrl: './own-profile-view.component.scss',
+  styleUrls: ['./own-profile-view.component.scss'],
 })
 export class OwnProfileViewComponent {
-  userData = signal<any>(null);
+  userData$: Observable<any>;
+
   constructor(public workspaceService: WorkspaceService) {
-    this.userData = this.workspaceService.loggedInUserData;
+    // Assuming loggedInUserData$ is exposed in WorkspaceService
+    this.userData$ = this.workspaceService.loggedInUserData;
   }
 
   closePopUp() {
