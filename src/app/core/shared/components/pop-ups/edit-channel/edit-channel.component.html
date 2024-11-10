@@ -1,80 +1,86 @@
-<section>
-  <div class="tittle-closse">
-    <div class="font24-700"># {{ (channelData$ | async)?.name }}</div>
-    <div class="close-button" (click)="closeAddChannelPopUp()"></div>
-  </div>
-  <div
-    class="edit-wrapper"
-    ngClass="{{ editNameActive ? 'edit-wrapper-no-border' : '' }}"
-  >
-    <div class="inner-tittle-wrapper">
-      <div class="font18-700">Channel-Name</div>
-      <div
-        *ngIf="!editNameActive"
-        class="purple3-btn"
-        (click)="toggleEditName()"
-      >
-        Bearbeiten
-      </div>
-      <div
-        (click)="toggleEditName(); saveChanges()"
-        *ngIf="editNameActive"
-        class="purple3-btn"
-      >
-        Speichern
-      </div>
+<section *ngIf="popUpVisible">
+  <div class="pop-up-wrapper">
+    <div class="tittle-closse">
+      <div class="font24-700"># {{ (channelData$ | async)?.name }}</div>
+      <div class="close-button" (click)="closeEditChannelPopUp()"></div>
     </div>
-    <div ngClass="{{ editNameActive ? '' : 'no-border' }}" class="pop-up-input">
-      <img src="assets/img/icons/tag-grey.svg" alt="" />
-      <input
-        *ngIf="editNameActive"
-        placeholder="z.B Kooperationsprojekte"
-        type="text"
-        [(ngModel)]="channelData.name"
-      />
-      <div *ngIf="!editNameActive">{{ (channelData$ | async)?.name }}</div>
-    </div>
-  </div>
-
-  <div
-    class="edit-wrapper"
-    ngClass="{{ editDescriptionActive ? 'edit-wrapper-no-border' : '' }}"
-  >
-    <div class="inner-tittle-wrapper">
-      <div class="font18-700">Berscheibung</div>
-      <div
-        *ngIf="!editDescriptionActive"
-        class="purple3-btn"
-        (click)="toggleEditDescription()"
-      >
-        Bearbeiten
+    <div
+      class="edit-wrapper"
+      ngClass="{{ editNameActive ? 'edit-wrapper-no-border' : '' }}"
+    >
+      <div class="inner-tittle-wrapper">
+        <div class="font18-700">Channel-Name</div>
+        <div
+          *ngIf="!editNameActive"
+          class="purple3-btn"
+          (click)="toggleEditName()"
+        >
+          Bearbeiten
+        </div>
+        <div
+          (click)="toggleEditName(); saveChanges()"
+          *ngIf="editNameActive"
+          class="purple3-btn"
+        >
+          Speichern
+        </div>
       </div>
       <div
-        (click)="toggleEditDescription(); saveChanges()"
-        *ngIf="editDescriptionActive"
-        class="purple3-btn"
+        ngClass="{{ editNameActive ? '' : 'no-border' }}"
+        class="pop-up-input"
       >
-        Speichern
+        <img src="assets/img/icons/tag-grey.svg" alt="" />
+        <input
+          *ngIf="editNameActive"
+          placeholder="z.B Kooperationsprojekte"
+          type="text"
+          [(ngModel)]="channelData.name"
+        />
+        <div *ngIf="!editNameActive">{{ (channelData$ | async)?.name }}</div>
       </div>
     </div>
 
     <div
-      ngClass="{{ editDescriptionActive ? '' : 'no-border' }}"
-      class="pop-up-input"
+      class="edit-wrapper"
+      ngClass="{{ editDescriptionActive ? 'edit-wrapper-no-border' : '' }}"
     >
-      <img src="assets/img/icons/tag-grey.svg" alt="" />
-      <input
-        *ngIf="editDescriptionActive"
-        placeholder="dein Text hier"
-        type="text"
-        [(ngModel)]="channelData.description"
-      />
-      <div *ngIf="!editDescriptionActive">
-        {{ (channelData$ | async)?.description }}
+      <div class="inner-tittle-wrapper">
+        <div class="font18-700">Berscheibung</div>
+        <div
+          *ngIf="!editDescriptionActive"
+          class="purple3-btn"
+          (click)="toggleEditDescription()"
+        >
+          Bearbeiten
+        </div>
+        <div
+          (click)="toggleEditDescription(); saveChanges()"
+          *ngIf="editDescriptionActive"
+          class="purple3-btn"
+        >
+          Speichern
+        </div>
+      </div>
+
+      <div
+        ngClass="{{ editDescriptionActive ? '' : 'no-border' }}"
+        class="pop-up-input"
+      >
+        <img src="assets/img/icons/tag-grey.svg" alt="" />
+        <input
+          *ngIf="editDescriptionActive"
+          placeholder="dein Text hier"
+          type="text"
+          [(ngModel)]="channelData.description"
+        />
+        <div *ngIf="!editDescriptionActive">
+          {{ (channelData$ | async)?.description }}
+        </div>
       </div>
     </div>
+    <div class="btn-wrapper">
+      <div class="primary-btn">Channel verlassen</div>
+    </div>
   </div>
-  <div class="btn-wrapper">
-    <div class="primary-btn">Channel verlassen</div>
-  </div>
+  <div class="pop-up-shadow" (click)="closeEditChannelPopUp()"></div>
 </section>

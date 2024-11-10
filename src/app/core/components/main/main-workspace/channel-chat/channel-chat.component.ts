@@ -86,11 +86,15 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  openEditChannelPopUp() {}
+  openEditChannelPopUp() {
+    this.workspaceService.editChannelPopUp.set(true);
+  }
 
   openAddUserToChannelPopUp() {
     this.workspaceService.addUserToChannelPopUp.set(true);
   }
 
-  openChannelUsersViewPopUp() {}
+  openChannelUsersViewPopUp() {
+    this.workspaceService.channelMembersPopUp.set(true);
+  }
 }

@@ -1,7 +1,4 @@
-import { UserMenuComponent } from './../../components/pop-ups/user-menu/user-menu.component';
-import { AddChannelComponent } from './../../components/pop-ups/add-channel/add-channel.component';
-import { EditChannelComponent } from './../../components/pop-ups/edit-channel/edit-channel.component';
-import { Injectable, inject, signal, effect, Signal } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { AuthService } from '../auth-services/auth.service';
 import { FirebaseServicesService } from './../firebase/firebase.service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
@@ -28,7 +25,7 @@ export class WorkspaceService {
   ownProfileEditPopUp = signal(false);
   ownProfileViewPopUp = signal(false);
   profileViewPopUp = signal(false);
-  UserMenuPopUp = signal(false);
+  userMenuPopUp = signal(false);
 
   constructor() {
     this.loadUserData();

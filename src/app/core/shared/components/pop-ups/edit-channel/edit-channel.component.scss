@@ -2,16 +2,20 @@
 
 section {
   @include dFlex($fd: column, $jc: start, $ai: start);
+}
+
+.pop-up-wrapper {
+  @include dFlex($fd: column, $jc: start, $ai: start);
   width: 872px;
   max-width: 100%;
   height: 539px;
   padding: 40px;
-  box-sizing: border-box;
   background-color: white;
   border-radius: 30px;
   border-top-left-radius: 0px;
   gap: 20px;
   box-shadow: 0px 6px 10px 0px #00000033;
+  z-index: 4;
 }
 
 .tittle-closse {

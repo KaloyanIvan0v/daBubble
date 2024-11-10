@@ -4,8 +4,6 @@ import {
   ViewChildren,
   QueryList,
   ElementRef,
-  Input,
-  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

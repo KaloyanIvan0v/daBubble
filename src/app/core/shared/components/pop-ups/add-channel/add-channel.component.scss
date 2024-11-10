@@ -1,7 +1,7 @@
 @import "global.scss";
 
 section {
-  @include dFlex($fd: column, $jc: space-between, $ai: start);
+  @include dFlex();
 }
 
 .pop-up-wrapper {
@@ -10,11 +10,11 @@ section {
   max-width: 100%;
   height: 539px;
   padding: 40px;
-  box-sizing: border-box;
   background-color: white;
   border-radius: 30px;
   gap: 20px;
   box-shadow: 0px 6px 10px 0px #00000033;
+  z-index: 4;
 }
 
 .tittle-closse {

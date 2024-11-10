@@ -1,21 +1,23 @@
-<section>
-  <div class="tittle-closse">
-    <div class="font24-700">Mitglieder</div>
-    <div class="close-button" (click)="closePopUp()"></div>
-  </div>
-  <div class="members overflow-y-scroll">
-    <div
-      class="member"
-      *ngFor="let user of channelUsers"
-      (click)="openProfileView(user)"
-    >
-      <img src="{{ user?.photoURL }}" alt="" />
-      <div class="font18-700">{{ user?.name }}</div>
+<section *ngIf="popUpVisible">
+  <div class="pop-up-wrapper">
+    <div class="tittle-closse">
+      <div class="font24-700">Mitglieder</div>
+      <div class="close-button" (click)="closePopUp()"></div>
     </div>
-    <div class="add-member" (click)="openAddUserToChannelPopUp()">
-      <div class="add-person-icon"></div>
-      <div class="font18-400">Mitglieder hinzufügen</div>
+    <div class="members overflow-y-scroll">
+      <div
+        class="member"
+        *ngFor="let user of channelUsers"
+        (click)="openProfileView(user)"
+      >
+        <img src="{{ user?.photoURL }}" alt="" />
+        <div class="font18-700">{{ user?.name }}</div>
+      </div>
+      <div class="add-member" (click)="openAddUserToChannelPopUp()">
+        <div class="add-person-icon"></div>
+        <div class="font18-400">Mitglieder hinzufügen</div>
+      </div>
     </div>
   </div>
-  <div class="pop-up-shadow"></div>
+  <div class="pop-up-shadow" (click)="closePopUp()"></div>
 </section>

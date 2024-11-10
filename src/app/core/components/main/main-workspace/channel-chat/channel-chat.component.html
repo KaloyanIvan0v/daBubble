@@ -20,7 +20,11 @@
   </div>
   <div class="message-container">nachrichten</div>
   <app-input-box [channelId]="channelId"></app-input-box>
-  <app-add-user-to-channel></app-add-user-to-channel>
-  <!--<app-channel-members-view></app-channel-members-view>
-  <app-edit-channel></app-edit-channel> -->
+  <app-channel-members-view
+    class="channel-members-view"
+  ></app-channel-members-view>
+  <app-add-user-to-channel
+    class="add-user-to-channel"
+  ></app-add-user-to-channel>
+  <app-edit-channel class="edit-channel"></app-edit-channel>
 </section>

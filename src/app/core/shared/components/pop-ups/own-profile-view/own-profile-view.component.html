@@ -1,28 +1,33 @@
-<section>
-  <div class="header">
-    <div class="font24-700">Profile</div>
-    <div class="close-button" (click)="closeProfileView()"></div>
-  </div>
-  <div class="user-img">
-    <img [src]="userData().photoURL" alt="avatar" />
-  </div>
-  <div class="user-name-wrapper">
-    <div class="df-sb-100">
-      <div class="user-name">{{ userData().name }}</div>
-      <div class="purple3-btn" (click)="openEditProfilePopUp()">Bearbeiten</div>
+<section *ngIf="popUpVisible">
+  <div class="pop-up-wrapper">
+    <div class="header">
+      <div class="font24-700">Profile</div>
+      <div class="close-button" (click)="closePopUp()"></div>
+    </div>
+    <div class="user-img">
+      <img [src]="userData().photoURL" alt="avatar" />
+    </div>
+    <div class="user-name-wrapper">
+      <div class="df-sb-100">
+        <div class="user-name">{{ userData().name }}</div>
+        <div class="purple3-btn" (click)="openEditProfilePopUp()">
+          Bearbeiten
+        </div>
+      </div>
+
+      <div class="user-status-wrapper">
+        <div class="status-dot"></div>
+        <div class="user-status">Abswesend</div>
+      </div>
     </div>
 
-    <div class="user-status-wrapper">
-      <div class="status-dot"></div>
-      <div class="user-status">Abswesend</div>
+    <div class="user-email-wrapper">
+      <div class="email-wrapper-tittle">
+        <img src="/assets/img/icons/mail-black.svg" alt="" />
+        <div class="user-email-tittle">E-Mail-Adresse</div>
+      </div>
+      <div class="user-email">{{ userData().email }}</div>
     </div>
   </div>
-
-  <div class="user-email-wrapper">
-    <div class="email-wrapper-tittle">
-      <img src="/assets/img/icons/mail-black.svg" alt="" />
-      <div class="user-email-tittle">E-Mail-Adresse</div>
-    </div>
-    <div class="user-email">{{ userData().email }}</div>
-  </div>
+  <div class="pop-up-shadow" (click)="closePopUp()"></div>
 </section>

@@ -9,6 +9,11 @@ import { AuthService } from '../../shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
 import { ChannelChatComponent } from './main-workspace/channel-chat/channel-chat.component';
 import { WorkspaceService } from '../../shared/services/workspace-service/workspace.service';
+import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/user-menu.component';
+import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-profile-view/own-profile-view.component';
+import { OwnProfileEditComponent } from '../../shared/components/pop-ups/own-profile-edit/own-profile-edit.component';
+import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel/add-channel.component';
+
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -19,6 +24,10 @@ import { WorkspaceService } from '../../shared/services/workspace-service/worksp
     HeaderComponent,
     CommonModule,
     ChannelChatComponent,
+    UserMenuComponent,
+    OwnProfileEditComponent,
+    OwnProfileViewComponent,
+    AddChannelComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
@@ -58,6 +67,4 @@ export class MainComponent implements OnInit, OnDestroy {
       ? 'Workspace-Menu schließen'
       : 'Workspace-Menu öffnen';
   }
-
-  // Example methods to open and close pop-ups
 }

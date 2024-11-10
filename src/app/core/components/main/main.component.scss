@@ -11,6 +11,7 @@ app-header {
 
 .inner-section {
   @include dFlex();
+  position: relative;
   width: 100%;
   height: 100vh;
   max-width: 1980px;
@@ -151,9 +152,8 @@ p {
 
 .pop-up-center {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 50;
+  top: 50;
   max-width: 100%;
 }
 
@@ -164,11 +164,12 @@ p {
   max-width: 100%;
 }
 
-.own-profile-view {
+.own-profile {
   position: absolute;
   right: 20px;
   top: 120px;
   max-width: 100%;
+  z-index: 4;
 }
 
 @media (min-width: 1980px) {

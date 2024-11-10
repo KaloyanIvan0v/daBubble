@@ -1,6 +1,7 @@
 import { OwnProfileEditComponent } from './../own-profile-edit/own-profile-edit.component';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 
 import { AuthService } from '../../../services/auth-services/auth.service';
 import { Router } from '@angular/router';
@@ -12,7 +13,11 @@ import { Router } from '@angular/router';
   styleUrl: './user-menu.component.scss',
 })
 export class UserMenuComponent {
-  constructor(public authService: AuthService, private router: Router) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    public workspaceService: WorkspaceService
+  ) {}
 
   logOut() {
     this.authService.logoutUser().then(() => {
@@ -20,5 +25,15 @@ export class UserMenuComponent {
     });
   }
 
-  openProfilePopUp() {}
+  get popUpVisible() {
+    return this.workspaceService.userMenuPopUp();
+  }
+  closePopUp() {
+    this.workspaceService.userMenuPopUp.set(false);
+  }
+
+  openProfilePopUp() {
+    this.closePopUp();
+    this.workspaceService.ownProfileViewPopUp.set(true);
+  }
 }

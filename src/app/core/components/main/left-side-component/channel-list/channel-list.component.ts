@@ -31,7 +31,9 @@ export class ChannelListComponent {
     this.channelListOpen = !this.channelListOpen;
   }
 
-  openAddChannel() {}
+  openAddChannel() {
+    this.workspaceService.addChannelPopUp.set(true);
+  }
 
   ngOnInit(): void {
     this.subscription = this.firebaseService.getChannels().subscribe({

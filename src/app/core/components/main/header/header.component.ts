@@ -38,5 +38,7 @@ export class HeaderComponent {
     }
   }
 
-  openPopUp() {}
+  openPopUp() {
+    this.workspaceService.userMenuPopUp.set(true);
+  }
 }

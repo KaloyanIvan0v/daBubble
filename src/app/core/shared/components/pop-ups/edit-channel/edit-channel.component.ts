@@ -44,15 +44,21 @@ export class EditChannelComponent {
   toggleEditDescription() {
     this.editDescriptionActive = !this.editDescriptionActive;
   }
-  closeAddChannelPopUp() {}
+  closeEditChannelPopUp() {
+    this.workspaceService.editChannelPopUp.set(false);
+  }
 
   saveChanges() {
     console.log('gesperrt');
 
-    this.firebaseService
-      .updateDoc<Channel>('channels', this.currentChannelId, this.channelData)
-      .then(() => {
-        this.closeAddChannelPopUp();
-      });
+    this.firebaseService.updateDoc<Channel>(
+      'channels',
+      this.currentChannelId,
+      this.channelData
+    );
+  }
+
+  get popUpVisible() {
+    return this.workspaceService.editChannelPopUp();
   }
 }

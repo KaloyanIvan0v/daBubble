@@ -1,29 +1,29 @@
 import { Component, signal } from '@angular/core';
-import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
+import { CommonModule } from '@angular/common';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-own-profile-view',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './own-profile-view.component.html',
   styleUrl: './own-profile-view.component.scss',
 })
 export class OwnProfileViewComponent {
   userData = signal<any>(null);
-  constructor(
-    public globalDataService: GlobalDataService,
-    public workspaceService: WorkspaceService
-  ) {
+  constructor(public workspaceService: WorkspaceService) {
     this.userData = this.workspaceService.loggedInUserData;
   }
 
-  closeProfileView() {
-    this.globalDataService.closePopUp();
+  closePopUp() {
+    this.workspaceService.ownProfileViewPopUp.set(false);
   }
 
   openEditProfilePopUp() {
-    this.globalDataService.closePopUp();
-    this.globalDataService.openPopUp('ownProfileEdit');
+    this.workspaceService.ownProfileViewPopUp.set(true);
+  }
+
+  get popUpVisible() {
+    return this.workspaceService.ownProfileViewPopUp();
   }
 }

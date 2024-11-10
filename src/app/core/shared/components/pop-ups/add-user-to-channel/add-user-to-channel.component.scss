@@ -1,6 +1,6 @@
 @import "global.scss";
 section {
-  position: relative;
+  @include dFlex($fd: column, $jc: start);
 }
 .pop-up-wrapper {
   position: relative;

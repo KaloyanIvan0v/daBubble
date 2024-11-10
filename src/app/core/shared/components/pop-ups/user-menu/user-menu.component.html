@@ -1,4 +1,7 @@
-<section>
-  <div class="profile-info" (click)="openProfilePopUp()">Profile</div>
-  <div class="logout" (click)="logOut()">Log out</div>
+<section *ngIf="popUpVisible">
+  <div class="pop-up-wrapper">
+    <div class="profile-info" (click)="openProfilePopUp()">Profile</div>
+    <div class="logout" (click)="logOut()">Log out</div>
+  </div>
+  <div class="pop-up-shadow" (click)="closePopUp()"></div>
 </section>

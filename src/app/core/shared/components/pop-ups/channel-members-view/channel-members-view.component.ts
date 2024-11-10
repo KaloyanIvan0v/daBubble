@@ -1,9 +1,9 @@
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
+
 @Component({
   selector: 'app-channel-members-view',
   standalone: true,
@@ -43,9 +43,21 @@ export class ChannelMembersViewComponent {
     }
     return [];
   }
-  closePopUp() {}
 
-  openProfileView(user: any) {}
+  closePopUp() {
+    this.workspaceService.channelMembersPopUp.set(false);
+  }
 
-  openAddUserToChannelPopUp() {}
+  openProfileView(user: any) {
+    this.workspaceService.profileViewPopUp.set(true);
+  }
+
+  openAddUserToChannelPopUp() {
+    this.closePopUp();
+    this.workspaceService.addUserToChannelPopUp.set(true);
+  }
+
+  get popUpVisible() {
+    return this.workspaceService.channelMembersPopUp();
+  }
 }

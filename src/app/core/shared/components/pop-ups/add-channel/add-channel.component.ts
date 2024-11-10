@@ -3,8 +3,8 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
-import { Message } from 'src/app/core/shared/models/message.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-add-channel',
@@ -16,14 +16,15 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 export class AddChannelComponent {
   constructor(
     public firebaseService: FirebaseServicesService,
-    public authService: AuthService
+    public authService: AuthService,
+    public workspaceService: WorkspaceService
   ) {}
   channelName: string = '';
   chanelDescription: string = '';
   @Input() popUpOpen: boolean = true;
 
   closePopUp() {
-    this.popUpOpen = false;
+    this.workspaceService.addChannelPopUp.set(false);
   }
 
   async createChannel() {
@@ -39,5 +40,9 @@ export class AddChannelComponent {
     };
 
     this.firebaseService.addDoc('channels', newChannel);
+  }
+
+  get popUpVisible() {
+    return this.workspaceService.addChannelPopUp();
   }
 }
