@@ -146,32 +146,43 @@ export class ChooseAvatarComponent {
 
   private handleUploadSuccess(response: any, file: File) {
     const newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
-    this.selectedPhoto = newAvatarUrl;
-    this.isUploadedPhoto = true;
-    this.uploadedPhotoName = file.name;
-    this.uploadComplete = true;
-    this.isUploading = false;
+    this.updateAvatarSelectionUI(newAvatarUrl, file.name);
 
-    // Update the photo URL based on the available user context
     if (this.signUpComponent?.user) {
       this.signUpComponent.user.photoURL = newAvatarUrl;
     } else if (this.currentUser) {
-      this.userData.set({ ...this.userData(), photoURL: newAvatarUrl });
-      this.authService
-        .updateAvatar(this.currentUser, newAvatarUrl)
-        .then(() => {
-          console.log('Avatar updated successfully for current user');
-          // Update the logged-in user data in workspaceService
-          const updatedUserData = {
-            ...this.workspaceService.loggedInUserData.getValue(),
-            avatar: newAvatarUrl,
-          };
-          this.workspaceService.updateLoggedInUserData(updatedUserData);
-        })
-        .catch((error) => console.error('Error updating avatar:', error));
+      this.updateUserProfile(newAvatarUrl);
     } else {
       console.error('Cannot save avatar: No user is currently available.');
     }
+  }
+
+  private updateAvatarSelectionUI(newAvatarUrl: string, fileName: string) {
+    this.selectedPhoto = newAvatarUrl;
+    this.isUploadedPhoto = true;
+    this.uploadedPhotoName = fileName;
+    this.uploadComplete = true;
+    this.isUploading = false;
+  }
+
+  private updateUserProfile(newAvatarUrl: string) {
+    if (!this.currentUser) {
+      console.error('Cannot update profile: No current user is available.');
+      return;
+    }
+
+    this.userData.set({ ...this.userData(), photoURL: newAvatarUrl });
+    this.authService
+      .updateAvatar(this.currentUser, newAvatarUrl)
+      .then(() => {
+        console.log('Avatar updated successfully for current user');
+        const updatedUserData = {
+          ...this.workspaceService.loggedInUserData.getValue(),
+          avatar: newAvatarUrl,
+        };
+        this.workspaceService.updateLoggedInUserData(updatedUserData);
+      })
+      .catch((error) => console.error('Error updating avatar:', error));
   }
 
   private handleUploadError(error: any) {
@@ -211,7 +222,7 @@ export class ChooseAvatarComponent {
           .updateAvatar(this.currentUser, this.selectedPhoto)
           .then(() => {
             console.log('Avatar updated successfully!');
-            this.router.navigate(['/profile']); // Redirect to profile page after update
+            this.router.navigate(['/dashboard']);
           })
           .catch((error) => console.error('Error updating avatar:', error));
       }
