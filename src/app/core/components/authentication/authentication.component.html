@@ -39,14 +39,14 @@
     <app-login *ngIf="authUIService.shouldShowLogin()"></app-login>
     <app-signup *ngIf="authUIService.shouldShowSignup()"></app-signup>
     <app-choose-avatar
-      *ngIf="authUIService.shouldShowAvatarSelection()"
       [signUpComponent]="signupComponent"
+      *ngIf="authUIService.shouldShowAvatarSelection()"
     ></app-choose-avatar>
     <app-reset-password
       *ngIf="authUIService.shouldShowResetPassword()"
     ></app-reset-password>
     <app-reset-password-link
-    *ngIf="authUIService.shouldShowResetPasswordLink()"
-  ></app-reset-password-link>
+      *ngIf="authUIService.shouldShowResetPasswordLink()"
+    ></app-reset-password-link>
   </div>
 </section>

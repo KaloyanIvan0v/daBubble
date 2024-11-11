@@ -19,8 +19,8 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
 export class ChooseAvatarComponent {
   @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
   userData = signal<any>(null);
-
   currentUser!: User | null;
+
   photos: string[] = [
     'assets/img/profile-img/Elise-Roth.svg',
     'assets/img/profile-img/Elias-Neumann.svg',
@@ -63,7 +63,11 @@ export class ChooseAvatarComponent {
     this.selectedPhoto = photo;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
-    this.signUpComponent.user.photoURL = photo;
+    if (this.signUpComponent) {
+      this.signUpComponent.user.photoURL = photo;
+    } else if (this.currentUser) {
+      this.userData.set({ ...this.userData(), photoURL: photo });
+    }
   }
 
   onFileSelected(event: any) {
@@ -76,6 +80,7 @@ export class ChooseAvatarComponent {
     }
 
     this.readFile(file);
+    return file;
   }
 
   private validateFileSize(file: File): boolean {
@@ -124,10 +129,11 @@ export class ChooseAvatarComponent {
     const formData = this.createUploadcareFormData(file);
     const uploadUrl = 'https://upload.uploadcare.com/base/';
 
-    this.http.post(uploadUrl, formData).subscribe(
-      (response: any) => this.handleUploadSuccess(response, file),
-      (error) => this.handleUploadError(error)
-    );
+    this.http.post(uploadUrl, formData).subscribe({
+      next: (response: any) => this.handleUploadSuccess(response, file),
+      error: (error) => this.handleUploadError(error),
+      complete: () => console.log('Upload completed'),
+    });
   }
 
   private createUploadcareFormData(file: File): FormData {
@@ -139,13 +145,33 @@ export class ChooseAvatarComponent {
   }
 
   private handleUploadSuccess(response: any, file: File) {
-    console.log('Uploadcare response:', response); // Add this to see response details
-    this.selectedPhoto = `https://ucarecdn.com/${response.file}/`;
+    const newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
+    this.selectedPhoto = newAvatarUrl;
     this.isUploadedPhoto = true;
     this.uploadedPhotoName = file.name;
     this.uploadComplete = true;
     this.isUploading = false;
-    this.signUpComponent.user.photoURL = this.selectedPhoto;
+
+    // Update the photo URL based on the available user context
+    if (this.signUpComponent?.user) {
+      this.signUpComponent.user.photoURL = newAvatarUrl;
+    } else if (this.currentUser) {
+      this.userData.set({ ...this.userData(), photoURL: newAvatarUrl });
+      this.authService
+        .updateAvatar(this.currentUser, newAvatarUrl)
+        .then(() => {
+          console.log('Avatar updated successfully for current user');
+          // Update the logged-in user data in workspaceService
+          const updatedUserData = {
+            ...this.workspaceService.loggedInUserData.getValue(),
+            avatar: newAvatarUrl,
+          };
+          this.workspaceService.updateLoggedInUserData(updatedUserData);
+        })
+        .catch((error) => console.error('Error updating avatar:', error));
+    } else {
+      console.error('Cannot save avatar: No user is currently available.');
+    }
   }
 
   private handleUploadError(error: any) {
@@ -173,24 +199,24 @@ export class ChooseAvatarComponent {
   }
 
   saveAvatar() {
-    if (this.selectedPhoto && this.currentUser) {
-      console.log(
-        'Saving avatar with photoURL:',
-        this.signUpComponent.user.photoURL
-      );
+    if (this.selectedPhoto) {
+      console.log('Saving avatar with photoURL:', this.selectedPhoto);
 
-      this.authService
-        .updateAvatar(this.currentUser, this.signUpComponent.user.photoURL)
-        .then(() => {
-          console.log('Avatar updated successfully!');
-          this.authUIService.toggleAvatarSelection();
-          this.router.navigate(['/dashboard']);
-        })
-        .catch((error) => console.error('Error updating avatar:', error));
+      if (this.signUpComponent?.user) {
+        // Update avatar for user in sign-up flow
+        this.signUpComponent.user.photoURL = this.selectedPhoto;
+      } else if (this.currentUser) {
+        // Update avatar for currently logged-in user
+        this.authService
+          .updateAvatar(this.currentUser, this.selectedPhoto)
+          .then(() => {
+            console.log('Avatar updated successfully!');
+            this.router.navigate(['/profile']); // Redirect to profile page after update
+          })
+          .catch((error) => console.error('Error updating avatar:', error));
+      }
     } else {
-      console.error(
-        'Cannot save avatar: Upload incomplete or no photo selected.'
-      );
+      console.error('No photo selected to save as avatar');
     }
   }
 

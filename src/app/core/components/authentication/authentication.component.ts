@@ -36,9 +36,10 @@ import { ResetPasswordLinkComponent } from './reset-password-link/reset-password
   providers: [JsonPipe],
 })
 export class AuthenticationComponent implements OnInit, AfterViewInit {
+  @ViewChild(SignupComponent, { static: true })
+  signupComponent!: SignupComponent;
   removeLoginAnimation = false;
   removeAnimationText = false;
-  signupComponent: SignupComponent; // Declare the variable
 
   constructor(
     private firebaseService: FirebaseServicesService,
@@ -49,11 +50,6 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     public workspaceService: WorkspaceService
   ) {
     this.users = this.firebaseService.getUsers();
-    this.signupComponent = new SignupComponent(
-      this.authUIService,
-      this.authService,
-      this.workspaceService
-    );
   }
 
   users: Observable<any[]>;

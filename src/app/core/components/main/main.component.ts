@@ -1,3 +1,4 @@
+import { SignupComponent } from './../authentication/signup/signup.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainWorkspaceComponent } from './main-workspace/main-workspace.component';
@@ -13,6 +14,10 @@ import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/use
 import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-profile-view/own-profile-view.component';
 import { OwnProfileEditComponent } from '../../shared/components/pop-ups/own-profile-edit/own-profile-edit.component';
 import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel/add-channel.component';
+import { ChooseAvatarComponent } from '../authentication/choose-avatar/choose-avatar.component';
+import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -28,11 +33,15 @@ import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel
     OwnProfileEditComponent,
     OwnProfileViewComponent,
     AddChannelComponent,
+    ChooseAvatarComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
 })
 export class MainComponent implements OnInit, OnDestroy {
+  chooseAvatarComponent: ChooseAvatarComponent;
+  signupComponent: SignupComponent;
+
   workSpaceOpen: boolean = false;
   workspaceButtonText: string = 'Workspace-Menu öffnen';
   popUpShadowVisible: boolean = false;
@@ -41,9 +50,25 @@ export class MainComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private firebaseService: FirebaseServicesService,
-    public workspaceService: WorkspaceService
+    public workspaceService: WorkspaceService,
+    private authUIService: AuthUIService,
+    private router: Router,
+    private http: HttpClient
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
+    this.chooseAvatarComponent = new ChooseAvatarComponent(
+      this.authUIService,
+      this.authService,
+      this.workspaceService,
+      this.router,
+      this.http
+    );
+
+    this.signupComponent = new SignupComponent(
+      this.authUIService,
+      this.authService,
+      this.workspaceService
+    );
   }
 
   ngOnInit(): void {

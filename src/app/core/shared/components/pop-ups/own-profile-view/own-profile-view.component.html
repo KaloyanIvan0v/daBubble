@@ -6,7 +6,13 @@
       <div class="close-button" (click)="closePopUp()"></div>
     </div>
     <div class="user-img">
-      <img [src]="userData.photoURL" alt="avatar" />
+      <img [src]="userData.photoURL" alt="avatar" (click)="fileInput.click()" />
+      <input
+        type="file"
+        #fileInput
+        style="display: none"
+        (change)="updatePhoto($event)"
+      />
     </div>
     <div class="user-name-wrapper">
       <div class="df-sb-100">
