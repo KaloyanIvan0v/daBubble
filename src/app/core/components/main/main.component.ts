@@ -14,6 +14,7 @@ import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/use
 import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-profile-view/own-profile-view.component';
 import { OwnProfileEditComponent } from '../../shared/components/pop-ups/own-profile-edit/own-profile-edit.component';
 import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel/add-channel.component';
+import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-view/profile-view.component';
 import { ChooseAvatarComponent } from '../authentication/choose-avatar/choose-avatar.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
 import { HttpClient } from '@angular/common/http';
@@ -34,6 +35,7 @@ import { Router } from '@angular/router';
     OwnProfileViewComponent,
     AddChannelComponent,
     ChooseAvatarComponent,
+    ProfileViewComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',

@@ -1,8 +1,9 @@
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { Component } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-channel-members-view',
@@ -14,17 +15,34 @@ import { WorkspaceService } from '../../../services/workspace-service/workspace.
 export class ChannelMembersViewComponent {
   channelData!: Channel;
   channelUsers: any[] = [];
+  private channelSubscription!: Subscription;
+
   constructor(
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService
   ) {
-    this.firebaseService
-      .getDoc<Channel>('channels', this.workspaceService.currentActiveUnitId())
-      .subscribe((channel) => {
-        this.channelData = channel;
-      });
+    effect(() => {
+      if (this.channelSubscription) {
+        this.channelSubscription.unsubscribe();
+      }
+      this.channelSubscription = this.firebaseService
+        .getChannel(this.workspaceService.currentActiveUnitId())
+        .subscribe((channel) => {
+          this.channelData = channel;
+          this.channelUsers = this.getUsersOfChannel();
+        });
+      return () => {
+        if (this.channelSubscription) {
+          this.channelSubscription.unsubscribe();
+        }
+      };
+    });
+  }
 
-    this.channelUsers = this.getUsersOfChannel() ?? [];
+  ngOnDestroy() {
+    if (this.channelSubscription) {
+      this.channelSubscription.unsubscribe();
+    }
   }
 
   getUsersOfChannel() {
@@ -48,7 +66,8 @@ export class ChannelMembersViewComponent {
     this.workspaceService.channelMembersPopUp.set(false);
   }
 
-  openProfileView(user: any) {
+  openProfileView(uid: string) {
+    this.workspaceService.currentActiveUserId.set(uid);
     this.workspaceService.profileViewPopUp.set(true);
   }
 

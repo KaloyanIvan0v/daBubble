@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GlobalDataService } from '../../../services/pop-up-service/global-data.service';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-profile-view',
@@ -10,9 +10,13 @@ import { GlobalDataService } from '../../../services/pop-up-service/global-data.
   styleUrl: './profile-view.component.scss',
 })
 export class ProfileViewComponent {
-  constructor(public globalDataService: GlobalDataService) {}
+  constructor(public workspaceService: WorkspaceService) {}
 
-  closeProfileView() {
-    this.globalDataService.closePopUp();
+  closePopUp() {
+    this.workspaceService.profileViewPopUp.set(false);
+  }
+
+  get popUpVisible() {
+    return this.workspaceService.profileViewPopUp();
   }
 }

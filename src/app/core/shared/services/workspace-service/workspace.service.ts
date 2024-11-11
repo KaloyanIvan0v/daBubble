@@ -17,6 +17,7 @@ export class WorkspaceService {
   );
 
   currentActiveUnitId = signal('');
+  currentActiveUserId = signal('');
 
   loggedInUserData = new BehaviorSubject<any>(null);
   loggedInUserData$ = this.loggedInUserData.asObservable();

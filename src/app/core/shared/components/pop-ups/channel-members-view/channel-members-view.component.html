@@ -8,7 +8,7 @@
       <div
         class="member"
         *ngFor="let user of channelUsers"
-        (click)="openProfileView(user)"
+        (click)="openProfileView(user.uid)"
       >
         <img src="{{ user?.photoURL }}" alt="" />
         <div class="font18-700">{{ user?.name }}</div>
