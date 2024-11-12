@@ -57,7 +57,12 @@
       {{ uploadErrorMessage }}
     </p>
     <div class="button-container">
-      <button class="primary-btn" type="submit" [disabled]="!canProceed()">
+      <button
+        class="primary-btn"
+        type="submit"
+        [disabled]="!canProceed()"
+        [routerLink]="['/dashboard']"
+      >
         Weiter
       </button>
     </div>

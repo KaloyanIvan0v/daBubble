@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
 import { SignupComponent } from '../signup/signup.component';
@@ -8,15 +8,17 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-choose-avatar',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule, RouterLink],
   templateUrl: './choose-avatar.component.html',
   styleUrl: './choose-avatar.component.scss',
 })
-export class ChooseAvatarComponent {
+export class ChooseAvatarComponent implements OnInit, OnDestroy {
+  private userSubscription: any; // To store the subscription
   @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
   userData = signal<any>(null);
   currentUser!: User | null;
@@ -46,17 +48,22 @@ export class ChooseAvatarComponent {
     private router: Router,
     private http: HttpClient
   ) {
-    this.ngOnInit();
     this.userData = signal(this.workspaceService.loggedInUserData);
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     const userObservable: Observable<User | null> = authState(
       this.authService.firebaseAuth
     );
-    userObservable.subscribe((user) => {
+    this.userSubscription = userObservable.subscribe((user) => {
       this.currentUser = user;
     });
+  }
+
+  ngOnDestroy() {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe(); // Unsubscribe to avoid memory leaks
+    }
   }
 
   selectPhoto(photo: string) {
@@ -205,14 +212,27 @@ export class ChooseAvatarComponent {
   }
 
   eraseUploadedPhoto() {
-    this.selectedPhoto = null;
-    this.uploadedPhotoName = null;
-    this.uploadComplete = false;
+    if (!this.isUploading) {
+      this.selectedPhoto = null;
+      this.uploadedPhotoName = null;
+      this.uploadComplete = false;
+      this.isUploadedPhoto = false;
+      this.isUploading = false;
 
-    if (this.signUpComponent?.user) {
-      this.signUpComponent.user.photoURL = '';
-    } else {
-      console.warn('signUpComponent or user is undefined');
+      // Check if the user is in sign-up flow and reset their photoURL if so
+      if (this.signUpComponent?.user) {
+        this.signUpComponent.user.photoURL = '';
+      } else if (this.currentUser) {
+        // Reset photo URL for the current user
+        this.userData.set({ ...this.userData(), photoURL: '' });
+        console.log('Avatar erased for current user.');
+      } else {
+        console.log(
+          'No user or sign-up component available to reset the avatar.'
+        );
+      }
+
+      this.uploadErrorMessage = null;
     }
   }
 
@@ -229,7 +249,6 @@ export class ChooseAvatarComponent {
           .updateAvatar(this.currentUser, this.selectedPhoto)
           .then(() => {
             console.log('Avatar updated successfully!');
-            this.router.navigate(['/dashboard']);
           })
           .catch((error) => console.error('Error updating avatar:', error));
       }
