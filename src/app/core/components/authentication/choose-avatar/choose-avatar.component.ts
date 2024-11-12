@@ -145,16 +145,17 @@ export class ChooseAvatarComponent {
   }
 
   private handleUploadSuccess(response: any, file: File) {
-    const newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
-    this.updateAvatarSelectionUI(newAvatarUrl, file.name);
-
-    if (this.signUpComponent?.user) {
-      this.signUpComponent.user.photoURL = newAvatarUrl;
-    } else if (this.currentUser) {
-      this.updateUserProfile(newAvatarUrl);
-    } else {
-      console.error('Cannot save avatar: No user is currently available.');
-    }
+    setTimeout(() => {
+      const newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
+      this.updateAvatarSelectionUI(newAvatarUrl, file.name);
+      if (this.signUpComponent?.user) {
+        this.signUpComponent.user.photoURL = newAvatarUrl;
+      } else if (this.currentUser) {
+        this.updateUserProfile(newAvatarUrl);
+      } else {
+        console.error('Cannot save avatar: No user is currently available.');
+      }
+    }, 1000);
   }
 
   private updateAvatarSelectionUI(newAvatarUrl: string, fileName: string) {
@@ -206,7 +207,13 @@ export class ChooseAvatarComponent {
   eraseUploadedPhoto() {
     this.selectedPhoto = null;
     this.uploadedPhotoName = null;
-    this.signUpComponent.user.photoURL = '';
+    this.uploadComplete = false;
+
+    if (this.signUpComponent?.user) {
+      this.signUpComponent.user.photoURL = '';
+    } else {
+      console.warn('signUpComponent or user is undefined');
+    }
   }
 
   saveAvatar() {

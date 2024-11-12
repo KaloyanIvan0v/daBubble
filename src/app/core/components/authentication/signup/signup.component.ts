@@ -17,7 +17,7 @@ export class SignupComponent {
     name: '',
     email: '',
     password: '',
-    photoURL: '',
+    photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
   };
 
   userData$: Observable<any>;

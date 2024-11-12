@@ -43,12 +43,8 @@
         }}{{ (uploadedPhotoName ?? "").length > 10 ? "..." : "" }}
       </p>
 
-      <div class="uploading">
-        <div
-          *ngIf="isUploading || uploadComplete"
-          class="loader"
-          [class.complete]="uploadComplete"
-        ></div>
+      <div class="uploading" *ngIf="isUploading || uploadComplete">
+        <div class="loader" [class.complete]="uploadComplete"></div>
 
         <button *ngIf="uploadComplete" (click)="eraseUploadedPhoto()">X</button>
       </div>
