@@ -116,13 +116,8 @@ export class ChooseAvatarComponent {
     this.uploadedPhotoName = file.name;
     this.isUploading = true;
 
-    // Simulate upload completion
-    setTimeout(() => {
-      this.isUploading = false;
-      this.uploadComplete = true;
-    }, 5000);
-
-    this.uploadToUploadcare(file); // Call the upload function
+    // Start the actual file upload
+    this.uploadToUploadcare(file);
   }
 
   uploadToUploadcare(file: File) {
@@ -132,7 +127,12 @@ export class ChooseAvatarComponent {
     this.http.post(uploadUrl, formData).subscribe({
       next: (response: any) => this.handleUploadSuccess(response, file),
       error: (error) => this.handleUploadError(error),
-      complete: () => console.log('Upload completed'),
+      complete: () => {
+        // Set upload state based on actual completion
+        this.isUploading = false;
+        this.uploadComplete = true;
+        console.log('Upload completed');
+      },
     });
   }
 
