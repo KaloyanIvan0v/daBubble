@@ -1,13 +1,11 @@
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Observable, Subscription, firstValueFrom, take } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { User } from '../../../models/user.class';
-import { first } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-own-profile-edit',
   standalone: true,
@@ -17,7 +15,7 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 })
 export class OwnProfileEditComponent {
   userData: User = new User('', '', '', '', [], true);
-
+  sanitizedUrl!: SafeResourceUrl;
   constructor(
     public workspaceService: WorkspaceService,
     public firebaseService: FirebaseServicesService,
@@ -55,5 +53,6 @@ export class OwnProfileEditComponent {
   async saveEdit() {
     this.firebaseService.updateDoc('users', this.userData.uid, this.userData);
     this.workspaceService.ownProfileEditPopUp.set(false);
+    this.workspaceService.updateUser(this.userData);
   }
 }

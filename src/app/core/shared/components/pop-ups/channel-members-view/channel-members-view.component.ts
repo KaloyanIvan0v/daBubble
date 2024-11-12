@@ -1,61 +1,61 @@
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { Component, effect } from '@angular/core';
+import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
-import { Subscription } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
+import { linkWithPhoneNumber } from 'firebase/auth';
 
 @Component({
   selector: 'app-channel-members-view',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './channel-members-view.component.html',
-  styleUrl: './channel-members-view.component.scss',
+  styleUrls: ['./channel-members-view.component.scss'],
 })
-export class ChannelMembersViewComponent {
+export class ChannelMembersViewComponent implements OnDestroy {
   channelData!: Channel;
-  channelUsers: any[] = [];
-  private channelSubscription!: Subscription;
+  channelUsers$ = new BehaviorSubject<any[]>([]);
+  private subscriptions: Subscription[] = [];
 
   constructor(
     public firebaseService: FirebaseServicesService,
-    public workspaceService: WorkspaceService
+    public workspaceService: WorkspaceService // Inject UserService
   ) {
-    effect(() => {
-      if (this.channelSubscription) {
-        this.channelSubscription.unsubscribe();
-      }
-      this.channelSubscription = this.firebaseService
+    effect(async () => {
+      this.subscriptions.forEach((sub) => sub.unsubscribe());
+      const channelSub = this.firebaseService
         .getChannel(this.workspaceService.currentActiveUnitId())
-        .subscribe((channel) => {
+        .subscribe(async (channel) => {
           this.channelData = channel;
-          this.channelUsers = this.getUsersOfChannel();
+          this.channelUsers$.next(await this.getUsersOfChannel());
         });
-      return () => {
-        if (this.channelSubscription) {
-          this.channelSubscription.unsubscribe();
+      const userUpdateSub = this.workspaceService.userUpdates$.subscribe(
+        async () => {
+          this.channelUsers$.next(await this.getUsersOfChannel());
         }
-      };
+      );
+      this.subscriptions.push(userUpdateSub);
+
+      this.subscriptions.push(channelSub);
     });
   }
 
+  OnInit() {}
+
   ngOnDestroy() {
-    if (this.channelSubscription) {
-      this.channelSubscription.unsubscribe();
-    }
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  getUsersOfChannel() {
+  async getUsersOfChannel(): Promise<any[]> {
     if (this.channelData) {
       const uids = this.channelData.uid;
       const users: any[] = [];
-      for (let i = 0; i < uids.length; i++) {
-        const uid = uids[i];
-        this.firebaseService.getDoc('users', uid).subscribe((user) => {
-          if (user) {
-            users.push(user);
-          }
-        });
+      for (const uid of uids) {
+        const user = await this.firebaseService.getDocOnce('users', uid);
+        if (user) {
+          users.push(user);
+        }
       }
       return users;
     }

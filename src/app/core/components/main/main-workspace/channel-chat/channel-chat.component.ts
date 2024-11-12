@@ -66,17 +66,17 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadUsers() {
-    this.channelUsers = [];
+  async loadUsers() {
     const channelUids = this.channelData.uid;
-    for (let i = 0; i < channelUids.length; i++) {
-      const uid = channelUids[i];
-      this.firebaseService.getDoc('users', uid).subscribe((user) => {
-        if (user) {
-          this.channelUsers.push(user);
-        }
-      });
-    }
+
+    // Lade alle Benutzer gleichzeitig
+    const userPromises = channelUids.map((uid) =>
+      this.firebaseService.getDocOnce('users', uid)
+    );
+    const users = await Promise.all(userPromises);
+
+    // Filtere ungültige Benutzer heraus und aktualisiere das Array atomar
+    this.channelUsers = users.filter((user) => user != null);
   }
 
   ngOnDestroy(): void {

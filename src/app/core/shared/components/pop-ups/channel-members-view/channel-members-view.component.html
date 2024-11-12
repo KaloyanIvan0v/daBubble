@@ -7,7 +7,7 @@
     <div class="members overflow-y-scroll">
       <div
         class="member"
-        *ngFor="let user of channelUsers"
+        *ngFor="let user of channelUsers$ | async"
         (click)="openProfileView(user.uid)"
       >
         <img src="{{ user?.photoURL }}" alt="" />

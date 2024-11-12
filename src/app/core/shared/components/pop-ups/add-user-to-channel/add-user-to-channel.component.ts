@@ -4,6 +4,7 @@ import {
   ViewChildren,
   QueryList,
   ElementRef,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -36,12 +37,17 @@ export class AddUserToChannelComponent {
     private renderer: Renderer2
   ) {
     this.currentChannelId = this.workspaceService.currentActiveUnitId();
-    this.channelData$ = this.firebaseService.getChannel(this.currentChannelId);
-    this.firebaseService.getUsers().subscribe((users) => {
-      this.users = users;
-    });
-    this.channelData$.subscribe((channel) => {
-      this.channelData = channel;
+    effect(() => {
+      this.currentChannelId = this.workspaceService.currentActiveUnitId();
+      this.channelData$ = this.firebaseService.getChannel(
+        this.currentChannelId
+      );
+      this.firebaseService.getUsers().subscribe((users) => {
+        this.users = users;
+      });
+      this.channelData$.subscribe((channel) => {
+        this.channelData = channel;
+      });
     });
   }
 
@@ -56,11 +62,13 @@ export class AddUserToChannelComponent {
   }
 
   addUsers() {
+    this.closePopUp();
     const newUids = this.selectedUsers.map((user) => user.uid);
     this.channelData.uid = [...new Set([...this.channelData.uid, ...newUids])];
     this.firebaseService.updateDoc('channels', this.currentChannelId, {
       uid: this.channelData.uid,
     });
+    this.selectedUsers = [];
   }
 
   addUserChip(user: any) {
@@ -72,7 +80,6 @@ export class AddUserToChannelComponent {
       this.selectedUsers.push(user);
       this.searchText = '';
     } else {
-      console.log('User already exists');
       const userChip = this.userChips.find(
         (chip) => chip.nativeElement.id === user.uid
       );

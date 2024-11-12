@@ -17,7 +17,7 @@ export class WorkspaceService {
   );
 
   currentActiveUnitId = signal('');
-  currentActiveUserId = signal('');
+  currentActiveUserId = signal('123456789');
 
   loggedInUserData = new BehaviorSubject<any>(null);
   loggedInUserData$ = this.loggedInUserData.asObservable();
@@ -31,6 +31,9 @@ export class WorkspaceService {
   ownProfileViewPopUp = signal(false);
   profileViewPopUp = signal(false);
   userMenuPopUp = signal(false);
+
+  private userUpdates = new BehaviorSubject<any>(null); // Anfangswert kann `null` sein oder ein Initialwert
+  userUpdates$ = this.userUpdates.asObservable();
 
   constructor() {
     this.loadUserData();
@@ -46,6 +49,10 @@ export class WorkspaceService {
     this.currentActiveUnitId.set(
       this.sessionStorageService.getItem('activeUnit') ?? ''
     );
+  }
+
+  updateUser(user: any) {
+    this.userUpdates.next(user);
   }
 
   setPopUp(popUpName: any, visible: boolean) {

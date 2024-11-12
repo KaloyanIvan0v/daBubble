@@ -5,13 +5,13 @@
       <div class="close-button" (click)="closePopUp()"></div>
     </div>
     <div class="user-img">
-      <img src="/assets/img/profile-img/Frederik-Beck.svg" alt="" />
+      <img src="{{ (userData$ | async)?.photoURL }}" alt="" />
     </div>
     <div class="user-name-wrapper">
-      <div class="user-name">Fredirik Beck</div>
+      <div class="user-name">{{ (userData$ | async)?.name }}</div>
       <div class="user-status-wrapper">
         <div class="status-dot"></div>
-        <div class="user-status">Abswesend</div>
+        <div class="user-status">Active</div>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
         <img src="/assets/img/icons/mail-black.svg" alt="" />
         <div class="user-email-tittle">E-Mail-Adresse</div>
       </div>
-      <div class="user-email">L8n8oexample.com</div>
+      <div class="user-email">{{ (userData$ | async)?.email }}</div>
     </div>
     <div class="dfc">
       <div class="send-message-btn primary-btn">

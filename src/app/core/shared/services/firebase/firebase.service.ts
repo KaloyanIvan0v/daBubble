@@ -11,7 +11,7 @@ import {
   arrayUnion,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
-import { where, query } from 'firebase/firestore';
+import { where, query, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
@@ -119,6 +119,23 @@ export class FirebaseServicesService implements OnDestroy {
     }
 
     return this.dataSubjects.get(cacheKey)!.asObservable();
+  }
+
+  async getDocOnce(collectionName: string, docId: string): Promise<any> {
+    try {
+      const docRef = doc(this.firestore, `${collectionName}/${docId}`);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return docSnap.data();
+      } else {
+        console.log('No such document!');
+        return undefined;
+      }
+    } catch (error) {
+      console.error('Error getting document:', error);
+      return undefined;
+    }
   }
 
   async addDoc<T extends { [x: string]: any }>(
