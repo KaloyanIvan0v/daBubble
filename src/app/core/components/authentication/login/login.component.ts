@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
   async guestLogin(event: Event) {
     event.preventDefault();
     try {
-      const user = await this.authService.login('guest@mail.de', '12345678');
+      const user = await this.authService.login('guest@web.de', '12345678');
       if (user) {
         const uid = await this.authService.getCurrentUserUID();
         this.firebaseService.setUserUID(uid);

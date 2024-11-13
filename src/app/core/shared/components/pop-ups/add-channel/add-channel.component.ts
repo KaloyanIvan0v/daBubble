@@ -27,6 +27,11 @@ export class AddChannelComponent {
     this.workspaceService.addChannelPopUp.set(false);
   }
 
+  clearForm() {
+    this.channelName = '';
+    this.chanelDescription = '';
+  }
+
   async createChannel() {
     const uid = await this.authService.getCurrentUserUID();
 
@@ -40,6 +45,8 @@ export class AddChannelComponent {
     };
 
     this.firebaseService.addDoc('channels', newChannel);
+    this.clearForm();
+    this.closePopUp();
   }
 
   get popUpVisible() {

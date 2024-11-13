@@ -86,3 +86,26 @@ section {
   background-color: $bg-color;
   border-radius: 50%;
 }
+
+.img-wrapper {
+  position: relative;
+}
+
+.dot-offline {
+  @include statusDot("offline", 14px);
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+}
+
+.dot-online {
+  @include statusDot("online", 14px);
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+}
+
+.name-wrapper {
+  @include dFlex();
+  gap: 10px;
+}

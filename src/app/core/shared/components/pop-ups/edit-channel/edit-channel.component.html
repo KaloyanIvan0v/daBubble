@@ -77,9 +77,14 @@
           {{ (channelData$ | async)?.description }}
         </div>
       </div>
+      <div class="separator-line"></div>
+      <div class="creator-wrapper">
+        <div class="font18-700">Erstellt von</div>
+        <div class="creator-name">{{ (channelCreator$ | async)?.name }}</div>
+      </div>
     </div>
     <div class="btn-wrapper">
-      <div class="primary-btn">Channel verlassen</div>
+      <div class="primary-btn" (click)="leaveChannel()">Channel verlassen</div>
     </div>
   </div>
   <div class="pop-up-shadow" (click)="closeEditChannelPopUp()"></div>

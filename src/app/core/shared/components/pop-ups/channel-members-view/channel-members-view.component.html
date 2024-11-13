@@ -10,8 +10,18 @@
         *ngFor="let user of channelUsers$ | async"
         (click)="openProfileView(user.uid)"
       >
-        <img src="{{ user?.photoURL }}" alt="" />
-        <div class="font18-700">{{ user?.name }}</div>
+        <div class="img-wrapper">
+          <img src="{{ user?.photoURL }}" alt="" />
+          <div
+            ngClass="{{ user?.online ? 'dot-online' : 'dot-offline' }}"
+          ></div>
+        </div>
+        <div class="name-wrapper">
+          <div class="font18-700">{{ user?.name }}</div>
+          <div *ngIf="user?.uid === currentUserUid" class="font18-400">
+            (Du)
+          </div>
+        </div>
       </div>
       <div class="add-member" (click)="openAddUserToChannelPopUp()">
         <div class="add-person-icon"></div>

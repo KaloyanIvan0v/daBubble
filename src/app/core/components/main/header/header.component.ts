@@ -28,9 +28,8 @@ export class HeaderComponent {
   }
 
   ngOnInit(): void {
-    // Subscribe to currentUser$ observable from AuthService to get the current user
     this.userSubscription = this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user; // Update the local currentUser whenever it changes
+      this.currentUser = user;
       this.cdRef.detectChanges();
     });
   }

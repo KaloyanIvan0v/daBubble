@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Observable } from 'rxjs';
+import { User } from 'src/app/core/shared/models/user.class';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-channel',
@@ -17,18 +20,33 @@ export class EditChannelComponent {
   channelData$!: Observable<Channel>;
   channelData!: Channel;
   currentChannelId: string = '';
+  channelCreator$!: Observable<User>;
   constructor(
     public workspaceService: WorkspaceService,
-    public firebaseService: FirebaseServicesService
+    public firebaseService: FirebaseServicesService,
+    public authService: AuthService,
+    private router: Router
   ) {
-    this.currentChannelId = this.workspaceService.currentActiveUnitId();
-    this.channelData$ = this.firebaseService.getDoc<Channel>(
-      'channels',
-      this.currentChannelId
-    );
+    effect(() => {
+      this.currentChannelId = this.workspaceService.currentActiveUnitId();
+      this.channelData$ = this.firebaseService.getChannel(
+        this.currentChannelId
+      );
+      this.setInputValues();
+      this.channelData$.subscribe((channelData: Channel) => {
+        this.setChannelCreator(channelData.creator);
+      });
+    });
   }
 
-  ngOnInit() {
+  async setChannelCreator(creatorUid: string) {
+    const currentUserUid = await this.authService.getCurrentUserUID();
+    if (currentUserUid) {
+      this.channelCreator$ = this.firebaseService.getUser(creatorUid);
+    }
+  }
+
+  setInputValues() {
     this.channelData$.subscribe((data) => {
       this.channelData = data;
     });
@@ -49,13 +67,25 @@ export class EditChannelComponent {
   }
 
   saveChanges() {
-    console.log('gesperrt');
-
     this.firebaseService.updateDoc<Channel>(
       'channels',
       this.currentChannelId,
       this.channelData
     );
+  }
+
+  async leaveChannel() {
+    const currentLoggedInUserUid = await this.authService.getCurrentUserUID();
+    this.channelData.uid = this.channelData.uid.filter(
+      (uid) => uid !== currentLoggedInUserUid
+    );
+    this.saveChanges();
+    this.closeEditChannelPopUp();
+    this.navigateToNewChat();
+  }
+
+  navigateToNewChat() {
+    this.router.navigate(['dashboard', 'new-chat']);
   }
 
   get popUpVisible() {
