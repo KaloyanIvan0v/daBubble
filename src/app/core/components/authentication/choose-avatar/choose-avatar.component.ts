@@ -51,7 +51,7 @@ export class ChooseAvatarComponent implements OnInit, OnDestroy {
     this.userData = signal(this.workspaceService.loggedInUserData);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const userObservable: Observable<User | null> = authState(
       this.authService.firebaseAuth
     );

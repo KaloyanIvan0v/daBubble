@@ -68,6 +68,8 @@ export class AuthService {
       email,
       password
     );
+    this.currentUser$.next(userCredential.user);
+
     this.authStatusChanged.set(true);
     return userCredential.user;
   }
@@ -81,6 +83,7 @@ export class AuthService {
       const user: User = response.user;
       await updateProfile(user, { displayName: name });
       await this.saveUserDataToFirestore(user, name, email);
+      this.currentUser$.next(user); // Update the current user after registration
     });
     return from(promise);
   }
@@ -117,11 +120,13 @@ export class AuthService {
           user.email
         );
         this.authUIService.toggleAvatarSelection();
+        this.currentUser$.next(user);
       }
     } else {
+      this.currentUser$.next(user);
+
       this.router.navigate(['/dashboard']);
     }
-    this.currentUser$.next(user);
   }
 
   async updateAvatar(user: User, photoURL: string): Promise<void> {
@@ -137,6 +142,8 @@ export class AuthService {
 
   async logoutUser(): Promise<void> {
     this.authStatusChanged.set(false);
+    this.currentUser$.next(null); // Reset current user to null
+
     return this.auth.signOut();
   }
 

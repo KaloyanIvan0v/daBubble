@@ -49,6 +49,9 @@ export class MainComponent implements OnInit, OnDestroy {
   popUpShadowVisible: boolean = false;
   private popUpStatesSubscription!: Subscription;
 
+  userDataSubscription!: Subscription;
+  currentUser: any = null;
+
   constructor(
     private authService: AuthService,
     private firebaseService: FirebaseServicesService,
@@ -74,6 +77,18 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Subscribe to the user data observable to reactively update the UI
+    this.userDataSubscription =
+      this.workspaceService.loggedInUserData.subscribe((user) => {
+        this.currentUser = user;
+        if (user) {
+          console.log('User logged in:', user);
+        } else {
+          console.log('No user logged in');
+        }
+      });
+
+    // Fetch and set the user UID once on component initialization
     this.authService.getCurrentUserUID().then((uid) => {
       this.firebaseService.setUserUID(uid);
     });
@@ -81,6 +96,10 @@ export class MainComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.popUpStatesSubscription) {
       this.popUpStatesSubscription.unsubscribe();
+    }
+
+    if (this.userDataSubscription) {
+      this.userDataSubscription.unsubscribe();
     }
   }
 

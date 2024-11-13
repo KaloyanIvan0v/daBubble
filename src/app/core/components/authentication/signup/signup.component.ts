@@ -39,6 +39,15 @@ export class SignupComponent {
         console.log('User logged out');
       }
     });
+
+    // Ensure that the user is only registered after form submission
+    this.authService.observeAuthState((user) => {
+      if (user && !this.user.name) {
+        console.log(
+          'User is logged in automatically without submitting the form'
+        );
+      }
+    });
   }
 
   onSubmit(): void {
