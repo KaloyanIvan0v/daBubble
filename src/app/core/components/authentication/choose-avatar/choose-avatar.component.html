@@ -1,17 +1,18 @@
 <!-- choose-avatar.component.html -->
 <div class="choose-avatar-container">
   <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
-  <form #chooseAvatarForm="ngForm" (ngSubmit)="saveAvatar()">
+  <form #chooseAvatarForm="ngForm" (ngSubmit)="uploadcareService.saveAvatar()">
     <h2>Wähle deinen Avatar</h2>
     <img
       [src]="
-        selectedPhoto || 'assets/img/profile-img/profile-img-placeholder.svg'
+        uploadcareService.selectedPhoto ||
+        'assets/img/profile-img/profile-img-placeholder.svg'
       "
       alt="profile-img-placeholder"
       class="profile-img-preview"
     />
 
-    <h3>{{ userData()?.name }}</h3>
+    <h3>{{ uploadcareService.userData()?.name }}</h3>
 
     <h4 class="list-text">Aus der liste wählen.</h4>
     <div class="photos-container">
@@ -20,7 +21,7 @@
           [src]="photo"
           class="choose-avatar"
           alt="choose-avatar"
-          (click)="selectPhoto(photo)"
+          (click)="uploadcareService.selectPhoto(photo)"
         />
       </div>
     </div>
@@ -33,28 +34,43 @@
         type="file"
         #fileInput
         style="display: none"
-        (change)="onFileSelected($event)"
+        (change)="uploadcareService.onFileSelected($event)"
       />
     </div>
 
-    <div *ngIf="isUploadedPhoto" class="uploading-container">
+    <div *ngIf="uploadcareService.isUploadedPhoto" class="uploading-container">
       <p>
-        {{ uploadedPhotoName | slice : 0 : 10
-        }}{{ (uploadedPhotoName ?? "").length > 10 ? "..." : "" }}
+        {{ uploadcareService.uploadedPhotoName | slice : 0 : 10
+        }}{{
+          (uploadcareService.uploadedPhotoName ?? "").length > 10 ? "..." : ""
+        }}
       </p>
 
-      <div class="uploading" *ngIf="isUploading || uploadComplete">
-        <div class="loader" [class.complete]="uploadComplete"></div>
+      <div
+        class="uploading"
+        *ngIf="
+          uploadcareService.isUploading || uploadcareService.uploadComplete
+        "
+      >
+        <div
+          class="loader"
+          [class.complete]="uploadcareService.uploadComplete"
+        ></div>
 
-        <button *ngIf="uploadComplete" (click)="eraseUploadedPhoto()">X</button>
+        <button
+          *ngIf="uploadcareService.uploadComplete"
+          (click)="uploadcareService.eraseUploadedPhoto()"
+        >
+          X
+        </button>
       </div>
     </div>
     <p
-      *ngIf="uploadErrorMessage"
+      *ngIf="uploadcareService.uploadErrorMessage"
       class="error-message"
       style="margin-top: 10px; width: 100%"
     >
-      {{ uploadErrorMessage }}
+      {{ uploadcareService.uploadErrorMessage }}
     </p>
     <div class="button-container">
       <button

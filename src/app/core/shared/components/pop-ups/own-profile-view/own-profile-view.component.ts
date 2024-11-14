@@ -1,3 +1,4 @@
+import { UploadcareService } from './../../../services/uploadcare-service/uploadcare.service';
 import { ChooseAvatarComponent } from 'src/app/core/components/authentication/choose-avatar/choose-avatar.component';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Component, Input } from '@angular/core';
@@ -8,7 +9,7 @@ import { WorkspaceService } from '../../../services/workspace-service/workspace.
 @Component({
   selector: 'app-own-profile-view',
   standalone: true,
-  imports: [CommonModule, ChooseAvatarComponent],
+  imports: [CommonModule],
   templateUrl: './own-profile-view.component.html',
   styleUrls: ['./own-profile-view.component.scss'],
 })
@@ -19,7 +20,7 @@ export class OwnProfileViewComponent {
 
   constructor(
     public workspaceService: WorkspaceService,
-    private authService: AuthService
+    public uploadcareService: UploadcareService
   ) {
     // Assuming loggedInUserData$ is exposed in WorkspaceService
     this.userData$ = this.workspaceService.loggedInUserData;
@@ -39,7 +40,7 @@ export class OwnProfileViewComponent {
   }
 
   updatePhoto(event: any) {
-    this.chooseAvatarComponent.onFileSelected(event);
-    this.chooseAvatarComponent.saveAvatar();
+    this.uploadcareService.onFileSelected(event);
+    this.uploadcareService.saveAvatar();
   }
 }

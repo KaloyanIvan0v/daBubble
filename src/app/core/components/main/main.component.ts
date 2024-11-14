@@ -1,3 +1,4 @@
+import { UploadcareService } from './../../shared/services/uploadcare-service/uploadcare.service';
 import { SignupComponent } from './../authentication/signup/signup.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -57,16 +58,12 @@ export class MainComponent implements OnInit, OnDestroy {
     private firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     private authUIService: AuthUIService,
-    private router: Router,
-    private http: HttpClient
+    public uploadcareService: UploadcareService
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
     this.chooseAvatarComponent = new ChooseAvatarComponent(
       this.authUIService,
-      this.authService,
-      this.workspaceService,
-      this.router,
-      this.http
+      this.uploadcareService
     );
 
     this.signupComponent = new SignupComponent(
@@ -93,13 +90,10 @@ export class MainComponent implements OnInit, OnDestroy {
       this.firebaseService.setUserUID(uid);
     });
   }
+
   ngOnDestroy(): void {
     if (this.popUpStatesSubscription) {
       this.popUpStatesSubscription.unsubscribe();
-    }
-
-    if (this.userDataSubscription) {
-      this.userDataSubscription.unsubscribe();
     }
   }
 

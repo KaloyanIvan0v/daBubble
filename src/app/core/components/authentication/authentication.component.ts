@@ -38,6 +38,9 @@ import { ResetPasswordLinkComponent } from './reset-password-link/reset-password
 export class AuthenticationComponent implements OnInit, AfterViewInit {
   @ViewChild(SignupComponent, { static: true })
   signupComponent!: SignupComponent;
+  currentUser: any;
+  users: Observable<any[]>;
+
   removeLoginAnimation = false;
   removeAnimationText = false;
 
@@ -50,9 +53,9 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     public workspaceService: WorkspaceService
   ) {
     this.users = this.firebaseService.getUsers();
+    this.getCurrentUser();
   }
 
-  users: Observable<any[]>;
   @ViewChild('logoContainer') logoContainer!: ElementRef;
   @ViewChild('logoImage') logoImage!: ElementRef;
   @ViewChild('logoText') logoText!: ElementRef;
@@ -65,9 +68,21 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   // }
 
   ngOnInit(): void {
+    this.authService.getCurrentUser().subscribe((user) => {
+      this.currentUser = user;
+    });
+
     setTimeout(() => {
       this.removeLoginAnimation = true;
     }, 2600);
+  }
+
+  getCurrentUser(): void {
+    console.log('Getting current user...');
+    this.authService.getCurrentUser().subscribe((user) => {
+      console.log('Current user:', user);
+      this.currentUser = user;
+    });
   }
 
   ngAfterViewInit(): void {
