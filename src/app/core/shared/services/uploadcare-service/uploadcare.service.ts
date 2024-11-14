@@ -116,6 +116,8 @@ export class UploadcareService implements OnInit {
         setTimeout(() => {
           this.newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
           this.updateAvatarSelectionUI(this.newAvatarUrl, file.name);
+          this.updateUserProfile(this.newAvatarUrl);
+
           if (this.signUpComponent?.user) {
             this.signUpComponent.user.photoURL = this.newAvatarUrl;
           }
