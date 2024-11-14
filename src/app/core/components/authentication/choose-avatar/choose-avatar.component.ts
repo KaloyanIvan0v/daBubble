@@ -25,7 +25,7 @@ export class ChooseAvatarComponent {
     'assets/img/profile-img/Elias-Neumann.svg',
     'assets/img/profile-img/Frederik-Beck.svg',
     'assets/img/profile-img/Steffen-Hoffmann.svg',
-    'assets/img/profile-img/Sofia-Müller.svg',
+    'assets/img/profile-img/Sofia-Mueller.svg',
     'assets/img/profile-img/Noah-Braun.svg',
   ];
 

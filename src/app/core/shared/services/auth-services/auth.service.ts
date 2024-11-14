@@ -29,7 +29,6 @@ export class AuthService {
 
   provider = new GoogleAuthProvider();
   private popupOpen = false; // Tracks if a popup is already open
-
   constructor(
     private auth: Auth,
     public authUIService: AuthUIService,
@@ -112,7 +111,6 @@ export class AuthService {
   ): Promise<void> {
     const isNewUser = getAdditionalUserInfo(result)?.isNewUser;
     if (isNewUser) {
-      // Wait until the email is populated after the popup closes
       if (user.email) {
         await this.saveUserDataToFirestore(
           user,
@@ -142,7 +140,8 @@ export class AuthService {
 
   async logoutUser(): Promise<void> {
     this.authStatusChanged.set(false);
-    this.currentUser$.next(null);
+    this.currentUser$.next(null); // Reset current user to null
+
     return this.auth.signOut();
   }
 

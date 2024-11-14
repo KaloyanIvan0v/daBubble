@@ -1,3 +1,4 @@
+import { User } from '@angular/fire/auth';
 import { Injectable, inject, signal, effect } from '@angular/core';
 import { AuthService } from '../auth-services/auth.service';
 import { FirebaseServicesService } from './../firebase/firebase.service';
@@ -19,7 +20,7 @@ export class WorkspaceService {
   currentActiveUnitId = signal('');
   currentActiveUserId = signal('123456789'); //open UserView PopUp
 
-  loggedInUserData = new BehaviorSubject<any>(null);
+  loggedInUserData = new BehaviorSubject<User | null>(null);
   loggedInUserData$ = this.loggedInUserData.asObservable();
 
   popUpShadowVisible = signal(false);

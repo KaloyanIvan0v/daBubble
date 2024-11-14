@@ -136,7 +136,6 @@ export class UploadcareService implements OnInit {
   }
 
   private updateUserProfile(newAvatarUrl: string, currentUser: User | null) {
-    console.log('currentUser:', currentUser);
     if (!currentUser) {
       console.error('Cannot update profile: No current user is available.');
       return;
