@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SharedModule } from '../../../shared/shared-module';
 import { Observable } from 'rxjs';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
@@ -12,7 +12,7 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'], // Corrected 'styleUrl' to 'styleUrls'
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit {
   user = {
     name: '',
     email: '',
@@ -32,20 +32,12 @@ export class SignupComponent {
   }
 
   ngOnInit() {
+    // Subscribe to currentUser$ for real-time updates on auth state
     this.authService.observeAuthState((user) => {
       if (user) {
         console.log('User logged in, UID:', user.uid);
       } else {
-        console.log('User logged out');
-      }
-    });
-
-    // Ensure that the user is only registered after form submission
-    this.authService.observeAuthState((user) => {
-      if (user && !this.user.name) {
-        console.log(
-          'User is logged in automatically without submitting the form'
-        );
+        console.log('No user logged in');
       }
     });
   }

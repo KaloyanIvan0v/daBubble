@@ -18,8 +18,6 @@ import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel
 import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-view/profile-view.component';
 import { ChooseAvatarComponent } from '../authentication/choose-avatar/choose-avatar.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -62,8 +60,9 @@ export class MainComponent implements OnInit, OnDestroy {
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
     this.chooseAvatarComponent = new ChooseAvatarComponent(
-      this.authUIService,
-      this.uploadcareService
+      this.workspaceService,
+      this.uploadcareService,
+      this.authUIService
     );
 
     this.signupComponent = new SignupComponent(
@@ -74,17 +73,6 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Subscribe to the user data observable to reactively update the UI
-    this.userDataSubscription =
-      this.workspaceService.loggedInUserData.subscribe((user) => {
-        this.currentUser = user;
-        if (user) {
-          // console.log('User logged in:', user);
-        } else {
-          console.log('No user logged in');
-        }
-      });
-
     // Fetch and set the user UID once on component initialization
     this.authService.getCurrentUserUID().then((uid) => {
       this.firebaseService.setUserUID(uid);
@@ -94,6 +82,10 @@ export class MainComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.popUpStatesSubscription) {
       this.popUpStatesSubscription.unsubscribe();
+    }
+
+    if (this.userDataSubscription) {
+      this.userDataSubscription.unsubscribe();
     }
   }
 

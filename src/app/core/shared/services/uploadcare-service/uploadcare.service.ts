@@ -1,17 +1,18 @@
-import { ChooseAvatarComponent } from 'src/app/core/components/authentication/choose-avatar/choose-avatar.component';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Input, signal } from '@angular/core';
+import { Injectable, Input, signal, OnInit } from '@angular/core';
 import { AuthService } from '../auth-services/auth.service';
 import { SignupComponent } from 'src/app/core/components/authentication/signup/signup.component';
 import { WorkspaceService } from '../workspace-service/workspace.service';
+import { authState, User } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UploadcareService {
+export class UploadcareService implements OnInit {
   @Input() signUpComponent!: SignupComponent;
-  @Input() currentUser: any;
   userData = signal<any>(null);
+  currentUser!: User | null;
 
   uploadcareApiKey = '969c17c5a52163c20fd3';
 
@@ -29,6 +30,15 @@ export class UploadcareService {
     public workspaceService: WorkspaceService
   ) {
     this.userData = signal(this.workspaceService.loggedInUserData);
+  }
+
+  async ngOnInit() {
+    const userObservable: Observable<User | null> = authState(
+      this.authService.firebaseAuth
+    );
+    userObservable.subscribe((user) => {
+      this.currentUser = user;
+    });
   }
 
   onFileSelected(event: any) {
@@ -108,12 +118,6 @@ export class UploadcareService {
           this.updateAvatarSelectionUI(this.newAvatarUrl, file.name);
           if (this.signUpComponent?.user) {
             this.signUpComponent.user.photoURL = this.newAvatarUrl;
-          } else if (currentUser) {
-            this.updateUserProfile(this.newAvatarUrl);
-          } else {
-            console.error(
-              'Cannot save avatar: No user is currently available.'
-            );
           }
         }, 1000);
       }

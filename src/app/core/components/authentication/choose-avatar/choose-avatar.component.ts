@@ -1,9 +1,13 @@
 import { UploadcareService } from './../../../shared/services/uploadcare-service/uploadcare.service';
-import { Component, Input } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
 import { SignupComponent } from '../signup/signup.component';
 import { RouterLink } from '@angular/router';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { Observable } from 'rxjs';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { authState, User } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-choose-avatar',
@@ -14,6 +18,7 @@ import { RouterLink } from '@angular/router';
 })
 export class ChooseAvatarComponent {
   @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
+  userData$: Observable<any>;
 
   photos: string[] = [
     'assets/img/profile-img/Elise-Roth.svg',
@@ -25,9 +30,12 @@ export class ChooseAvatarComponent {
   ];
 
   constructor(
-    public authUIService: AuthUIService,
-    public uploadcareService: UploadcareService
-  ) {}
+    public workspaceService: WorkspaceService,
+    public uploadcareService: UploadcareService,
+    public authUIService: AuthUIService
+  ) {
+    this.userData$ = this.workspaceService.loggedInUserData;
+  }
 
   canProceed(): Promise<boolean> {
     return new Promise((resolve) => {

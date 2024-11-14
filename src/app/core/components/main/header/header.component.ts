@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { Subscription, Observable } from 'rxjs';
-import { authState, User } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -15,31 +14,14 @@ import { authState, User } from '@angular/fire/auth';
 })
 export class HeaderComponent {
   userData$: Observable<any>;
-  private userSubscription!: Subscription;
-  currentUser!: User | null;
 
   constructor(
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     public authService: AuthService,
-    private cdRef: ChangeDetectorRef // Inject ChangeDetectorRef
+    public cdRef: ChangeDetectorRef
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
-  }
-
-  ngOnInit(): void {
-    this.userSubscription = this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user;
-      this.cdRef.detectChanges();
-    });
-    this.userData$ = this.workspaceService.loggedInUserData;
-    console.log('onInit');
-  }
-
-  ngOnDestroy() {
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
-    }
   }
 
   openPopUp() {
