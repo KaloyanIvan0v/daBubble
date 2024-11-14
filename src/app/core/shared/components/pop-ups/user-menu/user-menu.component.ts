@@ -20,10 +20,10 @@ export class UserMenuComponent {
   ) {}
 
   logOut() {
-    this.authService.logoutUser().then(() => {
-      this.closePopUp();
-      this.router.navigate(['app-authentication']);
-    });
+    this.workspaceService.currentActiveUnitId.set('');
+    this.router.navigate(['app-authentication']);
+    this.closePopUp();
+    this.authService.logoutUser();
   }
 
   get popUpVisible() {

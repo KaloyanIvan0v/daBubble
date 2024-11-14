@@ -82,7 +82,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.workspaceService.loggedInUserData.subscribe((user) => {
         this.currentUser = user;
         if (user) {
-          console.log('User logged in:', user);
+          // console.log('User logged in:', user);
         } else {
           console.log('No user logged in');
         }

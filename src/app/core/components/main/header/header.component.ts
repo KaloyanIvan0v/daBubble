@@ -32,6 +32,8 @@ export class HeaderComponent {
       this.currentUser = user;
       this.cdRef.detectChanges();
     });
+    this.userData$ = this.workspaceService.loggedInUserData;
+    console.log('onInit');
   }
 
   ngOnDestroy() {

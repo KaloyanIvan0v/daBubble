@@ -1,3 +1,5 @@
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { authState } from '@angular/fire/auth';
 import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
@@ -34,7 +36,8 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   private popUpStatesSubscription!: Subscription;
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService
+    private firebaseService: FirebaseServicesService,
+    private authService: AuthService
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
@@ -51,7 +54,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   private loadChannelData(channelId: string): void {
     this.channelUsers = [];
     this.subscriptions.add(
-      this.firebaseService.getDoc<Channel>('channels', channelId).subscribe({
+      this.firebaseService.getChannel(channelId).subscribe({
         next: (channel) => {
           if (channel) {
             this.channelData = channel;
@@ -68,14 +71,10 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   async loadUsers() {
     const channelUids = this.channelData.uid;
-
-    // Lade alle Benutzer gleichzeitig
     const userPromises = channelUids.map((uid) =>
       this.firebaseService.getDocOnce('users', uid)
     );
     const users = await Promise.all(userPromises);
-
-    // Filtere ungültige Benutzer heraus und aktualisiere das Array atomar
     this.channelUsers = users.filter((user) => user != null);
   }
 
