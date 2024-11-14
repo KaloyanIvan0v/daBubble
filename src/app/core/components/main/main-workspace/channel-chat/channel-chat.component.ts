@@ -1,5 +1,3 @@
-import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { authState } from '@angular/fire/auth';
 import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
@@ -27,6 +25,7 @@ import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edi
 })
 export class ChannelChatComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
+  private channelSubscription?: Subscription;
   channelData!: Channel;
   channelName: string = '';
   channelId: string = '';
@@ -34,10 +33,10 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   channelUsers: any[] = [];
   popUpStates: { [key: string]: boolean } = {};
   private popUpStatesSubscription!: Subscription;
+
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService,
-    private authService: AuthService
+    private firebaseService: FirebaseServicesService
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
@@ -52,9 +51,12 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   private loadChannelData(channelId: string): void {
+    this.channelSubscription?.unsubscribe();
+
     this.channelUsers = [];
-    this.subscriptions.add(
-      this.firebaseService.getChannel(channelId).subscribe({
+    this.channelSubscription = this.firebaseService
+      .getChannel(channelId)
+      .subscribe({
         next: (channel) => {
           if (channel) {
             this.channelData = channel;
@@ -65,10 +67,8 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
         },
         error: (error) =>
           console.error('Fehler beim Laden des Channels:', error),
-      })
-    );
+      });
   }
-
   async loadUsers() {
     const channelUids = this.channelData.uid;
     const userPromises = channelUids.map((uid) =>
@@ -79,10 +79,9 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.channelSubscription?.unsubscribe();
     this.subscriptions.unsubscribe();
-    if (this.popUpStatesSubscription) {
-      this.popUpStatesSubscription.unsubscribe();
-    }
+    this.popUpStatesSubscription?.unsubscribe();
   }
 
   openEditChannelPopUp() {

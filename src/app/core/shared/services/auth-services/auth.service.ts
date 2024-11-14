@@ -142,8 +142,7 @@ export class AuthService {
 
   async logoutUser(): Promise<void> {
     this.authStatusChanged.set(false);
-    this.currentUser$.next(null); // Reset current user to null
-
+    this.currentUser$.next(null);
     return this.auth.signOut();
   }
 

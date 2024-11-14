@@ -46,10 +46,6 @@ export class ChannelListComponent {
     this.subscription?.unsubscribe();
   }
 
-  goToChannel(currentActiveUnitId: string) {
-    this.navigateToChannelChat(currentActiveUnitId);
-  }
-
   navigateToChannelChat(currentActiveUnitId: string) {
     this.setChannelId(currentActiveUnitId);
     this.router.navigate(['dashboard', 'channel-chat']);

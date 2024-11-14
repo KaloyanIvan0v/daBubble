@@ -108,20 +108,21 @@ export class UploadcareService implements OnInit {
     return formData;
   }
 
-  private handleUploadSuccess(response: any, file: File) {
-    this.authService.getCurrentUser().subscribe((currentUser) => {
+  private async handleUploadSuccess(response: any, file: File) {
+    this.authService.getCurrentUser().subscribe(async (currentUser) => {
       if (!currentUser && !this.signUpComponent) {
         console.error('Cannot save avatar: No user is currently available.');
       } else {
-        setTimeout(() => {
-          this.newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
-          this.updateAvatarSelectionUI(this.newAvatarUrl, file.name);
-          this.updateUserProfile(this.newAvatarUrl);
+        // We assign the new avatar URL first
+        this.newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
 
-          if (this.signUpComponent?.user) {
-            this.signUpComponent.user.photoURL = this.newAvatarUrl;
-          }
-        }, 1000);
+        // Now that this.newAvatarUrl is set, we can proceed with the update methods
+        this.updateAvatarSelectionUI(this.newAvatarUrl, file.name);
+        this.updateUserProfile(this.newAvatarUrl, currentUser);
+
+        if (this.signUpComponent?.user) {
+          this.signUpComponent.user.photoURL = this.newAvatarUrl;
+        }
       }
     });
   }
@@ -134,15 +135,16 @@ export class UploadcareService implements OnInit {
     this.isUploading = false;
   }
 
-  private updateUserProfile(newAvatarUrl: string) {
-    if (!this.currentUser) {
+  private updateUserProfile(newAvatarUrl: string, currentUser: User | null) {
+    console.log('currentUser:', currentUser);
+    if (!currentUser) {
       console.error('Cannot update profile: No current user is available.');
       return;
     }
 
     this.userData.set({ ...this.userData(), photoURL: newAvatarUrl });
     this.authService
-      .updateAvatar(this.currentUser, newAvatarUrl)
+      .updateAvatar(currentUser, newAvatarUrl)
       .then(() => {
         console.log('Avatar updated successfully for current user');
         const updatedUserData = {

@@ -20,7 +20,7 @@ export class UserMenuComponent {
   ) {}
 
   logOut() {
-    this.workspaceService.currentActiveUnitId.set('');
+    this.workspaceService.currentActiveUnitId.set('12345678');
     this.router.navigate(['app-authentication']);
     this.closePopUp();
     this.authService.logoutUser();
