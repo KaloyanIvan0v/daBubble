@@ -6,7 +6,14 @@
       <div class="close-button" (click)="closePopUp()"></div>
     </div>
     <div class="user-img">
-      <img [src]="userData.photoURL" alt="avatar" (click)="fileInput.click()" />
+      <img [src]="userData.photoURL" alt="avatar" />
+      <div class="change-img-overlay" (click)="fileInput.click()">
+        <img src="/assets/img/icons/camera.png" alt="change-photo" />
+        <p>
+          Profilbild <br />
+          Ändern
+        </p>
+      </div>
       <input
         type="file"
         #fileInput
