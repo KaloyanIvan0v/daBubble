@@ -13,8 +13,9 @@ import {
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { GoogleAuthProvider } from 'firebase/auth';
-import { BehaviorSubject, Subscription, Observable, from } from 'rxjs';
+import { BehaviorSubject, Subscription, Observable, from, Subject } from 'rxjs';
 import { AuthUIService } from '../authUI-services/authUI.service';
+import { WorkspaceService } from '../workspace-service/workspace.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ export class AuthService {
     null
   );
   authStatusChanged = signal<boolean>(false);
+  userStateChanged = new Subject<void>();
 
   provider = new GoogleAuthProvider();
   private popupOpen = false; // Tracks if a popup is already open
@@ -110,6 +112,7 @@ export class AuthService {
     result: any
   ): Promise<void> {
     const isNewUser = getAdditionalUserInfo(result)?.isNewUser;
+
     if (isNewUser) {
       if (user.email) {
         await this.saveUserDataToFirestore(
@@ -118,13 +121,12 @@ export class AuthService {
           user.email
         );
         this.authUIService.toggleAvatarSelection();
-        this.currentUser$.next(user);
       }
     } else {
-      this.currentUser$.next(user);
-
+      this.userStateChanged.next(); // Notify listeners
       this.router.navigate(['/dashboard']);
     }
+    this.currentUser$.next(user);
   }
 
   async updateAvatar(user: User, photoURL: string): Promise<void> {

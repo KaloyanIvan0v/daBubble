@@ -50,6 +50,10 @@ export class WorkspaceService {
     this.currentActiveUnitId.set(
       this.sessionStorageService.getItem('activeUnit') ?? ''
     );
+
+    this.authService.userStateChanged.subscribe(() => {
+      this.loadUserData(); // Trigger data reload
+    });
   }
 
   updateUser(user: any) {
