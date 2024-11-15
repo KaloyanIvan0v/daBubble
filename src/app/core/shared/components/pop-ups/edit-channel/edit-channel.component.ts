@@ -1,13 +1,14 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, Subject } from 'rxjs';
 import { User } from 'src/app/core/shared/models/user.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Router } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-edit-channel',
@@ -16,11 +17,13 @@ import { Router } from '@angular/router';
   templateUrl: './edit-channel.component.html',
   styleUrl: './edit-channel.component.scss',
 })
-export class EditChannelComponent {
+export class EditChannelComponent implements OnDestroy {
   channelData$!: Observable<Channel>;
   channelData!: Channel;
   currentChannelId: string = '';
   channelCreator$!: Observable<User>;
+  private destroy$ = new Subject<void>();
+
   constructor(
     public workspaceService: WorkspaceService,
     public firebaseService: FirebaseServicesService,
@@ -33,9 +36,11 @@ export class EditChannelComponent {
         this.currentChannelId
       );
       this.setInputValues();
-      this.channelData$.subscribe((channelData: Channel) => {
-        this.setChannelCreator(channelData.creator);
-      });
+      this.channelData$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((channelData: Channel) => {
+          this.setChannelCreator(channelData.creator);
+        });
     });
   }
 
@@ -47,9 +52,14 @@ export class EditChannelComponent {
   }
 
   setInputValues() {
-    this.channelData$.subscribe((data) => {
+    this.channelData$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.channelData = data;
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   editNameActive: boolean = false;
@@ -62,6 +72,7 @@ export class EditChannelComponent {
   toggleEditDescription() {
     this.editDescriptionActive = !this.editDescriptionActive;
   }
+
   closeEditChannelPopUp() {
     this.workspaceService.editChannelPopUp.set(false);
   }
