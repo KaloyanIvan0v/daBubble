@@ -178,6 +178,13 @@ p {
   max-width: 100%;
 }
 
+.edit-avatar {
+  position: absolute;
+  right: 60px;
+  top: 360px;
+  max-width: 100%;
+}
+
 @media (min-width: 1980px) {
   .workspace-menu-btn {
     border-radius: 20px;

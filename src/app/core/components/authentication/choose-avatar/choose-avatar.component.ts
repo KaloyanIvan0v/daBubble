@@ -1,4 +1,4 @@
-import { UploadcareService } from './../../../shared/services/uploadcare-service/uploadcare.service';
+import { UploadCareService } from './../../../shared/services/uploadcare-service/uploadcare.service';
 import { Component, Input, signal } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
@@ -31,7 +31,7 @@ export class ChooseAvatarComponent {
 
   constructor(
     public workspaceService: WorkspaceService,
-    public uploadcareService: UploadcareService,
+    public uploadCareService: UploadCareService,
     public authUIService: AuthUIService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
@@ -41,8 +41,8 @@ export class ChooseAvatarComponent {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(
-          this.uploadcareService.selectedPhoto !== null ||
-            this.uploadcareService.isUploadedPhoto
+          this.uploadCareService.selectedPhoto !== null ||
+            this.uploadCareService.isUploadedPhoto
         );
       }, 1000);
     });

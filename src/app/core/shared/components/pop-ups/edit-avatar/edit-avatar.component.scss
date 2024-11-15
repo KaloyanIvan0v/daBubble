@@ -1,0 +1,35 @@
+@import "global.scss";
+
+section {
+  @include dFlex($fd: column, $jc: space-around, $ai: start);
+}
+
+.pop-up-wrapper {
+  @include dFlex($fd: column, $jc: space-around, $ai: start);
+  width: 200px;
+  max-width: 100%;
+  height: 100px;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 30px;
+  border-top-left-radius: 0px;
+  box-shadow: 0px 6px 10px 0px #00000033;
+  z-index: 5;
+}
+
+.upload-photo {
+  @include dFlex();
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.erase-photo {
+  @include dFlex();
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -15,8 +15,6 @@ import { AuthUIService } from '../../shared/services/authUI-services/authUI.serv
 import { ChooseAvatarComponent } from './choose-avatar/choose-avatar.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SignupComponent } from './signup/signup.component';
-import { AuthService } from '../../shared/services/auth-services/auth.service';
-import { Router } from '@angular/router';
 import { WorkspaceService } from '../../shared/services/workspace-service/workspace.service';
 import { ResetPasswordLinkComponent } from './reset-password-link/reset-password-link.component';
 
@@ -46,9 +44,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   constructor(
     private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService,
-    private authService: AuthService,
     private renderer: Renderer2,
-    private router: Router,
     public workspaceService: WorkspaceService
   ) {
     this.users = this.firebaseService.getUsers();

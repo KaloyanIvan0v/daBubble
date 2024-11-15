@@ -1,6 +1,3 @@
-import { UploadcareService } from './../../../services/uploadcare-service/uploadcare.service';
-import { ChooseAvatarComponent } from 'src/app/core/components/authentication/choose-avatar/choose-avatar.component';
-import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -14,20 +11,22 @@ import { WorkspaceService } from '../../../services/workspace-service/workspace.
   styleUrls: ['./own-profile-view.component.scss'],
 })
 export class OwnProfileViewComponent {
-  @Input() chooseAvatarComponent!: ChooseAvatarComponent; // Receive component as input
-
   userData$: Observable<any>;
 
-  constructor(
-    public workspaceService: WorkspaceService,
-    public uploadcareService: UploadcareService
-  ) {
-    // Assuming loggedInUserData$ is exposed in WorkspaceService
+  constructor(public workspaceService: WorkspaceService) {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
 
   closePopUp() {
     this.workspaceService.ownProfileViewPopUp.set(false);
+  }
+
+  closeChangeImgPopUp() {
+    this.workspaceService.changeAvatarPopUp.set(false);
+  }
+
+  openChangeImgPopUp() {
+    this.workspaceService.changeAvatarPopUp.set(true);
   }
 
   openEditProfilePopUp() {
@@ -37,10 +36,5 @@ export class OwnProfileViewComponent {
 
   get popUpVisible() {
     return this.workspaceService.ownProfileViewPopUp();
-  }
-
-  updatePhoto(event: any) {
-    this.uploadcareService.onFileSelected(event);
-    this.uploadcareService.saveAvatar();
   }
 }

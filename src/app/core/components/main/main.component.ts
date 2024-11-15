@@ -1,4 +1,4 @@
-import { UploadcareService } from './../../shared/services/uploadcare-service/uploadcare.service';
+import { UploadCareService } from './../../shared/services/uploadcare-service/uploadcare.service';
 import { SignupComponent } from './../authentication/signup/signup.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,7 +18,7 @@ import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel
 import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-view/profile-view.component';
 import { ChooseAvatarComponent } from '../authentication/choose-avatar/choose-avatar.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
-
+import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar/edit-avatar.component';
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -35,6 +35,7 @@ import { AuthUIService } from '../../shared/services/authUI-services/authUI.serv
     AddChannelComponent,
     ChooseAvatarComponent,
     ProfileViewComponent,
+    EditAvatarComponent,
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
@@ -56,12 +57,12 @@ export class MainComponent implements OnInit, OnDestroy {
     private firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     private authUIService: AuthUIService,
-    public uploadcareService: UploadcareService
+    public uploadCareService: UploadCareService
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
     this.chooseAvatarComponent = new ChooseAvatarComponent(
       this.workspaceService,
-      this.uploadcareService,
+      this.uploadCareService,
       this.authUIService
     );
 

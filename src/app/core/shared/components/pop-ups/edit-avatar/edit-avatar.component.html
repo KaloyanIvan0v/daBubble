@@ -1,0 +1,18 @@
+<section *ngIf="popUpVisible">
+  <div class="pop-up-wrapper">
+    <div class="upload-photo" (click)="fileInput.click()">
+      Bild hochladen
+      <input
+        type="file"
+        #fileInput
+        style="display: none"
+        (change)="updatePhoto($event)"
+      />
+    </div>
+
+    <div class="erase-photo" (click)="resetCurrentUserAvatar()">
+      Bild entfernen
+    </div>
+  </div>
+  <div class="pop-up-shadow"></div>
+</section>

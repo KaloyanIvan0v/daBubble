@@ -9,12 +9,12 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class UploadcareService implements OnInit {
+export class UploadCareService implements OnInit {
   @Input() signUpComponent!: SignupComponent;
   userData = signal<any>(null);
   currentUser!: User | null;
 
-  uploadcareApiKey = '969c17c5a52163c20fd3';
+  uploadCareApiKey = '969c17c5a52163c20fd3';
 
   selectedPhoto: string | null = null;
   isUploading: boolean = false;
@@ -23,6 +23,7 @@ export class UploadcareService implements OnInit {
   isUploadedPhoto: boolean = false;
   uploadedPhotoName: string | null = null;
   newAvatarUrl: string | null = null;
+  fileId: string | null = null;
 
   constructor(
     private http: HttpClient,
@@ -102,7 +103,7 @@ export class UploadcareService implements OnInit {
 
   private createUploadcareFormData(file: File): FormData {
     const formData = new FormData();
-    formData.append('UPLOADCARE_PUB_KEY', this.uploadcareApiKey);
+    formData.append('UPLOADCARE_PUB_KEY', this.uploadCareApiKey);
     formData.append('UPLOADCARE_STORE', 'auto');
     formData.append('file', file);
     return formData;
@@ -115,6 +116,7 @@ export class UploadcareService implements OnInit {
       } else {
         // We assign the new avatar URL first
         this.newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
+        this.fileId = response.file; // Store the file ID here
 
         // Now that this.newAvatarUrl is set, we can proceed with the update methods
         this.updateAvatarSelectionUI(this.newAvatarUrl, file.name);
@@ -207,26 +209,31 @@ export class UploadcareService implements OnInit {
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
     this.signUpComponent.user.photoURL = '';
+    this.uploadErrorMessage = null;
   }
 
   eraseUploadedPhoto() {
-    if (!this.isUploading) {
-      this.selectedPhoto = null;
-      this.uploadedPhotoName = null;
-      this.uploadComplete = false;
-      this.isUploadedPhoto = false;
-      this.isUploading = false;
-
-      // Check if the user is in sign-up flow and reset their photoURL if so
-      if (this.signUpComponent?.user) {
-        this.signUpComponent.user.photoURL = '';
-      }
+    if (this.fileId) {
+      // Make the DELETE request to Uploadcare API
+      this.http
+        .delete(`https://api.uploadcare.com/files/${this.fileId}/`, {
+          headers: {
+            Authorization: `Basic ${btoa(this.uploadCareApiKey + ':')}`,
+          },
+        })
+        .subscribe({
+          next: () => {
+            console.log('Image successfully erased from Uploadcare.');
+            this.resetSelectedPhoto(); // Reset UI state
+          },
+          error: (error) => {
+            console.error('Error erasing image from Uploadcare:', error);
+            this.uploadErrorMessage =
+              'Failed to delete image. Please try again.';
+          },
+        });
     } else {
-      console.log(
-        'No user or sign-up component available to reset the avatar.'
-      );
+      console.log('No file ID available to erase.');
     }
-
-    this.uploadErrorMessage = null;
   }
 }
