@@ -1,4 +1,3 @@
-import { FirebaseServicesService } from './../../services/firebase/firebase.service';
 import { Component, Input } from '@angular/core';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { FormsModule } from '@angular/forms';
@@ -15,10 +14,7 @@ export class InputBoxComponent {
   @Input() channelId: string = '';
   inputData = new InputBoxData('', []);
 
-  constructor(
-    private firebaseService: FirebaseServicesService,
-    private mainService: MainService
-  ) {}
+  constructor(private mainService: MainService) {}
 
   sendMessage() {
     this.mainService.sendMessage('channels', this.channelId, this.inputData);

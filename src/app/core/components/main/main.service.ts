@@ -1,11 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { Message } from 'src/app/core/shared/models/message.class';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { Thread } from '../../shared/models/thread.class';
 import { firstValueFrom, map } from 'rxjs';
-import { Timestamp } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -41,8 +38,9 @@ export class MainService {
     };
     await this.firestore.sendMessage(collection, docId, message);
   }
+
   getSpaceName(collection: string, docId: string) {
     const doc = this.firestore.getDoc<{ name: string }>(collection, docId);
-    return doc.pipe(map((doc) => doc.name));
+    return doc.pipe(map((doc) => doc?.name ?? ''));
   }
 }
