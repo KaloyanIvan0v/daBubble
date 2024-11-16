@@ -21,12 +21,12 @@ export class OwnProfileViewComponent {
     this.workspaceService.ownProfileViewPopUp.set(false);
   }
 
-  closeChangeImgPopUp() {
-    this.workspaceService.changeAvatarPopUp.set(false);
+  closeEditImgPopUp() {
+    this.workspaceService.editAvatarPopUp.set(false);
   }
 
-  openChangeImgPopUp() {
-    this.workspaceService.changeAvatarPopUp.set(true);
+  openEditImgPopUp() {
+    this.workspaceService.editAvatarPopUp.set(true);
   }
 
   openEditProfilePopUp() {

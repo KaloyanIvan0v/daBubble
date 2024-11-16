@@ -1,4 +1,4 @@
-<section *ngIf="popUpVisible" (click)="closeChangeImgPopUp()">
+<section *ngIf="popUpVisible" (click)="closeEditImgPopUp()">
   <!-- Subscribe to userData$ and assign emitted value to userData -->
   <div class="pop-up-wrapper" *ngIf="userData$ | async as userData">
     <div class="header">
@@ -8,10 +8,10 @@
     <div class="user-img">
       <img [src]="userData.photoURL" alt="avatar" />
       <div
-        class="change-img-overlay"
-        (click)="openChangeImgPopUp(); $event.stopPropagation()"
+        class="edit-img-overlay"
+        (click)="openEditImgPopUp(); $event.stopPropagation()"
       >
-        <img src="/assets/img/icons/camera.png" alt="change-photo" />
+        <img src="/assets/img/icons/camera.png" alt="edit-photo" />
         <p>
           Profilbild <br />
           Ändern

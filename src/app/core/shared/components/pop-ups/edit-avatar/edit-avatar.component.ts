@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { UploadCareService } from '../../../services/uploadcare-service/uploadcare.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../services/auth-services/auth.service';
+import { User } from '../../../models/user.class';
 @Component({
   selector: 'app-edit-avatar',
   standalone: true,
@@ -15,27 +17,30 @@ export class EditAvatarComponent {
 
   constructor(
     public workspaceService: WorkspaceService,
-    public uploadCareService: UploadCareService
+    public uploadCareService: UploadCareService,
+    public authService: AuthService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
 
   updatePhoto(event: any) {
-    this.workspaceService.changeAvatarPopUp.set(false);
+    this.workspaceService.editAvatarPopUp.set(false);
     this.uploadCareService.onFileSelected(event);
     this.uploadCareService.saveAvatar();
   }
 
   resetCurrentUserAvatar() {
-    this.workspaceService.changeAvatarPopUp.set(false);
-    this.uploadCareService.eraseUploadedPhoto();
+    this.workspaceService.editAvatarPopUp.set(false);
+    this.uploadCareService.deleteFromUploadcare(
+      this.uploadCareService.uploadedFileUuid ?? ''
+    );
   }
 
   closePopUp() {
-    this.workspaceService.changeAvatarPopUp.set(false);
+    this.workspaceService.editAvatarPopUp.set(false);
   }
 
   get popUpVisible() {
-    return this.workspaceService.changeAvatarPopUp();
+    return this.workspaceService.editAvatarPopUp();
   }
 }

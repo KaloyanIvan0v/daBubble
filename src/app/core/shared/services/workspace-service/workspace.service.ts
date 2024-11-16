@@ -32,7 +32,7 @@ export class WorkspaceService {
   ownProfileViewPopUp = signal(false);
   profileViewPopUp = signal(false);
   userMenuPopUp = signal(false);
-  changeAvatarPopUp = signal(false);
+  editAvatarPopUp = signal(false);
 
   private userUpdates = new BehaviorSubject<any>(null);
   userUpdates$ = this.userUpdates.asObservable();
@@ -53,7 +53,7 @@ export class WorkspaceService {
     );
 
     this.authService.userStateChanged.subscribe(() => {
-      this.loadUserData(); // Trigger data reload
+      this.loadUserData();
     });
   }
 

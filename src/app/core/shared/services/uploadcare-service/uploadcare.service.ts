@@ -23,11 +23,11 @@ export class UploadCareService implements OnInit {
   isUploadedPhoto: boolean = false;
   uploadedPhotoName: string | null = null;
   newAvatarUrl: string | null = null;
-  fileId: string | null = null;
+  uploadedFileUuid: string | null = null;
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
+    public authService: AuthService,
     public workspaceService: WorkspaceService
   ) {
     this.userData = signal(this.workspaceService.loggedInUserData);
@@ -114,9 +114,10 @@ export class UploadCareService implements OnInit {
       if (!currentUser && !this.signUpComponent) {
         console.error('Cannot save avatar: No user is currently available.');
       } else {
+        this.uploadedFileUuid = response.file;
+
         // We assign the new avatar URL first
         this.newAvatarUrl = `https://ucarecdn.com/${response.file}/`;
-        this.fileId = response.file; // Store the file ID here
 
         // Now that this.newAvatarUrl is set, we can proceed with the update methods
         this.updateAvatarSelectionUI(this.newAvatarUrl, file.name);
@@ -213,27 +214,33 @@ export class UploadCareService implements OnInit {
   }
 
   eraseUploadedPhoto() {
-    if (this.fileId) {
-      // Make the DELETE request to Uploadcare API
-      this.http
-        .delete(`https://api.uploadcare.com/files/${this.fileId}/`, {
-          headers: {
-            Authorization: `Basic ${btoa(this.uploadCareApiKey + ':')}`,
-          },
-        })
-        .subscribe({
-          next: () => {
-            console.log('Image successfully erased from Uploadcare.');
-            this.resetSelectedPhoto(); // Reset UI state
-          },
-          error: (error) => {
-            console.error('Error erasing image from Uploadcare:', error);
-            this.uploadErrorMessage =
-              'Failed to delete image. Please try again.';
-          },
-        });
+    if (!this.isUploading) {
+      this.resetSelectedPhoto();
+
+      // Check if the user is in sign-up flow and reset their photoURL if so
+      if (this.signUpComponent?.user) {
+        this.signUpComponent.user.photoURL = '';
+      }
     } else {
-      console.log('No file ID available to erase.');
+      console.log(
+        'No user or sign-up component available to reset the avatar.'
+      );
     }
+
+    this.uploadErrorMessage = null;
+  }
+
+  deleteFromUploadcare(uuid: string) {
+    const deleteUrl = `https://api.uploadcare.com/files/${uuid}/`;
+    const headers = {
+      Authorization: `Uploadcare.Simple ${this.uploadCareApiKey}:`,
+    };
+
+    return this.http.delete(deleteUrl, { headers }).subscribe({
+      next: () =>
+        console.log(`File ${uuid} deleted successfully from Uploadcare`),
+      error: (error) =>
+        console.error('Error deleting file from Uploadcare:', error),
+    });
   }
 }

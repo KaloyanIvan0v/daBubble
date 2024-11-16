@@ -43,14 +43,14 @@ section {
   }
 
   &:hover {
-    .change-img-overlay {
+    .edit-img-overlay {
       opacity: 1;
       cursor: pointer;
     }
   }
 }
 
-.user-img .change-img-overlay {
+.user-img .edit-img-overlay {
   @include dFlex($fd: column, $jc: center, $ai: center);
   position: absolute;
   width: 200px;

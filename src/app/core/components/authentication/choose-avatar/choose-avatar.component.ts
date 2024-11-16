@@ -42,7 +42,7 @@ export class ChooseAvatarComponent {
       setTimeout(() => {
         resolve(
           this.uploadCareService.selectedPhoto !== null ||
-            this.uploadCareService.isUploadedPhoto
+            this.uploadCareService.uploadComplete
         );
       }, 1000);
     });

@@ -15,7 +15,6 @@ import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { BehaviorSubject, Subscription, Observable, from, Subject } from 'rxjs';
 import { AuthUIService } from '../authUI-services/authUI.service';
-import { WorkspaceService } from '../workspace-service/workspace.service';
 
 @Injectable({
   providedIn: 'root',
@@ -70,8 +69,8 @@ export class AuthService {
       password
     );
     this.currentUser$.next(userCredential.user);
-
     this.authStatusChanged.set(true);
+    this.userStateChanged.next();
     return userCredential.user;
   }
 
@@ -84,7 +83,8 @@ export class AuthService {
       const user: User = response.user;
       await updateProfile(user, { displayName: name });
       await this.saveUserDataToFirestore(user, name, email);
-      this.currentUser$.next(user); // Update the current user after registration
+      this.currentUser$.next(user);
+      this.userStateChanged.next();
     });
     return from(promise);
   }
@@ -123,7 +123,7 @@ export class AuthService {
         this.authUIService.toggleAvatarSelection();
       }
     } else {
-      this.userStateChanged.next(); // Notify listeners
+      this.userStateChanged.next();
       this.router.navigate(['/dashboard']);
     }
     this.currentUser$.next(user);
