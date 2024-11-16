@@ -17,7 +17,15 @@
       <div class="add-user" (click)="openAddUserToChannelPopUp()"></div>
     </div>
   </div>
-  <div class="message-container">nachrichten</div>
+  <div
+    #messageContainer
+    *ngIf="channelData"
+    class="message-container overflow-y-scroll"
+  >
+    <div *ngFor="let message of channelData.messages" class="message">
+      <app-message [message]="message"></app-message>
+    </div>
+  </div>
   <app-input-box [channelId]="channelId"></app-input-box>
   <app-channel-members-view
     class="channel-members-view"

@@ -1,29 +1,41 @@
-import { Component, OnInit, OnDestroy, effect } from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  ElementRef,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+  effect,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Subscription } from 'rxjs';
 import { Channel } from 'src/app/core/shared/models/channel.class';
-import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
 import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
 import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edit-channel/edit-channel.component';
-
+import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
 @Component({
   selector: 'app-channel-chat',
   standalone: true,
   imports: [
     InputBoxComponent,
-    CommonModule,
     AddUserToChannelComponent,
     ChannelMembersViewComponent,
     EditChannelComponent,
+    FormsModule,
+    CommonModule,
+    MessageComponent,
   ],
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
 })
-export class ChannelChatComponent implements OnInit, OnDestroy {
+export class ChannelChatComponent
+  implements OnInit, OnDestroy, AfterViewChecked
+{
   private subscriptions = new Subscription();
   private channelSubscription?: Subscription;
   channelData!: Channel;
@@ -49,6 +61,20 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {}
+
+  @ViewChild('messageContainer') private messageContainer!: ElementRef;
+
+  // Methode, um immer nach unten zu scrollen
+  private scrollToBottom(): void {
+    if (this.messageContainer) {
+      this.messageContainer.nativeElement.scrollTop =
+        this.messageContainer.nativeElement.scrollHeight;
+    }
+  }
+  // Automatisches Scrollen nach neuen Änderungen
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
 
   private loadChannelData(channelId: string): void {
     this.channelSubscription?.unsubscribe();

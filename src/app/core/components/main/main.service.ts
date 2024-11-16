@@ -20,9 +20,8 @@ export class MainService {
   ) {
     const id = this.firestore.getUniqueId();
     const userId = await this.authService.getCurrentUserUID();
-    const name: string = await firstValueFrom(
-      this.getSpaceName(collection, docId)
-    );
+    const name: string = await this.getSpaceName(collection, docId);
+
     const plainInputMessage = {
       text: inputMessage.message,
       imports: inputMessage.imports,
@@ -39,8 +38,15 @@ export class MainService {
     await this.firestore.sendMessage(collection, docId, message);
   }
 
-  getSpaceName(collection: string, docId: string) {
-    const doc = this.firestore.getDoc<{ name: string }>(collection, docId);
-    return doc.pipe(map((doc) => doc?.name ?? ''));
+  async getSpaceName(collection: string, docId: string): Promise<string> {
+    if (collection === 'channels') {
+      const doc = this.firestore.getChannel(docId);
+      const name = await firstValueFrom(
+        doc.pipe(map((doc) => doc?.name ?? ''))
+      );
+      return name;
+    } else {
+      return '';
+    }
   }
 }
