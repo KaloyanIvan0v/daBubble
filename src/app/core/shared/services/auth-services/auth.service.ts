@@ -15,7 +15,6 @@ import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { BehaviorSubject, Subscription, Observable, from, Subject } from 'rxjs';
 import { AuthUIService } from '../authUI-services/authUI.service';
-import { WorkspaceService } from '../workspace-service/workspace.service';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +27,7 @@ export class AuthService {
   );
   authStatusChanged = signal<boolean>(false);
   userStateChanged = new Subject<void>();
+  private nextSubject = new Subject<any>();
 
   provider = new GoogleAuthProvider();
   private popupOpen = false; // Tracks if a popup is already open
@@ -37,6 +37,11 @@ export class AuthService {
     private router: Router
   ) {
     this.initAuthState();
+
+    this.getAuthState().subscribe((user: User | null) => {
+      const uid = user ? user.uid : null;
+      this.nextSubject.next(uid);
+    });
   }
 
   private initAuthState(): void {

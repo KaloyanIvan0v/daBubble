@@ -2,7 +2,10 @@ export class Message {
   id: string;
   author: string;
   time: Date;
-  value: object;
+  value: {
+    text: string;
+    imports: string[];
+  };
   thread: object;
   space: string;
   reactions: object;
@@ -11,7 +14,7 @@ export class Message {
     id: string,
     author: string,
     time: Date,
-    value: object,
+    value: { text: string; imports: string[] },
     thread: object,
     space: string,
     reactions: object
