@@ -1,16 +1,13 @@
 @import "global.scss";
 
 .choose-avatar-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  @include dFlex($fd: column, $ai: center);
+
   width: 472px;
   margin: 0 auto;
 
   form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @include dFlex($fd: column, $ai: center);
   }
 
   h2 {
@@ -36,8 +33,7 @@
 }
 
 .photos-container {
-  display: flex;
-  flex-direction: row;
+  @include dFlex($fd: row);
 
   img {
     width: 64px;
@@ -54,8 +50,8 @@
 }
 
 .upload-button {
-  display: flex;
-  align-items: center;
+  @include dFlex($ai: center);
+
   margin-top: 32px;
   width: 100%;
 
@@ -100,9 +96,8 @@
 }
 
 .uploading-container {
-  display: flex;
+  @include dFlex($ai: center);
   width: 100%;
-  align-items: center;
 
   p {
     font-size: 14px;
@@ -126,6 +121,12 @@
 .uploading {
   display: flex;
   align-items: center;
+}
+
+.spinner-container {
+  width: 168px;
+  height: 168px;
+  @include dFlex($jc: center, $ai: center);
 }
 
 @keyframes loading {

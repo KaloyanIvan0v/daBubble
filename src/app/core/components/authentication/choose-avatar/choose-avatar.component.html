@@ -3,7 +3,15 @@
   <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
   <form #chooseAvatarForm="ngForm" (ngSubmit)="uploadCareService.saveAvatar()">
     <h2>Wähle deinen Avatar</h2>
+    <div class="spinner-container" *ngIf="uploadCareService.isUploading">
+      <img
+        src="assets/img/loading-spinner.gif"
+        alt="Loading..."
+        class="loading-spinner"
+      />
+    </div>
     <img
+      *ngIf="!uploadCareService.isUploading"
       [src]="
         uploadCareService.selectedPhoto ||
         'assets/img/profile-img/profile-img-placeholder.svg'
