@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class UploadCareService implements OnInit {
-  @Input() signUpComponent!: SignupComponent;
+  @Input() signUpComponent?: SignupComponent;
   userData = signal<any>(null);
   currentUser!: User | null;
 
@@ -209,8 +209,11 @@ export class UploadCareService implements OnInit {
     this.selectedPhoto = null;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
-    this.signUpComponent.user.photoURL = '';
     this.uploadErrorMessage = null;
+
+    if (this.signUpComponent?.user) {
+      this.signUpComponent.user.photoURL = ''; // Safe access to user.photoURL
+    }
   }
 
   eraseUploadedPhoto() {
@@ -219,7 +222,7 @@ export class UploadCareService implements OnInit {
 
       // Check if the user is in sign-up flow and reset their photoURL if so
       if (this.signUpComponent?.user) {
-        this.signUpComponent.user.photoURL = '';
+        this.signUpComponent.user.photoURL = ''; // Safe access
       }
     } else {
       console.log(

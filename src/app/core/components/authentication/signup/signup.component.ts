@@ -17,7 +17,7 @@ export class SignupComponent implements OnInit {
     name: '',
     email: '',
     password: '',
-    photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
+    photoURL: '',
   };
 
   userData$: Observable<any>;

@@ -37,14 +37,11 @@ export class ChooseAvatarComponent {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
 
-  canProceed(): Promise<boolean> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(
-          this.uploadCareService.selectedPhoto !== null ||
-            this.uploadCareService.uploadComplete
-        );
-      }, 1000);
-    });
+  canProceed(): boolean {
+    return (
+      this.uploadCareService.selectedPhoto !== null &&
+      this.uploadCareService.uploadComplete &&
+      !this.uploadCareService.isUploading
+    );
   }
 }
