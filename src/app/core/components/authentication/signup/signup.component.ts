@@ -22,6 +22,8 @@ export class SignupComponent implements OnInit {
 
   userData$: Observable<any>;
 
+  isEmailAlreadyUsed = false;
+
   constructor(
     public authUIService: AuthUIService,
     private authService: AuthService,
@@ -47,12 +49,23 @@ export class SignupComponent implements OnInit {
       .register(this.user.email, this.user.name, this.user.password)
       .subscribe({
         next: (registeredUser) => {
-          // Update the user data in the workspace service
+          this.isEmailAlreadyUsed = false;
+
           this.workspaceService.updateLoggedInUserData(registeredUser);
-          // Proceed with the next steps
+
           this.authUIService.toggleAvatarSelection();
         },
-        error: (err) => console.error('Registration error:', err),
+        error: (err) => {
+          if (err.code === 'auth/email-already-in-use') {
+            this.isEmailAlreadyUsed = true;
+          }
+        },
       });
+  }
+
+  checkEmailAlreadyUsed(email: string): void {
+    if (email) {
+      this.isEmailAlreadyUsed = false;
+    }
   }
 }

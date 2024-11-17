@@ -1,5 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Input, signal, OnInit } from '@angular/core';
+import {
+  Injectable,
+  Input,
+  signal,
+  OnInit,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { AuthService } from '../auth-services/auth.service';
 import { SignupComponent } from 'src/app/core/components/authentication/signup/signup.component';
 import { WorkspaceService } from '../workspace-service/workspace.service';
@@ -210,10 +217,6 @@ export class UploadCareService implements OnInit {
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;
     this.uploadErrorMessage = null;
-
-    if (this.signUpComponent?.user) {
-      this.signUpComponent.user.photoURL = ''; // Safe access to user.photoURL
-    }
   }
 
   eraseUploadedPhoto() {

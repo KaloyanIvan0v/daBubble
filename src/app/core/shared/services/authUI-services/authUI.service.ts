@@ -6,9 +6,9 @@ import { Injectable } from '@angular/core';
 export class AuthUIService {
   constructor() {}
 
-  showLogin = false;
+  showLogin = true;
   showSignup = false;
-  showAvatarSelection = true;
+  showAvatarSelection = false;
   showResetPassword = false;
   showResetPasswordLink = false;
   isChecked: boolean = false;

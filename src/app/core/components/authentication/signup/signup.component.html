@@ -53,6 +53,10 @@
         <p>*Diese E-Mail-Adresse ist leider ungültig.</p>
       </div>
 
+      <div *ngIf="isEmailAlreadyUsed" class="error-message">
+        <p>*Diese E-Mail-Adresse wird bereits verwendet</p>
+      </div>
+
       <!-- Password Input -->
       <div
         class="password-input"
