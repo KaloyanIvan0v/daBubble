@@ -19,9 +19,12 @@ export class WorkspaceService {
 
   currentActiveUnitId = signal('');
   currentActiveUserId = signal('123456789'); //open UserView PopUp
+  currentActiveDmUser = signal<User | null>(null);
 
   loggedInUserData = new BehaviorSubject<User | null>(null);
   loggedInUserData$ = this.loggedInUserData.asObservable();
+
+  activeDmUsers = signal<User[]>([]);
 
   popUpShadowVisible = signal(false);
   addChannelPopUp = signal(false);
@@ -83,6 +86,14 @@ export class WorkspaceService {
     } catch (error) {
       console.error('Error initializing user data:', error);
     }
+  }
+
+  setActiveDmUser(dmUser: User) {
+    this.currentActiveDmUser.set(dmUser);
+  }
+
+  getCurrentActiveDmUser(): User | null {
+    return this.currentActiveDmUser();
   }
 
   updateLoggedInUserData(userData: any) {

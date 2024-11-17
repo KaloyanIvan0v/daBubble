@@ -95,6 +95,7 @@ export class ChannelChatComponent
           console.error('Fehler beim Laden des Channels:', error),
       });
   }
+
   async loadUsers() {
     const channelUids = this.channelData.uid;
     const userPromises = channelUids.map((uid) =>
