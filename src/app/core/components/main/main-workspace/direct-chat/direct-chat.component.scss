@@ -1,0 +1,68 @@
+@import "global.scss";
+section {
+  position: relative;
+  box-sizing: border-box;
+  @include dFlex($fd: column);
+  width: 100%;
+  height: calc(100vh - 140px);
+  padding-bottom: 40px;
+  box-sizing: border-box;
+  z-index: auto;
+}
+
+.header {
+  width: 100%;
+  height: 110px;
+  @include dFlex($jc: space-between);
+  padding: 25px 45px;
+  box-shadow: 0px 10px 10px -5px #00000014;
+}
+
+.message-container {
+  @include dFlex($fd: column, $jc: start);
+  gap: 25px;
+  max-height: 100%;
+  width: 100%;
+  flex-grow: 1;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+app-input-box {
+  @include dFlex();
+  width: 100%;
+  height: 145px;
+}
+
+.header-left {
+  @include dFlex();
+  gap: 10px;
+  padding: 5px 10px 5px 18px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $bg-color;
+    border-radius: 50px;
+  }
+}
+
+.user-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: relative;
+  margin-left: -10px;
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+}
+
+.user-name {
+  font-family: Nunito;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32.74px;
+  text-align: left;
+}

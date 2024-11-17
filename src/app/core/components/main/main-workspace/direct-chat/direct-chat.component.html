@@ -1,1 +1,31 @@
-<p>direct-chat works!</p>
+<section>
+  <div class="header">
+    <div class="header-left">
+      <div class="user-img">
+        <img
+          [src]="
+            dmUser?.photoURL ||
+            '/assets/img/profile-img/profile-img-placeholder.svg'
+          "
+          alt="user-img"
+        />
+      </div>
+      <div class="user-name">{{ dmUser?.name || "Name Placeholder" }}</div>
+    </div>
+  </div>
+  <div #messageContainer *ngIf="" class="message-container overflow-y-scroll">
+    <div
+      *ngFor="let message of messages"
+      [class.sent]="message.author === loggedInUserId"
+      [class.received]="message.author !== loggedInUserId"
+      class="message"
+    ></div>
+  </div>
+  <!-- Placeholder for no messages -->
+  <div class="no-messages" *ngIf="!messages?.length">
+    No messages yet. Say hello!
+  </div>
+
+  <!-- Input Box for Sending Messages -->
+  <app-input-box (sendMessage)="sendMessage()"></app-input-box>
+</section>
