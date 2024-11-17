@@ -1,0 +1,66 @@
+@import "global.scss";
+
+section {
+  width: 100%;
+  @include dFlex();
+  &:hover {
+    background-color: $bg-color;
+    .msg-text {
+      background-color: white;
+    }
+  }
+  padding: 10px 45px;
+}
+
+.msg-wrapper {
+  width: 100%;
+  @include dFlex($jc: start);
+  gap: 30px;
+}
+
+.img-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.msg-content {
+  width: max-content;
+  @include dFlex($fd: column, $ai: start);
+  gap: 8px;
+}
+
+.name-date-wrapper {
+  width: 100%;
+  @include dFlex($jc: start);
+  gap: 20px;
+}
+
+.author-name {
+  width: max-content;
+  @include dFlex();
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  &:hover {
+    cursor: pointer;
+    color: $purple3;
+  }
+}
+
+.msg-date {
+  color: $text-grey;
+}
+
+.msg-text {
+  background-color: $bg-color;
+  border-radius: 30px;
+  border-top-left-radius: 0px;
+  padding: 15px;
+}

@@ -1,17 +1,25 @@
+import { FirebaseServicesService } from './../../services/firebase/firebase.service';
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Message } from 'src/app/core/shared/models/message.class';
+import { User } from '../../models/user.class';
+import { Observable } from 'rxjs';
+import { FirebaseTimePipe } from 'src/app/shared/pipes/firebase-time.pipe';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FirebaseTimePipe],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
 export class MessageComponent {
   @Input() message!: Message;
+  author$: Observable<User> = new Observable();
 
-  constructor() {}
+  constructor(private firebaseService: FirebaseServicesService) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {
+    this.author$ = this.firebaseService.getUser(this.message.author);
+  }
 }

@@ -1,3 +1,22 @@
 <section>
-  <div class="message">{{ message.value.text }}</div>
+  <div class="msg-wrapper" *ngIf="author$ | async as author">
+    <div class="img-wrapper">
+      <img src="{{ (author$ | async)?.photoURL }}" alt="" />
+    </div>
+    <div class="msg-content">
+      <div class="name-date-wrapper">
+        <div class="author-name">
+          {{ (author$ | async)?.name }}
+        </div>
+        <div class="msg-date">{{ message.time | firebaseTime }} Uhr</div>
+      </div>
+      <div class="msg-text">
+        {{ message.value.text }}
+      </div>
+      <div>
+        <div class="msg-threads"></div>
+        <div class="threads-last-response"></div>
+      </div>
+    </div>
+  </div>
 </section>
