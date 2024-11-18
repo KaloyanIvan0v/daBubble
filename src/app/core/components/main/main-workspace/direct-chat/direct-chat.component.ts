@@ -43,7 +43,7 @@ export class DirectChatComponent
     effect(() => {
       const activeDmUser = this.workspaceService.currentActiveDmUser(); // Get the active DM user
       if (activeDmUser) {
-        this.dmUser = activeDmUser; // Set the dmUser to the active DM user
+        // this.dmUser = activeDmUser; // Set the dmUser to the active DM user
       } else {
         console.warn('No valid DM user available.');
       }

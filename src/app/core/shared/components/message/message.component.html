@@ -5,7 +5,7 @@
     </div>
     <div class="msg-content">
       <div class="name-date-wrapper">
-        <div class="author-name">
+        <div class="author-name" (click)="openAuthorProfile(author.uid)">
           {{ (author$ | async)?.name }}
         </div>
         <div class="msg-date">{{ message.time | firebaseTime }} Uhr</div>
