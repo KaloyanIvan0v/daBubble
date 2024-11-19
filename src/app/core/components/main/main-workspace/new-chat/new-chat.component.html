@@ -3,11 +3,25 @@
     <div class="font24-700">Neue Nachricht</div>
     <div class="input-wrapper">
       <input
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
         placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
         type="text"
       />
+      <div *ngIf="searchResults.length > 0" class="search-results-container">
+        <div
+          *ngFor="let result of searchResults"
+          class="search-result-item"
+          (click)="onSelectResult(result)"
+        >
+          <p *ngIf="result.name">{{ result.name }}</p>
+          <p *ngIf="result.email">{{ result.email }}</p>
+          <p *ngIf="result.description">{{ result.description }}</p>
+        </div>
+      </div>
     </div>
   </div>
+
   <div class="message-container">nachrichten</div>
   <app-input-box></app-input-box>
 </section>

@@ -9,6 +9,7 @@ import {
   CollectionReference,
   docData,
   arrayUnion,
+  getDocs,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { where, query, getDoc } from 'firebase/firestore';
@@ -191,5 +192,80 @@ export class FirebaseServicesService implements OnDestroy {
   getUniqueId() {
     const id = doc(collection(this.firestore, 'dummyCollection')).id;
     return id;
+  }
+
+  private getDocs(q: any): Observable<any[]> {
+    return new Observable((observer) => {
+      getDocs(q)
+        .then((snapshot) => {
+          const results = snapshot.docs.map((doc) => doc.data());
+          observer.next(results);
+        })
+        .catch((error) => observer.error(error));
+    });
+  }
+
+  searchUsers(queryText: string): Observable<any[]> {
+    const usersRef = collection(this.firestore, 'users');
+
+    if (queryText.startsWith('@')) {
+      const username = queryText.slice(1).toLowerCase();
+      return this.searchByUsername(usersRef, username);
+    }
+    // Search by email
+    else if (this.isEmail(queryText)) {
+      const email = queryText.toLowerCase();
+      return this.searchByEmail(usersRef, email);
+    } else {
+      return this.searchByEmailPrefix(usersRef, queryText.toLowerCase());
+    }
+  }
+
+  private searchByEmailPrefix(
+    usersRef: CollectionReference,
+    emailPrefix: string
+  ): Observable<any[]> {
+    const q = query(
+      usersRef,
+      where('email', '>=', emailPrefix),
+      where('email', '<=', emailPrefix + '\uf8ff')
+    );
+    return this.getDocs(q);
+  }
+
+  isEmail(queryText: string): boolean {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]*$/;
+    return emailPattern.test(queryText);
+  }
+
+  private searchByUsername(
+    usersRef: CollectionReference,
+    username: string
+  ): Observable<any[]> {
+    const q = query(
+      usersRef,
+      where('name', '>=', username),
+      where('name', '<=', username + '\uf8ff')
+    );
+    return this.getDocs(q);
+  }
+
+  private searchByEmail(
+    usersRef: CollectionReference,
+    email: string
+  ): Observable<any[]> {
+    const q = query(usersRef, where('email', '==', email));
+    return this.getDocs(q);
+  }
+
+  searchChannels(queryText: string): Observable<any[]> {
+    const channelName = queryText.slice(1).toLowerCase();
+    const channelsRef = collection(this.firestore, 'channels');
+    const q = query(
+      channelsRef,
+      where('name', '>=', channelName),
+      where('name', '<=', channelName + '\uf8ff')
+    );
+    return this.getDocs(q);
   }
 }
