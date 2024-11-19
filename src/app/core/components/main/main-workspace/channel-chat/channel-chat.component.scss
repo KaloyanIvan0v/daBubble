@@ -20,7 +20,7 @@ section {
 
 .message-container {
   @include dFlex($fd: column, $jc: start);
-  gap: 35px;
+  gap: 65px;
   max-height: 100%;
   width: 100%;
   flex-grow: 1;
