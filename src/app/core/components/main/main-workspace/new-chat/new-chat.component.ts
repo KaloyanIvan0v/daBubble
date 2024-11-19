@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
@@ -17,7 +17,23 @@ export class NewChatComponent {
   searchText: string = '';
   isSearching: boolean = false;
 
+  @ViewChild('searchInput', { static: false }) searchInput!: ElementRef;
+
   constructor(private firebaseService: FirebaseServicesService) {}
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent): void {
+    if (
+      this.searchInput &&
+      !this.searchInput.nativeElement.contains(event.target)
+    ) {
+      this.closeSearchResults();
+    }
+  }
+
+  closeSearchResults() {
+    this.searchResults = [];
+  }
 
   onSearchChange(): void {
     const searchText = this.searchQuery.trim();

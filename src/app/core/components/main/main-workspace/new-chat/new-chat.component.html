@@ -3,6 +3,7 @@
     <div class="font24-700">Neue Nachricht</div>
     <div class="input-wrapper">
       <input
+        #searchInput
         [(ngModel)]="searchQuery"
         (input)="onSearchChange()"
         placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
