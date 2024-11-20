@@ -1,5 +1,5 @@
 import { FirebaseServicesService } from './../../services/firebase/firebase.service';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { User } from '../../models/user.class';
@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 import { FirebaseTimePipe } from 'src/app/shared/pipes/firebase-time.pipe';
 import { WorkspaceService } from '../../services/workspace-service/workspace.service';
 import { ReactionsMenuComponent } from './reactions-menu/reactions-menu.component';
-
 @Component({
   selector: 'app-message',
   standalone: true,
@@ -31,9 +30,5 @@ export class MessageComponent {
   openAuthorProfile(authorId: string) {
     this.workspaceService.currentActiveUserId.set(authorId);
     this.workspaceService.profileViewPopUp.set(true);
-  }
-
-  addEmoji(emoji: string) {
-    this.message.value.text = this.message.value.text + emoji;
   }
 }

@@ -44,6 +44,7 @@ export class ChannelChatComponent
   userAmount: number = 0;
   channelUsers: any[] = [];
   popUpStates: { [key: string]: boolean } = {};
+  private lastMessageLength: number = 0;
   private popUpStatesSubscription!: Subscription;
 
   constructor(
@@ -71,12 +72,18 @@ export class ChannelChatComponent
         this.messageContainer.nativeElement.scrollHeight;
     }
   }
-  // Automatisches Scrollen nach neuen Änderungen
+
   ngAfterViewChecked(): void {
-    this.scrollToBottom();
+    if (this.channelData) {
+      if (this.lastMessageLength !== this.channelData.messages.length) {
+        this.scrollToBottom();
+        // Update lastMessageLength after scrolling to ensure it's in sync
+        this.lastMessageLength = this.channelData.messages.length;
+      }
+    }
   }
 
-  private loadChannelData(channelId: string): void {
+  loadChannelData(channelId: string): void {
     this.channelSubscription?.unsubscribe();
 
     this.channelUsers = [];

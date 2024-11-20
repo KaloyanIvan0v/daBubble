@@ -1,0 +1,9 @@
+<div class="emoji-picker">
+  <button
+    *ngFor="let emoji of emojis"
+    (click)="selectEmoji(emoji)"
+    class="emoji-button"
+  >
+    {{ emoji }}
+  </button>
+</div>

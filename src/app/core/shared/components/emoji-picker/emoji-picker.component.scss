@@ -1,0 +1,22 @@
+@import "global.scss";
+
+.emoji-picker {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 15px;
+  border: solid 1px $light-purple;
+}
+
+.emoji-button {
+  font-size: 24px;
+  margin: 5px;
+  cursor: pointer;
+  border: none;
+  background: none;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
