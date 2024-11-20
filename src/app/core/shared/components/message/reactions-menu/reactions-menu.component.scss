@@ -1,0 +1,45 @@
+@import "global.scss";
+
+section {
+  @include dFlex();
+  position: relative;
+  gap: 5px;
+  border: 1px solid $light-purple;
+  border-radius: 25px;
+  background-color: white;
+  z-index: 4;
+  padding: 3px 15px;
+}
+
+.add-reaction {
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/add_reaction-black.svg",
+    "/assets/img/buttons/add_reaction-blue.svg"
+  );
+  border-radius: 50%;
+}
+
+.add-thread {
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/comment-black.svg",
+    "/assets/img/buttons/comment-blue.svg"
+  );
+
+  border-radius: 50%;
+}
+
+.more-options {
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/more_vert-black.svg",
+    "/assets/img/buttons/more_vert-blue.svg"
+  );
+
+  border-radius: 50%;
+}
+
+.emoji-picker-wrapper {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 3;
+}

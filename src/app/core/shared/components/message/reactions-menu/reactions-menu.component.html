@@ -1,1 +1,12 @@
-<p>reactions-menu works!</p>
+<section>
+  <div class="emoji-one">
+    <img src="" alt="" />
+  </div>
+  <div class="emoji-two">
+    <img src="" alt="" />
+  </div>
+  <div class="add-reaction" (click)="toggleEmojiPicker()"></div>
+  <div class="add-thread"></div>
+  <div class="more-options"></div>
+  <div *ngIf="showEmojiPicker" class="emoji-picker-wrapper"></div>
+</section>

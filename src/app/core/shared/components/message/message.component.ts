@@ -6,11 +6,12 @@ import { User } from '../../models/user.class';
 import { Observable } from 'rxjs';
 import { FirebaseTimePipe } from 'src/app/shared/pipes/firebase-time.pipe';
 import { WorkspaceService } from '../../services/workspace-service/workspace.service';
+import { ReactionsMenuComponent } from './reactions-menu/reactions-menu.component';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [CommonModule, FirebaseTimePipe],
+  imports: [CommonModule, FirebaseTimePipe, ReactionsMenuComponent],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss',
 })
@@ -30,5 +31,9 @@ export class MessageComponent {
   openAuthorProfile(authorId: string) {
     this.workspaceService.currentActiveUserId.set(authorId);
     this.workspaceService.profileViewPopUp.set(true);
+  }
+
+  addEmoji(emoji: string) {
+    this.message.value.text = this.message.value.text + emoji;
   }
 }

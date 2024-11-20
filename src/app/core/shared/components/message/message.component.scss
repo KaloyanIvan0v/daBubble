@@ -1,12 +1,16 @@
 @import "global.scss";
 
 section {
+  position: relative;
   width: 100%;
   @include dFlex();
   &:hover {
     background-color: $bg-color;
     .msg-text {
       background-color: white;
+    }
+    .reactions-menu {
+      display: block;
     }
   }
   padding: 10px 45px;
@@ -19,6 +23,7 @@ section {
 }
 
 .img-wrapper {
+  min-width: 70px;
   width: 70px;
   height: 70px;
   border-radius: 50%;
@@ -31,8 +36,8 @@ section {
 }
 
 .msg-content {
-  width: max-content;
   @include dFlex($fd: column, $ai: start);
+  flex-grow: 1;
   gap: 8px;
 }
 
@@ -63,4 +68,11 @@ section {
   border-radius: 30px;
   border-top-left-radius: 0px;
   padding: 15px;
+}
+
+.reactions-menu {
+  position: absolute;
+  right: 20px;
+  top: -23px;
+  display: none;
 }
