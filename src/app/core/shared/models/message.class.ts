@@ -1,4 +1,5 @@
 import { Reaction } from './reaction.class';
+import { Thread } from './thread.class';
 export class Message {
   id: string;
   author: string;
@@ -11,7 +12,7 @@ export class Message {
     text: string;
     imports: string[];
   };
-  thread: object;
+  thread: Thread;
   space: string;
   reactions: Reaction[];
 
@@ -20,7 +21,7 @@ export class Message {
     author: string,
     time: Date,
     value: { text: string; imports: string[] },
-    thread: object,
+    thread: Thread,
     space: string,
     reactions: Reaction[]
   ) {

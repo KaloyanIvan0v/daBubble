@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 import { firstValueFrom, map } from 'rxjs';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { Reaction } from 'src/app/core/shared/models/reaction.class';
+import { Thread } from 'src/app/core/shared/models/thread.class';
 
 @Injectable({
   providedIn: 'root',
@@ -35,7 +36,7 @@ export class MainService {
       time: new Date(Date.now()),
       location: { collection: collection, docId: docId },
       value: plainInputMessage,
-      thread: {},
+      thread: JSON.parse(JSON.stringify(new Thread('', '', []))),
       space: name,
       reactions: [],
     };

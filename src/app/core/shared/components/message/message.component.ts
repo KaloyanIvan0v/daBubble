@@ -25,6 +25,7 @@ export class MessageComponent {
 
   ngOnInit(): void {
     this.author$ = this.firebaseService.getUser(this.message.author);
+    console.log(this.message);
   }
 
   openAuthorProfile(authorId: string) {
