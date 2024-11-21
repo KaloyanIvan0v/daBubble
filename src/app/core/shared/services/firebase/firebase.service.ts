@@ -8,7 +8,6 @@ import {
   updateDoc,
   CollectionReference,
   docData,
-  arrayUnion,
   getDocs,
   deleteDoc,
   orderBy,

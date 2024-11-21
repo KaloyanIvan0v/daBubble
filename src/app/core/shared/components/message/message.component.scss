@@ -79,7 +79,7 @@ section {
 
 .reactions-view {
   @include dFlex();
-  gap: 11px;
+  gap: 10px;
 }
 
 .reaction {
@@ -100,6 +100,8 @@ section {
 
 .reaction-authors {
   @include dFlex();
+  width: max-content;
+  max-width: 170px;
   position: absolute;
   bottom: 35px;
   left: 50%;
@@ -112,6 +114,13 @@ section {
   gap: 5px;
   color: white;
   z-index: 4;
+}
+
+.reaction-authors-emoji {
+  @include dFlex();
+  transform: scale(2);
+  width: 100%;
+  gap: 5px;
 }
 
 .add-reaction-btn {
@@ -128,4 +137,11 @@ section {
   position: absolute;
   z-index: 4;
   top: 35px;
+}
+
+.reaction-author-name {
+  width: 100%;
+  @include dFlex();
+  font-size: 16px;
+  font-weight: 700;
 }

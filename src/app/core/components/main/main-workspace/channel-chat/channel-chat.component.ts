@@ -5,6 +5,8 @@ import {
   OnInit,
   OnDestroy,
   effect,
+  AfterViewInit,
+  NgZone,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -52,7 +54,8 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService
+    private firebaseService: FirebaseServicesService,
+    private ngZone: NgZone
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
@@ -111,7 +114,10 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     this.messagesSubscription = this.messages$.subscribe((messages) => {
       if (messages) {
         this.messages = messages;
-        this.checkForNewMessages();
+        setTimeout(() => {
+          // to ensure messages are rendered before scrolling
+          this.checkForNewMessages();
+        });
       }
     });
   }

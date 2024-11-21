@@ -36,9 +36,15 @@
           <div class="emoji">{{ reaction.value }}</div>
           <div class="amount">{{ reaction.authors.length }}</div>
           <div class="reaction-authors">
-            <div>{{ reaction.value }}</div>
-            <div></div>
-            <div class="font16-400">hat reagiert</div>
+            <div class="reaction-authors-emoji">{{ reaction.value }}</div>
+            <div *ngFor="let authorUID of reaction.authors">
+              <ng-container
+                *ngIf="getAuthorName(authorUID) | async as authorName"
+              >
+                <div class="reaction-author-name">{{ authorName }}</div>
+              </ng-container>
+            </div>
+            <div class="font16-400 dfc">hat reagiert</div>
           </div>
         </div>
         <div class="add-reaction-btn" (click)="toggleEmojiPicker()">
