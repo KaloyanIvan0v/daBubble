@@ -40,7 +40,6 @@ export class AddChannelComponent {
       id: '',
       name: this.channelName,
       description: this.chanelDescription,
-      messages: [],
       creator: uid ?? '',
     };
 

@@ -17,7 +17,16 @@
         <div class="msg-threads"></div>
         <div class="threads-last-response"></div>
       </div>
+      <div *ngIf="message.thread !== {}" class="thread-view">
+        <div class="thread-amount">{{ message.thread }}</div>
+        <div class="last-thread-time">
+          Letzte Antwort {{ message.time | firebaseTime }}
+        </div>
+      </div>
     </div>
   </div>
-  <app-reactions-menu class="reactions-menu"></app-reactions-menu>
+  <app-reactions-menu
+    [message]="message"
+    class="reactions-menu"
+  ></app-reactions-menu>
 </section>

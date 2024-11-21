@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   Component,
   ElementRef,
   ViewChild,
@@ -12,12 +11,14 @@ import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Channel } from 'src/app/core/shared/models/channel.class';
+import { Message } from 'src/app/core/shared/models/message.class';
 import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
 import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
 import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edit-channel/edit-channel.component';
 import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
+
 @Component({
   selector: 'app-channel-chat',
   standalone: true,
@@ -33,11 +34,10 @@ import { MessageComponent } from 'src/app/core/shared/components/message/message
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
 })
-export class ChannelChatComponent
-  implements OnInit, OnDestroy, AfterViewChecked
-{
+export class ChannelChatComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   private channelSubscription?: Subscription;
+  private messagesSubscription?: Subscription;
   channelData!: Channel;
   channelName: string = '';
   channelId: string = '';
@@ -45,7 +45,10 @@ export class ChannelChatComponent
   channelUsers: any[] = [];
   popUpStates: { [key: string]: boolean } = {};
   private lastMessageLength: number = 0;
-  private popUpStatesSubscription!: Subscription;
+  private popUpStatesSubscription?: Subscription;
+
+  messages$!: Observable<Message[]>;
+  private messages: Message[] = [];
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -73,20 +76,20 @@ export class ChannelChatComponent
     }
   }
 
-  ngAfterViewChecked(): void {
-    if (this.channelData) {
-      if (this.lastMessageLength !== this.channelData.messages.length) {
-        this.scrollToBottom();
-        // Update lastMessageLength after scrolling to ensure it's in sync
-        this.lastMessageLength = this.channelData.messages.length;
-      }
+  private checkForNewMessages(): void {
+    if (this.lastMessageLength !== this.messages.length) {
+      this.scrollToBottom();
+      this.lastMessageLength = this.messages.length;
     }
   }
 
   loadChannelData(channelId: string): void {
     this.channelSubscription?.unsubscribe();
+    this.messagesSubscription?.unsubscribe();
 
     this.channelUsers = [];
+
+    // Lade das Channel-Dokument
     this.channelSubscription = this.firebaseService
       .getChannel(channelId)
       .subscribe({
@@ -101,6 +104,16 @@ export class ChannelChatComponent
         error: (error) =>
           console.error('Fehler beim Laden des Channels:', error),
       });
+
+    // Lade die Nachrichten des Channels
+    this.messages$ = this.firebaseService.getMessages('channels', channelId);
+
+    this.messagesSubscription = this.messages$.subscribe((messages) => {
+      if (messages) {
+        this.messages = messages;
+        this.checkForNewMessages();
+      }
+    });
   }
 
   async loadUsers() {
@@ -114,6 +127,7 @@ export class ChannelChatComponent
 
   ngOnDestroy(): void {
     this.channelSubscription?.unsubscribe();
+    this.messagesSubscription?.unsubscribe();
     this.subscriptions.unsubscribe();
     this.popUpStatesSubscription?.unsubscribe();
   }

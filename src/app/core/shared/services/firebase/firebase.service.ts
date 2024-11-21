@@ -10,12 +10,17 @@ import {
   docData,
   arrayUnion,
   getDocs,
+  deleteDoc,
+  orderBy,
+  query,
+  setDoc,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
-import { where, query, getDoc } from 'firebase/firestore';
+import { where, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -55,6 +60,66 @@ export class FirebaseServicesService implements OnDestroy {
   private mapDocumentData<T>(doc: any): T & { id: string } {
     const data = doc.data() as T;
     return { ...data, id: doc.id };
+  }
+
+  getMessages(collectionName: string, docId: string): Observable<Message[]> {
+    const messagesCollectionRef = collection(
+      this.firestore,
+      `${collectionName}/${docId}/messages`
+    );
+
+    const q = query(messagesCollectionRef, orderBy('time'));
+
+    return new Observable<Message[]>((observer) => {
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const messages = snapshot.docs.map((doc) =>
+            this.mapDocumentData<Message>(doc)
+          );
+          observer.next(messages);
+        },
+        (error) => {
+          observer.error(`Error fetching messages: ${error}`);
+        }
+      );
+
+      return () => unsubscribe();
+    });
+  }
+
+  async sendMessage(collectionName: string, docId: string, message: Message) {
+    const messageDocRef = doc(
+      this.firestore,
+      `${collectionName}/${docId}/messages/${message.id}`
+    );
+    await setDoc(messageDocRef, message);
+  }
+
+  // Methoden zum Aktualisieren und Löschen von Nachrichten
+  async updateMessage(
+    collectionName: string,
+    docId: string,
+    messageId: string,
+    data: Partial<Message>
+  ): Promise<void> {
+    const messageDocRef = doc(
+      this.firestore,
+      `${collectionName}/${docId}/messages/${messageId}`
+    );
+    return updateDoc(messageDocRef, data);
+  }
+
+  async deleteMessage(
+    collectionName: string,
+    docId: string,
+    messageId: string
+  ): Promise<void> {
+    const messageDocRef = doc(
+      this.firestore,
+      `${collectionName}/${docId}/messages/${messageId}`
+    );
+    return deleteDoc(messageDocRef);
   }
 
   getCollection<T>(
@@ -155,13 +220,6 @@ export class FirebaseServicesService implements OnDestroy {
   ): Promise<void> {
     const docRef = this.getDocRef(collectionName, docId);
     return updateDoc(docRef, data);
-  }
-
-  async sendMessage(collectionName: string, docId: string, message: Message) {
-    const docRef = this.getDocRef(collectionName, docId);
-    return updateDoc(docRef, {
-      messages: arrayUnion(message),
-    });
   }
 
   getUsers(): Observable<any> {

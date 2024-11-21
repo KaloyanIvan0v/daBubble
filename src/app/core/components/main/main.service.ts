@@ -3,6 +3,8 @@ import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/f
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { firstValueFrom, map } from 'rxjs';
+import { Message } from 'src/app/core/shared/models/message.class';
+import { Reaction } from 'src/app/core/shared/models/reaction.class';
 
 @Injectable({
   providedIn: 'root',
@@ -26,15 +28,18 @@ export class MainService {
       text: inputMessage.message,
       imports: inputMessage.imports,
     };
-    const message = {
+
+    const message: Message = {
       id: id,
       author: userId!,
       time: new Date(Date.now()),
+      location: { collection: collection, docId: docId },
       value: plainInputMessage,
       thread: {},
       space: name,
-      reactions: {},
+      reactions: [],
     };
+
     await this.firestore.sendMessage(collection, docId, message);
   }
 

@@ -6,13 +6,11 @@ export class Channel {
   name: string;
   description: string;
   creator: string;
-  messages: Message[];
 
   constructor(
     id: string,
     name: string,
     description: string,
-    messages: Message[],
     creator: string,
     uid: []
   ) {
@@ -21,6 +19,5 @@ export class Channel {
     this.name = name;
     this.description = description;
     this.creator = creator;
-    this.messages = messages;
   }
 }
