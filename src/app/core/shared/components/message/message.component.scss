@@ -76,3 +76,56 @@ section {
   top: -23px;
   display: none;
 }
+
+.reactions-view {
+  @include dFlex();
+  gap: 11px;
+}
+
+.reaction {
+  position: relative;
+  @include dFlex();
+  gap: 10px;
+  background-color: white;
+  cursor: pointer;
+  border: solid 1px $light-purple;
+  border-radius: 20px;
+  padding: 5px 10px;
+  &:hover {
+    .reaction-authors {
+      display: block;
+    }
+  }
+}
+
+.reaction-authors {
+  @include dFlex();
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  background-color: transparent;
+  display: none;
+  background-color: $purple1;
+  border-radius: 30px;
+  border-bottom-left-radius: 0px;
+  padding: 15px 10px;
+  gap: 5px;
+  color: white;
+  z-index: 4;
+}
+
+.add-reaction-btn {
+  position: relative;
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/add_reaction-black.svg",
+    "/assets/img/buttons/add_reaction-blue.svg"
+  );
+  background-color: white;
+  border-radius: 50%;
+}
+
+.emoji-picker {
+  position: absolute;
+  z-index: 4;
+  top: 35px;
+}

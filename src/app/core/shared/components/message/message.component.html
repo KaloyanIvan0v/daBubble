@@ -1,5 +1,9 @@
 <section>
-  <div class="msg-wrapper" *ngIf="author$ | async as author">
+  <div
+    (mouseleave)="closeEmojiPicker()"
+    class="msg-wrapper"
+    *ngIf="author$ | async as author"
+  >
     <div class="img-wrapper">
       <img src="{{ (author$ | async)?.photoURL }}" alt="" />
     </div>
@@ -21,6 +25,29 @@
         <div class="thread-amount">{{ message.thread }}</div>
         <div class="last-thread-time">
           Letzte Antwort {{ message.time | firebaseTime }}
+        </div>
+      </div>
+      <div class="reactions-view" *ngIf="message.reactions.length >= 1">
+        <div
+          *ngFor="let reaction of message.reactions"
+          class="reaction"
+          (click)="onEmojiSelected(reaction.value)"
+        >
+          <div class="emoji">{{ reaction.value }}</div>
+          <div class="amount">{{ reaction.authors.length }}</div>
+          <div class="reaction-authors">
+            <div>{{ reaction.value }}</div>
+            <div></div>
+            <div class="font16-400">hat reagiert</div>
+          </div>
+        </div>
+        <div class="add-reaction-btn" (click)="toggleEmojiPicker()">
+          <app-emoji-picker
+            (emojiSelected)="onEmojiSelected($event)"
+            (mouseleave)="showEmojiPicker = false"
+            *ngIf="showEmojiPicker"
+            class="emoji-picker"
+          ></app-emoji-picker>
         </div>
       </div>
     </div>
