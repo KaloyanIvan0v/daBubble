@@ -1,5 +1,6 @@
 <section>
   <div
+    [ngClass]="{ 'fd-reverse': message.author === loggedInUserId }"
     (mouseleave)="closeEmojiPicker()"
     class="msg-wrapper"
     *ngIf="author$ | async as author"
@@ -7,14 +8,26 @@
     <div class="img-wrapper">
       <img src="{{ (author$ | async)?.photoURL }}" alt="" />
     </div>
-    <div class="msg-content">
-      <div class="name-date-wrapper">
+    <div
+      class="msg-content"
+      [ngClass]="{ 'ai-end': message.author === loggedInUserId }"
+    >
+      <div
+        class="name-date-wrapper"
+        [ngClass]="{ 'fd-reverse jc-end': message.author === loggedInUserId }"
+      >
         <div class="author-name" (click)="openAuthorProfile(author.uid)">
           {{ (author$ | async)?.name }}
         </div>
         <div class="msg-date">{{ message.time | firebaseTime }} Uhr</div>
       </div>
-      <div class="msg-text">
+      <div
+        [ngClass]="
+          message.author === loggedInUserId
+            ? 'msg-text-own-message'
+            : 'msg-text'
+        "
+      >
         {{ message.value.text }}
       </div>
       <div>
@@ -37,14 +50,26 @@
           <div class="amount">{{ reaction.authors.length }}</div>
           <div class="reaction-authors">
             <div class="reaction-authors-emoji">{{ reaction.value }}</div>
-            <div *ngFor="let authorUID of reaction.authors">
+            <ng-container *ngIf="reaction.authors.length > 0">
               <ng-container
-                *ngIf="getAuthorName(authorUID) | async as authorName"
+                *ngIf="
+                  getAuthorName(reaction.authors[0]) | async as firstAuthorName
+                "
               >
-                <div class="reaction-author-name">{{ authorName }}</div>
+                <div class="reaction-author-name">
+                  {{ firstAuthorName }}
+                  <div class="more-users" *ngIf="reaction.authors.length > 1">
+                    +{{ reaction.authors.length - 1 }}
+                  </div>
+                </div>
               </ng-container>
+            </ng-container>
+            <div *ngIf="reaction.authors.length < 2" class="font16-400 dfc">
+              hat reagiert
             </div>
-            <div class="font16-400 dfc">hat reagiert</div>
+            <div *ngIf="reaction.authors.length >= 2" class="font16-400 dfc">
+              haben reagiert
+            </div>
           </div>
         </div>
         <div class="add-reaction-btn" (click)="toggleEmojiPicker()">
@@ -60,6 +85,10 @@
   </div>
   <app-reactions-menu
     [message]="message"
-    class="reactions-menu"
+    [ngClass]="
+      message.author === loggedInUserId
+        ? 'reactions-menu-own-message'
+        : 'reactions-menu'
+    "
   ></app-reactions-menu>
 </section>

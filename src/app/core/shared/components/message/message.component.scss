@@ -12,13 +12,16 @@ section {
     .reactions-menu {
       display: block;
     }
+    .reactions-menu-own-message {
+      display: block;
+    }
   }
   padding: 10px 45px;
 }
 
 .msg-wrapper {
   width: 100%;
-  @include dFlex($jc: start);
+  @include dFlex($jc: start, $ai: start);
   gap: 30px;
 }
 
@@ -70,9 +73,24 @@ section {
   padding: 15px;
 }
 
+.msg-text-own-message {
+  background-color: $purple2;
+  border-radius: 30px;
+  border-top-right-radius: 0px;
+  padding: 15px;
+  color: white;
+}
+
 .reactions-menu {
   position: absolute;
   right: 20px;
+  top: -23px;
+  display: none;
+}
+
+.reactions-menu-own-message {
+  position: absolute;
+  left: 45px;
   top: -23px;
   display: none;
 }
@@ -111,16 +129,20 @@ section {
   border-radius: 30px;
   border-bottom-left-radius: 0px;
   padding: 15px 10px;
-  gap: 5px;
+  gap: 10px;
   color: white;
-  z-index: 4;
+  z-index: 10;
+  &:hover {
+    display: none !important;
+  }
 }
 
 .reaction-authors-emoji {
   @include dFlex();
-  transform: scale(2);
   width: 100%;
-  gap: 5px;
+  position: relative;
+  transform: scale(2);
+  margin-left: 7px;
 }
 
 .add-reaction-btn {
@@ -139,9 +161,27 @@ section {
   top: 35px;
 }
 
+// .emoji-picker-last-message {
+//   position: absolute;
+//   z-index: 4;
+//   bottom: 35px;
+// }
+
 .reaction-author-name {
   width: 100%;
-  @include dFlex();
+  @include dFlex($fd: column);
   font-size: 16px;
   font-weight: 700;
+}
+
+.fd-reverse {
+  flex-direction: row-reverse;
+}
+
+.jc-end {
+  justify-content: end;
+}
+
+.ai-end {
+  align-items: end;
 }
