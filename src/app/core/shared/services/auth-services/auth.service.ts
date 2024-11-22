@@ -150,7 +150,8 @@ export class AuthService {
     this.authStatusChanged.set(false);
     this.currentUser$.next(null); // Reset current user to null
 
-    return this.auth.signOut();
+    await this.auth.signOut();
+    this.router.navigate(['/login']);
   }
 
   async resetPassword(email: string): Promise<void> {

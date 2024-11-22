@@ -17,24 +17,20 @@ export class NewChatComponent {
   searchText: string = '';
   isSearching: boolean = false;
 
-  @ViewChild('searchInput', { static: false }) searchInput!: ElementRef;
-
   constructor(private firebaseService: FirebaseServicesService) {}
+  @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
     if (
-      this.searchInput &&
-      !this.searchInput.nativeElement.contains(event.target)
+      this.searchContainer &&
+      !this.searchContainer.nativeElement.contains(event.target)
     ) {
-      this.closeSearchResults();
+      this.searchResults = [];
     }
   }
 
-  closeSearchResults() {
-    this.searchResults = [];
-  }
-
+  // Close the search results
   onSearchChange(): void {
     const searchText = this.searchQuery.trim();
 
@@ -45,9 +41,6 @@ export class NewChatComponent {
       } else if (searchText.startsWith('#')) {
         this.searchResults = [];
         this.searchForChannels(searchText);
-      } else if (searchText.includes('@')) {
-        this.searchResults = [];
-        this.searchForUsers(searchText);
       } else {
         this.searchResults = [];
         this.searchForUsers(searchText);
@@ -67,7 +60,8 @@ export class NewChatComponent {
   }
 
   searchForChannels(queryText: string): void {
-    this.firebaseService.searchChannels(queryText).subscribe(
+    const channelName = queryText.slice(1).toLowerCase();
+    this.firebaseService.searchChannels(channelName).subscribe(
       (results) => {
         this.searchResults = results;
       },
@@ -78,7 +72,34 @@ export class NewChatComponent {
   }
 
   onSelectResult(result: any) {
-    console.log('Selected Result:', result);
-    // Handle the result selection (e.g., initiate a chat)
+    if (result.name) {
+      if (result.email) {
+        this.searchQuery = `@${result.name}`;
+      } else {
+        this.searchQuery = `#${result.name}`;
+      }
+    } else if (result.email) {
+      this.searchQuery = result.email;
+    }
+    this.searchResults = [];
+  }
+
+  selectedIndex: number = -1;
+
+  onKeyDown(event: KeyboardEvent) {
+    if (!this.searchResults.length) return;
+
+    if (event.key === 'ArrowDown') {
+      this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
+      event.preventDefault();
+    } else if (event.key === 'ArrowUp') {
+      this.selectedIndex =
+        (this.selectedIndex - 1 + this.searchResults.length) %
+        this.searchResults.length;
+      event.preventDefault();
+    } else if (event.key === 'Enter' && this.selectedIndex >= 0) {
+      this.onSelectResult(this.searchResults[this.selectedIndex]);
+      event.preventDefault();
+    }
   }
 }

@@ -6,18 +6,24 @@
         #searchInput
         [(ngModel)]="searchQuery"
         (input)="onSearchChange()"
-        placeholder="An: #channel, oder @jemand oder E-Mail Adresse"
+        (keydown)="onKeyDown($event)"
+        placeholder="An: #channel, @jemand, oder E-Mail Adresse"
         type="text"
       />
+
       <div *ngIf="searchResults.length > 0" class="search-results-container">
         <div
-          *ngFor="let result of searchResults"
+          *ngFor="let result of searchResults; let i = index"
           class="search-result-item"
+          [class.active]="i === selectedIndex"
+          role="option"
           (click)="onSelectResult(result)"
+          (keydown.enter)="onSelectResult(result)"
+          tabindex="0"
         >
           <p *ngIf="result.name">{{ result.name }}</p>
+
           <p *ngIf="result.email">{{ result.email }}</p>
-          <p *ngIf="result.description">{{ result.description }}</p>
         </div>
       </div>
     </div>

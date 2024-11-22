@@ -8,7 +8,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { environment } from './app/environments/environment';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import 'emoji-picker-element';
+//import 'emoji-picker-element';
 
 bootstrapApplication(AppComponent, {
   providers: [
