@@ -2,15 +2,23 @@
   <div class="header">
     <div class="font24-700">Neue Nachricht</div>
     <div class="input-wrapper">
-      <input
-        #searchInput
-        [(ngModel)]="searchQuery"
-        (input)="onSearchChange()"
-        (keydown)="onKeyDown($event)"
-        placeholder="An: #channel, @jemand, oder E-Mail Adresse"
-        type="text"
-      />
-
+      <div class="search-input-wrapper">
+        <div *ngIf="selectedUserPhotoURL" class="selected-photo-container">
+          <img
+            [src]="selectedUserPhotoURL"
+            alt="User Avatar"
+            class="selected-photo"
+          />
+        </div>
+        <input
+          #searchInput
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()"
+          (keydown)="onKeyDown($event)"
+          placeholder="An: #channel, @jemand, oder E-Mail Adresse"
+          type="text"
+        />
+      </div>
       <div *ngIf="searchResults.length > 0" class="search-results-container">
         <div
           *ngFor="let result of searchResults; let i = index"
@@ -21,7 +29,20 @@
           (keydown.enter)="onSelectResult(result)"
           tabindex="0"
         >
-          <p *ngIf="result.name">{{ result.name }}</p>
+          <div
+            *ngIf="result.name && result.email"
+            class="results-info-container"
+          >
+            <img
+              *ngIf="result.photoURL"
+              [src]="result.photoURL"
+              alt="{{ result.name }}"
+              class="user-profile-image"
+            />
+            <span>{{ result.name }}</span>
+          </div>
+
+          <p *ngIf="result.name && !result.email">{{ result.name }}</p>
 
           <p *ngIf="result.email">{{ result.email }}</p>
         </div>

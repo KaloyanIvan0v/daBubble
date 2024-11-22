@@ -16,6 +16,7 @@ export class NewChatComponent {
   searchResults: any[] = [];
   searchText: string = '';
   isSearching: boolean = false;
+  selectedUserPhotoURL: string | null = null;
 
   constructor(private firebaseService: FirebaseServicesService) {}
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
@@ -33,6 +34,8 @@ export class NewChatComponent {
   // Close the search results
   onSearchChange(): void {
     const searchText = this.searchQuery.trim();
+
+    this.selectedUserPhotoURL = null;
 
     if (searchText) {
       if (searchText.startsWith('@')) {
@@ -74,9 +77,11 @@ export class NewChatComponent {
   onSelectResult(result: any) {
     if (result.name) {
       if (result.email) {
-        this.searchQuery = `@${result.name}`;
+        this.searchQuery = `@ ${result.name}`;
+        this.selectedUserPhotoURL = result.photoURL || '';
       } else {
-        this.searchQuery = `#${result.name}`;
+        this.searchQuery = `# ${result.name}`;
+        this.selectedUserPhotoURL = '';
       }
     } else if (result.email) {
       this.searchQuery = result.email;

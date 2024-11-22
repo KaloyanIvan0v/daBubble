@@ -30,7 +30,6 @@ app-input-box {
 }
 
 .input-wrapper {
-  @include dFlex();
   position: relative;
   width: 100%;
   border: 1px solid $light-purple;
@@ -55,6 +54,10 @@ app-input-box {
   border-radius: 20px;
 }
 
+.results-info-container {
+  @include dFlex($ai: center, $jc: flex-start);
+}
+
 .search-result-item {
   padding: 10px;
   cursor: pointer;
@@ -62,4 +65,25 @@ app-input-box {
   &:hover {
     background-color: #f1f1f1;
   }
+}
+
+.selected-photo {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+.search-input-wrapper {
+  display: flex;
+}
+
+.user-profile-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
