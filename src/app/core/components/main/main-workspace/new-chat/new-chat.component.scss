@@ -62,7 +62,8 @@ app-input-box {
   padding: 10px;
   cursor: pointer;
 
-  &:hover {
+  &:hover,
+  &.active {
     background-color: #f1f1f1;
   }
 }

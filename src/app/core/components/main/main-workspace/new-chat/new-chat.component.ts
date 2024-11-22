@@ -17,6 +17,8 @@ export class NewChatComponent {
   searchText: string = '';
   isSearching: boolean = false;
   selectedUserPhotoURL: string | null = null;
+  selectedUserName: string | null = null;
+  isAutoSelected: boolean = false;
 
   constructor(private firebaseService: FirebaseServicesService) {}
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
@@ -37,6 +39,15 @@ export class NewChatComponent {
 
     this.selectedUserPhotoURL = null;
 
+    if (
+      this.isAutoSelected &&
+      (!searchText || searchText !== `@${this.selectedUserName}`)
+    ) {
+      // Reset selection when user manually erases or modifies the input
+      this.selectedUserName = null;
+      this.isAutoSelected = false;
+    }
+
     if (searchText) {
       if (searchText.startsWith('@')) {
         this.searchResults = [];
@@ -55,11 +66,23 @@ export class NewChatComponent {
     this.firebaseService.searchUsers(queryText).subscribe(
       (results) => {
         this.searchResults = results;
+
+        // Auto-select if there's exactly one match
+        if (queryText.length >= 3 && results.length === 1) {
+          this.autoSelectUser(results[0]);
+        }
       },
       (error) => {
         console.error('Error fetching user search results:', error);
       }
     );
+  }
+
+  autoSelectUser(user: any): void {
+    this.selectedUserPhotoURL = user.photoURL;
+    this.selectedUserName = user.name;
+    this.searchQuery = `@${user.name}`; // Update the input to match the user
+    this.searchResults = [];
   }
 
   searchForChannels(queryText: string): void {
