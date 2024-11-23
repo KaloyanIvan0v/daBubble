@@ -51,6 +51,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   messages$!: Observable<Message[]>;
   private messages: Message[] = [];
+  messageToEdit: Message | null = null;
 
   constructor(
     private workspaceService: WorkspaceService,

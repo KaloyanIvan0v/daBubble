@@ -44,6 +44,28 @@ export class MainService {
     await this.firestore.sendMessage(collection, docId, message);
   }
 
+  async updateMessage(message: Message) {
+    const editedMessage: Message = {
+      id: message.id,
+      author: message.author!,
+      time: message.time,
+      location: {
+        collection: message.location.collection,
+        docId: message.location.docId,
+      },
+      value: message.value,
+      thread: message.thread,
+      space: message.space,
+      reactions: JSON.parse(JSON.stringify(message.reactions)),
+    };
+    await this.firestore.updateMessage(
+      message.location.collection,
+      message.location.docId,
+      message.id,
+      editedMessage
+    );
+  }
+
   async getSpaceName(collection: string, docId: string): Promise<string> {
     if (collection === 'channels') {
       const doc = this.firestore.getChannel(docId);

@@ -29,12 +29,39 @@ section {
 }
 
 .more-options {
+  position: relative;
   @include iconButtonWithHoverBackground(
     "/assets/img/buttons/more_vert-black.svg",
     "/assets/img/buttons/more_vert-blue.svg"
   );
 
   border-radius: 50%;
+}
+
+.edit-message-wrapper {
+  position: absolute;
+  left: 25px;
+  top: 20px;
+  z-index: 4;
+  background-color: white;
+  border-radius: 30px;
+  border-top-left-radius: 0px;
+  padding: 10px 20px;
+  box-shadow: 0px 6px 14px 0px #00000033;
+}
+
+.edit-message {
+  width: max-content;
+  background-color: white;
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-size: 24px;
+  font-weight: 400;
+  &:hover {
+    background-color: $bg-color;
+    color: $purple3;
+    font-weight: 600;
+  }
 }
 
 .emoji-picker-wrapper {

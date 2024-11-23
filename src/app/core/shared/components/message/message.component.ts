@@ -1,5 +1,11 @@
 import { FirebaseServicesService } from './../../services/firebase/firebase.service';
-import { Component, Input, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  Input,
+  ElementRef,
+  EventEmitter,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { User } from '../../models/user.class';
@@ -30,6 +36,7 @@ export class MessageComponent {
   loggedInUserId: string | null = '';
   containerRef!: ElementRef;
   lastTwoReactions: string[] = [];
+  @Output() messageToEdit = new EventEmitter<Message>();
 
   //@ViewChild('messageElement', { static: true }) messageElement!: ElementRef;
   //popupDirection: 'up' | 'down' = 'down';
@@ -44,6 +51,10 @@ export class MessageComponent {
       this.loggedInUserId = uid;
       this.setLastTwoReactions();
     });
+  }
+
+  setMessageToEdit($event: any) {
+    this.messageToEdit.emit($event);
   }
 
   setLastTwoReactions() {

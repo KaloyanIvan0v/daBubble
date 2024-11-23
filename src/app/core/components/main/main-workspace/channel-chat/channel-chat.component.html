@@ -23,10 +23,16 @@
     class="message-container overflow-y-scroll"
   >
     <div *ngFor="let message of messages$ | async" class="message">
-      <app-message [message]="message"></app-message>
+      <app-message
+        (messageToEdit)="messageToEdit = $event"
+        [message]="message"
+      ></app-message>
     </div>
   </div>
-  <app-input-box [channelId]="channelId"></app-input-box>
+  <app-input-box
+    [messageToEdit]="messageToEdit"
+    [channelId]="channelId"
+  ></app-input-box>
   <app-channel-members-view
     class="channel-members-view"
   ></app-channel-members-view>

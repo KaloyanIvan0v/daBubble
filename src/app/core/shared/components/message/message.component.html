@@ -84,6 +84,7 @@
     </div>
   </div>
   <app-reactions-menu
+    (messageToEdit)="setMessageToEdit($event)"
     [lastTwoReactions]="lastTwoReactions"
     [message]="message"
     [ownMessage]="message.author === loggedInUserId"

@@ -15,7 +15,22 @@
   </div>
   <div class="add-reaction" (click)="toggleEmojiPicker()"></div>
   <div class="add-thread"></div>
-  <div *ngIf="ownMessage" class="more-options"></div>
+  <div
+    (mouseleave)="closeEditMessage()"
+    *ngIf="ownMessage"
+    class="more-options"
+    (click)="toggleEditMessage()"
+  >
+    <div
+      (mouseleave)="closeEditMessage()"
+      *ngIf="showEditMessage"
+      class="edit-message-wrapper"
+    >
+      <div class="edit-message" (click)="editMessage()">
+        Nachricht bearbeiten
+      </div>
+    </div>
+  </div>
   <app-emoji-picker
     (mouseleave)="toggleEmojiPicker()"
     class="emoji-picker"

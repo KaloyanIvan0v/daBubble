@@ -3,13 +3,15 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Input,
   OnInit,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EmojiPickerComponent } from '../../emoji-picker/emoji-picker.component';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { Reaction } from 'src/app/core/shared/models/reaction.class';
 import { EmojiPickerService } from '../../../services/emoji-picker/emoji-picker.service';
-
+import { MessageService } from '../../../services/message-service/message.service';
 @Component({
   selector: 'app-reactions-menu',
   standalone: true,
@@ -20,13 +22,18 @@ import { EmojiPickerService } from '../../../services/emoji-picker/emoji-picker.
 })
 export class ReactionsMenuComponent implements OnInit {
   showEmojiPicker = false;
+  showEditMessage = false;
   selectedEmoji: string = '';
   @Input() message!: Message;
   @Input() lastTwoReactions: string[] = [];
   @Input() ownMessage: boolean = false;
+  @Output() messageToEdit = new EventEmitter<Message>();
   currentUserId: string = '';
 
-  constructor(private emojiPickerService: EmojiPickerService) {}
+  constructor(
+    private emojiPickerService: EmojiPickerService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit() {
     this.convertReactionToInstance();
@@ -53,6 +60,18 @@ export class ReactionsMenuComponent implements OnInit {
 
   closeEmojiPicker() {
     this.showEmojiPicker = false;
+  }
+
+  toggleEditMessage() {
+    this.showEditMessage = !this.showEditMessage;
+  }
+
+  closeEditMessage() {
+    this.showEditMessage = false;
+  }
+
+  editMessage() {
+    this.messageToEdit.emit(this.message);
   }
 
   onEmojiSelected(emoji: string) {
