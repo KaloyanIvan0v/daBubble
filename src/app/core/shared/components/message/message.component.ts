@@ -29,8 +29,10 @@ export class MessageComponent {
   showEmojiPicker = false;
   loggedInUserId: string | null = '';
   containerRef!: ElementRef;
-  @ViewChild('messageElement', { static: true }) messageElement!: ElementRef;
-  popupDirection: 'up' | 'down' = 'down';
+  lastTwoReactions: string[] = [];
+
+  //@ViewChild('messageElement', { static: true }) messageElement!: ElementRef;
+  //popupDirection: 'up' | 'down' = 'down';
 
   constructor(
     private firebaseService: FirebaseServicesService,
@@ -40,11 +42,20 @@ export class MessageComponent {
   ) {
     this.authService.getCurrentUserUID().then((uid) => {
       this.loggedInUserId = uid;
+      this.setLastTwoReactions();
     });
+  }
+
+  setLastTwoReactions() {
+    const reactions = this.message.reactions
+      .slice(-2)
+      .map((reaction) => reaction?.value || '');
+    this.lastTwoReactions = [reactions[0] || '', reactions[1] || ''];
   }
 
   onEmojiSelected(emoji: string) {
     this.emojiPickerService.addReaction(emoji, this.message);
+    this.setLastTwoReactions();
   }
 
   toggleEmojiPicker() {
@@ -71,18 +82,18 @@ export class MessageComponent {
       .pipe(map((user: any) => user?.name || 'Unbekannt'));
   }
 
-  calculatePopupDirection() {
-    const messageRect =
-      this.messageElement.nativeElement.getBoundingClientRect();
-    const containerRect =
-      this.containerRef.nativeElement.getBoundingClientRect();
+  // calculatePopupDirection() {
+  //   const messageRect =
+  //     this.messageElement.nativeElement.getBoundingClientRect();
+  //   const containerRect =
+  //     this.containerRef.nativeElement.getBoundingClientRect();
 
-    const distanceToBottom = containerRect.bottom - messageRect.bottom;
+  //   const distanceToBottom = containerRect.bottom - messageRect.bottom;
 
-    if (distanceToBottom <= 200) {
-      this.popupDirection = 'up';
-    } else {
-      this.popupDirection = 'down';
-    }
-  }
+  //   if (distanceToBottom <= 200) {
+  //     this.popupDirection = 'up';
+  //   } else {
+  //     this.popupDirection = 'down';
+  //   }
+  // }
 }

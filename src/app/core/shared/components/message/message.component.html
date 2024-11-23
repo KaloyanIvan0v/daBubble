@@ -84,7 +84,9 @@
     </div>
   </div>
   <app-reactions-menu
+    [lastTwoReactions]="lastTwoReactions"
     [message]="message"
+    [ownMessage]="message.author === loggedInUserId"
     [ngClass]="
       message.author === loggedInUserId
         ? 'reactions-menu-own-message'

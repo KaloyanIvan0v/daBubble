@@ -50,3 +50,18 @@ section {
   top: 50px;
   z-index: 3;
 }
+
+.reaction-emoji {
+  @include dFlex();
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  &:hover {
+    border-radius: 50%;
+    background-color: $bg-color;
+  }
+  .emoji {
+    transform: scale(1.4) translate(8%, 4%);
+    //transform: translate(15%, 15%);
+  }
+}

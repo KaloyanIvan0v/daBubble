@@ -1,13 +1,21 @@
 <section>
-  <div class="emoji-one">
-    <img src="" alt="" />
+  <div
+    *ngIf="lastTwoReactions[0] !== ''"
+    class="reaction-emoji"
+    (click)="onEmojiSelected(lastTwoReactions[0])"
+  >
+    <div class="emoji">{{ lastTwoReactions[0] }}</div>
   </div>
-  <div class="emoji-two">
-    <img src="" alt="" />
+  <div
+    *ngIf="lastTwoReactions[1] !== ''"
+    class="reaction-emoji"
+    (click)="onEmojiSelected(lastTwoReactions[1])"
+  >
+    <div class="emoji">{{ lastTwoReactions[1] }}</div>
   </div>
   <div class="add-reaction" (click)="toggleEmojiPicker()"></div>
   <div class="add-thread"></div>
-  <div class="more-options"></div>
+  <div *ngIf="ownMessage" class="more-options"></div>
   <app-emoji-picker
     (mouseleave)="toggleEmojiPicker()"
     class="emoji-picker"

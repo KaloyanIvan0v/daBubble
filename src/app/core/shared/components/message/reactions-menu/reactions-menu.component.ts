@@ -22,6 +22,8 @@ export class ReactionsMenuComponent implements OnInit {
   showEmojiPicker = false;
   selectedEmoji: string = '';
   @Input() message!: Message;
+  @Input() lastTwoReactions: string[] = [];
+  @Input() ownMessage: boolean = false;
   currentUserId: string = '';
 
   constructor(private emojiPickerService: EmojiPickerService) {}
