@@ -34,7 +34,7 @@
         <div class="msg-threads"></div>
         <div class="threads-last-response"></div>
       </div>
-      <div *ngIf="message.thread.messages.length >= 1" class="thread-view">
+      <div class="thread-view">
         <div class="thread-amount">{{ message.thread }}</div>
         <div class="last-thread-time">
           Letzte Antwort {{ message.time | firebaseTime }}

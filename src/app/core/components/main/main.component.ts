@@ -19,6 +19,7 @@ import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-vi
 import { ChooseAvatarComponent } from '../authentication/choose-avatar/choose-avatar.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
 import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar/edit-avatar.component';
+import { ThreadService } from '../../shared/services/thread-service/thread.service';
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -45,6 +46,7 @@ export class MainComponent implements OnInit, OnDestroy {
   signupComponent: SignupComponent;
 
   workSpaceOpen: boolean = false;
+  threadOpen: boolean = false;
   workspaceButtonText: string = 'Workspace-Menu öffnen';
   popUpShadowVisible: boolean = false;
   private popUpStatesSubscription!: Subscription;
@@ -57,7 +59,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     private authUIService: AuthUIService,
-    public uploadCareService: UploadCareService
+    public uploadCareService: UploadCareService,
+    private threadService: ThreadService
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
     this.chooseAvatarComponent = new ChooseAvatarComponent(
@@ -71,6 +74,9 @@ export class MainComponent implements OnInit, OnDestroy {
       this.authService,
       this.workspaceService
     );
+    this.threadService.threadOpen.subscribe((value) => {
+      this.threadOpen = value;
+    });
   }
 
   ngOnInit(): void {

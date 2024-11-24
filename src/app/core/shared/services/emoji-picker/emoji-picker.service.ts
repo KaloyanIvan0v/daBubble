@@ -81,12 +81,8 @@ export class EmojiPickerService {
   }
 
   private saveMessageData(messageData: any) {
-    this.firebaseService.updateMessage(
-      this.message.location.collection,
-      this.message.location.docId,
-      this.message.id,
-      messageData
-    );
+    const messagePath = messageData.location + '/' + messageData.id;
+    this.firebaseService.updateMessage(messagePath, messageData);
   }
 
   constructor() {}

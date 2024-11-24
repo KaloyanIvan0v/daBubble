@@ -5,7 +5,6 @@ import {
   OnInit,
   OnDestroy,
   effect,
-  AfterViewInit,
   NgZone,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -48,6 +47,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   popUpStates: { [key: string]: boolean } = {};
   private lastMessageLength: number = 0;
   private popUpStatesSubscription?: Subscription;
+  messagePath = '/channels/' + this.channelId + '/messages';
 
   messages$!: Observable<Message[]>;
   private messages: Message[] = [];
@@ -62,6 +62,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
       this.channelId = this.workspaceService.currentActiveUnitId();
       if (this.channelId) {
         this.loadChannelData(this.channelId);
+        this.messagePath = '/channels/' + this.channelId + '/messages';
       } else {
         console.warn('Keine gültige channelId verfügbar.');
       }
@@ -72,7 +73,6 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
-  // Methode, um immer nach unten zu scrollen
   private scrollToBottom(): void {
     if (this.messageContainer) {
       this.messageContainer.nativeElement.scrollTop =
@@ -93,7 +93,6 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
     this.channelUsers = [];
 
-    // Lade das Channel-Dokument
     this.channelSubscription = this.firebaseService
       .getChannel(channelId)
       .subscribe({
@@ -109,7 +108,6 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
           console.error('Fehler beim Laden des Channels:', error),
       });
 
-    // Lade die Nachrichten des Channels
     this.messages$ = this.firebaseService.getMessages('channels', channelId);
 
     this.messagesSubscription = this.messages$.subscribe((messages) => {

@@ -14,7 +14,7 @@ import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
   styleUrl: './input-box.component.scss',
 })
 export class InputBoxComponent implements OnChanges {
-  @Input() channelId: string = '';
+  @Input() messagePath: string = '';
   @Input() showEmojiPicker: boolean = false;
   inputData = new InputBoxData('', []);
 
@@ -36,7 +36,7 @@ export class InputBoxComponent implements OnChanges {
       this.mainService.updateMessage(this.messageToEdit);
       this.messageToEdit = null;
     } else {
-      this.mainService.sendMessage('channels', this.channelId, this.inputData);
+      this.mainService.sendMessage(this.messagePath, this.inputData);
     }
     this.inputData = new InputBoxData('', []);
   }

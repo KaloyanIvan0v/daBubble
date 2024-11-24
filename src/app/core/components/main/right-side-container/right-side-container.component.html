@@ -1,4 +1,4 @@
-<section>
+<section ngClass="{ 'width0px': rightSideOpen }">
   <div class="header">
     <div class="header-left">
       <div class="header-tittle">Thread</div>
@@ -7,8 +7,18 @@
       </div>
       <div class="thread-source-title">Entwicklerteam</div>
     </div>
-    <div class="close-button"></div>
+    <div class="close-button" (click)="closeThread()"></div>
   </div>
-  <div class="message-container">nachrichten</div>
-  <app-input-box></app-input-box>
+  <div #messageContainer class="message-container overflow-y-scroll">
+    <div *ngFor="let message of messages$ | async" class="message">
+      <app-message
+        (messageToEdit)="messageToEdit = $event"
+        [message]="message"
+      ></app-message>
+    </div>
+  </div>
+  <app-input-box
+    [messageToEdit]="messageToEdit"
+    [messagePath]="threadPath"
+  ></app-input-box>
 </section>

@@ -15,11 +15,9 @@ export class MainService {
 
   constructor() {}
 
-  async sendMessage(
-    collection: string,
-    docId: string,
-    inputMessage: InputBoxData
-  ) {
+  async sendMessage(messagePath: string, inputMessage: InputBoxData) {
+    const collection = messagePath.split('/')[0];
+    const docId = messagePath.split('/')[1];
     const id = this.firestore.getUniqueId();
     const userId = await this.authService.getCurrentUserUID();
     const name: string = await this.getSpaceName(collection, docId);
@@ -33,14 +31,14 @@ export class MainService {
       id: id,
       author: userId!,
       time: new Date(Date.now()),
-      location: { collection: collection, docId: docId },
+      location: messagePath,
       value: plainInputMessage,
       thread: JSON.parse(JSON.stringify(new Thread('', '', []))),
       space: name,
       reactions: [],
     };
 
-    await this.firestore.sendMessage(collection, docId, message);
+    await this.firestore.sendMessage(messagePath + '/' + id, message);
   }
 
   async updateMessage(message: Message) {
@@ -48,19 +46,14 @@ export class MainService {
       id: message.id,
       author: message.author!,
       time: message.time,
-      location: {
-        collection: message.location.collection,
-        docId: message.location.docId,
-      },
+      location: message.location,
       value: message.value,
       thread: message.thread,
       space: message.space,
       reactions: JSON.parse(JSON.stringify(message.reactions)),
     };
     await this.firestore.updateMessage(
-      message.location.collection,
-      message.location.docId,
-      message.id,
+      message.location + '/' + message.id,
       editedMessage
     );
   }

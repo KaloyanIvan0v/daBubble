@@ -87,25 +87,55 @@ export class FirebaseServicesService implements OnDestroy {
     });
   }
 
-  async sendMessage(collectionName: string, docId: string, message: Message) {
-    const messageDocRef = doc(
-      this.firestore,
-      `${collectionName}/${docId}/messages/${message.id}`
-    );
+  getThreadMessages(threadPath: string): Observable<Message[]> {
+    const threadMessagesCollectionRef = collection(this.firestore, threadPath);
+
+    const q = query(threadMessagesCollectionRef, orderBy('time'));
+
+    return new Observable<Message[]>((observer) => {
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          const messages = snapshot.docs.map((doc) =>
+            this.mapDocumentData<Message>(doc)
+          );
+          observer.next(messages);
+        },
+        (error) => {
+          observer.error(`Error fetching thread messages: ${error}`);
+        }
+      );
+
+      return () => unsubscribe();
+    });
+  }
+
+  async sendMessage(messagePath: string, message: Message) {
+    const messageDocRef = doc(this.firestore, messagePath);
     await setDoc(messageDocRef, message);
   }
 
-  // Methoden zum Aktualisieren und Löschen von Nachrichten
-  async updateMessage(
+  async sendThreadMessage(
     collectionName: string,
     docId: string,
     messageId: string,
+    threadMessage: Message
+  ) {
+    // Referenz zur Thread-Nachricht unter der Hauptnachricht
+    const threadMessageDocRef = doc(
+      this.firestore,
+      `${collectionName}/${docId}/messages/${messageId}/thread/messages/${threadMessage.id}`
+    );
+
+    // Thread-Nachricht in Firestore speichern
+    await setDoc(threadMessageDocRef, threadMessage);
+  }
+
+  async updateMessage(
+    messagePath: string,
     data: Partial<Message>
   ): Promise<void> {
-    const messageDocRef = doc(
-      this.firestore,
-      `${collectionName}/${docId}/messages/${messageId}`
-    );
+    const messageDocRef = doc(this.firestore, messagePath);
     return updateDoc(messageDocRef, data);
   }
 
