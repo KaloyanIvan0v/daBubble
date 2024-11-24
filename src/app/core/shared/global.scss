@@ -354,3 +354,10 @@ button:hover {
   background-color: $light-purple;
   border-radius: 20px;
 }
+
+.emoji-picker-top {
+  position: absolute;
+  left: 0;
+  bottom: 30px;
+  z-index: 3;
+}

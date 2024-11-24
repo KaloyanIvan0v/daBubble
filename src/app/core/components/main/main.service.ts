@@ -4,7 +4,6 @@ import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { firstValueFrom, map } from 'rxjs';
 import { Message } from 'src/app/core/shared/models/message.class';
-import { Reaction } from 'src/app/core/shared/models/reaction.class';
 import { Thread } from 'src/app/core/shared/models/thread.class';
 
 @Injectable({

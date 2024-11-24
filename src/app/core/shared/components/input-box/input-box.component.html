@@ -1,4 +1,4 @@
-<section>
+<section (mouseleave)="closeEmojiPicker()">
   <div class="input-wrapper">
     <textarea
       placeholder="Nachricht an #devspace"
@@ -11,7 +11,14 @@
     <div class="left-wrapper">
       <div class="upload-button"></div>
       <div class="vertival-line"></div>
-      <div class="add-emoji"></div>
+      <div class="add-emoji" (click)="toggleEmojiPicker()">
+        <app-emoji-picker
+          (emojiSelected)="onEmojiSelected($event)"
+          (mouseleave)="closeEmojiPicker()"
+          class="emoji-picker-top"
+          *ngIf="showEmojiPicker"
+        ></app-emoji-picker>
+      </div>
       <div class="mention-button"></div>
     </div>
     <div>

@@ -49,6 +49,7 @@ section {
   }
 
   .add-emoji {
+    position: relative;
     @include iconButtonWithHoverBackground(
       "/assets/img/icons/sentiment_satisfied-grey.svg",
       "/assets/img/icons/sentiment_satisfied-blue.svg"
