@@ -294,6 +294,7 @@ export class FirebaseServicesService implements OnDestroy {
 
   searchUsers(queryText: string): Observable<any[]> {
     const usersRef = collection(this.firestore, 'users');
+    const lowerCaseQuery = queryText.trim().toLowerCase();
 
     if (queryText.startsWith('@')) {
       const username = queryText.slice(1).toLowerCase();
@@ -304,7 +305,7 @@ export class FirebaseServicesService implements OnDestroy {
       const email = queryText.toLowerCase();
       return this.searchByEmail(usersRef, email);
     } else {
-      return this.searchByEmailPrefix(usersRef, queryText.toLowerCase());
+      return this.searchByEmailPrefix(usersRef, lowerCaseQuery);
     }
   }
 
@@ -346,7 +347,8 @@ export class FirebaseServicesService implements OnDestroy {
   }
 
   searchChannels(queryText: string): Observable<any[]> {
-    const channelName = queryText.slice(1).toLowerCase();
+    const lowerCaseQuery = queryText.trim().toLowerCase();
+    const channelName = lowerCaseQuery.slice(1);
     const channelsRef = collection(this.firestore, 'channels');
     const q = query(
       channelsRef,

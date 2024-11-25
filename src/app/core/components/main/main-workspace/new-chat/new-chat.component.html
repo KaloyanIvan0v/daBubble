@@ -17,7 +17,16 @@
           (keydown)="onKeyDown($event)"
           placeholder="An: #channel, @jemand, oder E-Mail Adresse"
           type="text"
+          [disabled]="isSelected"
         />
+        <button
+          *ngIf="isSelected"
+          class="clear-button"
+          (click)="clearSearchState()"
+          aria-label="Clear Selection"
+        >
+          ✕
+        </button>
       </div>
       <div *ngIf="searchResults.length > 0" class="search-results-container">
         <div

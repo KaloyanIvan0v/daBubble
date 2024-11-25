@@ -42,6 +42,13 @@ app-input-box {
   }
 }
 
+input:disabled {
+  background-color: rgb(235, 235, 235);
+  color: $purple1;
+  width: 20% !important;
+  text-align: center;
+}
+
 .search-results-container {
   position: absolute;
   top: 100%;
@@ -87,4 +94,16 @@ app-input-box {
   height: 30px;
   border-radius: 50%;
   margin-right: 8px;
+}
+
+.clear-button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #888;
+
+  &:hover {
+    color: #333;
+  }
 }

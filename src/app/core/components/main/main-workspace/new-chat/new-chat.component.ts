@@ -18,16 +18,21 @@ export class NewChatComponent {
   isSearching: boolean = false;
   selectedUserPhotoURL: string | null = null;
   selectedUserName: string | null = null;
+  selectedChannelName: string | null = null;
   isAutoSelected: boolean = false;
+  isSelected: boolean = false;
 
   constructor(private firebaseService: FirebaseServicesService) {}
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
+    const clickedElement = event.target as HTMLElement;
+
     if (
       this.searchContainer &&
-      !this.searchContainer.nativeElement.contains(event.target)
+      !this.searchContainer.nativeElement.contains(event.target) &&
+      !clickedElement.classList.contains('clear-button')
     ) {
       this.searchResults = [];
     }
@@ -36,20 +41,10 @@ export class NewChatComponent {
   onSearchChange(): void {
     const searchText = this.searchQuery.trim();
 
-    this.resetAutoSelectedIfMismatch(searchText);
-
     if (searchText) {
       this.handleSearchQuery(searchText);
     } else {
       this.clearSearchState();
-    }
-  }
-
-  resetAutoSelectedIfMismatch(searchText: string): void {
-    if (this.isAutoSelected && searchText !== `@${this.selectedUserName}`) {
-      this.selectedUserPhotoURL = null;
-      this.selectedUserName = null;
-      this.isAutoSelected = false;
     }
   }
 
@@ -70,6 +65,8 @@ export class NewChatComponent {
     this.searchResults = [];
     this.selectedUserPhotoURL = null;
     this.selectedUserName = null;
+    this.isSelected = false;
+    this.selectedChannelName = null;
     this.isAutoSelected = false;
   }
 
@@ -93,14 +90,16 @@ export class NewChatComponent {
     if (!this.isAutoSelected) {
       this.selectedUserPhotoURL = user.photoURL;
       this.selectedUserName = user.name;
-      this.searchQuery = `@${user.name}`; // Update only on initial selection
-      this.searchResults = []; // Clear the results after auto-selecting
+      this.isSelected = true;
+      this.selectedChannelName = user.name;
+      this.searchQuery = `@${user.name}`;
       this.isAutoSelected = true;
+      this.searchResults = [];
     }
   }
 
   searchForChannels(queryText: string): void {
-    const channelName = queryText.slice(1).toLowerCase();
+    const channelName = queryText.slice(1).trim();
     this.firebaseService.searchChannels(channelName).subscribe(
       (results) => {
         this.searchResults = results;
@@ -114,14 +113,17 @@ export class NewChatComponent {
   onSelectResult(result: any) {
     if (result.name) {
       if (result.email) {
-        this.searchQuery = `@ ${result.name}`;
+        this.searchQuery = `@${result.name}`;
         this.selectedUserPhotoURL = result.photoURL || '';
+        this.isSelected = true;
       } else {
-        this.searchQuery = `# ${result.name}`;
+        this.searchQuery = `#${result.name}`;
         this.selectedUserPhotoURL = '';
+        this.isSelected = true;
       }
     } else if (result.email) {
       this.searchQuery = result.email;
+      this.isSelected = true;
     }
     this.searchResults = [];
   }
@@ -141,6 +143,7 @@ export class NewChatComponent {
       event.preventDefault();
     } else if (event.key === 'Enter' && this.selectedIndex >= 0) {
       this.onSelectResult(this.searchResults[this.selectedIndex]);
+
       event.preventDefault();
     }
   }
