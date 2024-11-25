@@ -21,7 +21,9 @@
       <div class="message-divider">
         <div class="message-divider-text">
           {{ (messages$ | async)?.length ?? 0 }}
-          <ng-container *ngIf="messages.length > 1"> Antworten</ng-container>
+          <ng-container *ngIf="messages.length > 1 || messages.length === 0">
+            Antworten</ng-container
+          >
           <ng-container *ngIf="messages.length === 1"> Antwort</ng-container>
         </div>
         <div class="message-divider-line"></div>
