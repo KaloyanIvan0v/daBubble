@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, effect } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
@@ -8,6 +8,7 @@ import { Observable, Subscription } from 'rxjs';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
 import { RouterModule } from '@angular/router';
+import { Thread } from 'src/app/core/shared/models/thread.class';
 import { ThreadService } from 'src/app/core/shared/services/thread-service/thread.service';
 @Component({
   selector: 'app-right-side-container',
@@ -27,11 +28,13 @@ export class RightSideContainerComponent {
   private messagesSubscription?: Subscription;
   private lastMessageLength: number = 0;
   messages$!: Observable<Message[]>;
-  private messages: Message[] = [];
+  messages: Message[] = [];
   messageToEdit: Message | null = null;
   threadPath: string = '';
   threadOpen: boolean = false;
   messagePath: string = '';
+  originMessage!: Message | null;
+  threadData: Thread = new Thread('', '');
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -46,7 +49,11 @@ export class RightSideContainerComponent {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.threadService.originMessage.subscribe((message) => {
+      this.originMessage = message;
+    });
+  }
 
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
 

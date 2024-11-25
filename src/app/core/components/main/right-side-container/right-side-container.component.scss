@@ -200,3 +200,28 @@ app-input-box {
     "/assets/img/buttons/close-blue.svg"
   );
 }
+
+.origin-message {
+  width: 100%;
+}
+
+.message-divider {
+  @include dFlex();
+  width: 100%;
+  gap: 20px;
+  padding: 0px 30px;
+}
+
+.message-divider-text {
+  @include dFlex();
+  width: fit-content;
+  color: $light-purple;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.message-divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: $light-purple;
+}

@@ -1,9 +1,8 @@
-import { Message } from './message.class';
 export class Thread {
-  id: string;
+  originMessagePath: string;
   space: string;
-  constructor(id: string, space: string, messages: Message[]) {
-    this.id = id;
+  constructor(originMessagePath: string, space: string) {
     this.space = space;
+    this.originMessagePath = originMessagePath;
   }
 }

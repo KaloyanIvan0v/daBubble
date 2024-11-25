@@ -16,16 +16,15 @@ export class MainService {
   constructor() {}
 
   async sendMessage(messagePath: string, inputMessage: InputBoxData) {
-    const collection = messagePath.split('/')[0];
-    const docId = messagePath.split('/')[1];
     const id = this.firestore.getUniqueId();
     const userId = await this.authService.getCurrentUserUID();
-    const name: string = await this.getSpaceName(collection, docId);
+    const name: string = await this.getSpaceName(messagePath);
 
     const plainInputMessage = {
       text: inputMessage.message,
       imports: inputMessage.imports,
     };
+    console.log(name);
 
     const message: Message = {
       id: id,
@@ -33,7 +32,9 @@ export class MainService {
       time: new Date(Date.now()),
       location: messagePath,
       value: plainInputMessage,
-      thread: JSON.parse(JSON.stringify(new Thread('', '', []))),
+      thread: JSON.parse(
+        JSON.stringify(new Thread(messagePath + '/' + id, name))
+      ),
       space: name,
       reactions: [],
     };
@@ -58,7 +59,9 @@ export class MainService {
     );
   }
 
-  async getSpaceName(collection: string, docId: string): Promise<string> {
+  async getSpaceName(messagePath: string): Promise<string> {
+    let collection = messagePath.split('/')[1];
+    let docId = messagePath.split('/')[2];
     if (collection === 'channels') {
       const doc = this.firestore.getChannel(docId);
       const name = await firstValueFrom(

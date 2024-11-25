@@ -5,11 +5,28 @@
       <div class="thread-source-tag">
         <img src="assets/img/icons/tag-thin.svg" alt="" />
       </div>
-      <div class="thread-source-title">Entwicklerteam</div>
+      <div class="thread-source-title">
+        {{ originMessage?.thread?.space }}
+      </div>
     </div>
     <div class="close-button" (click)="closeThread()"></div>
   </div>
   <div #messageContainer class="message-container overflow-y-scroll">
+    <div class="origin-message">
+      <app-message
+        *ngIf="originMessage"
+        (messageToEdit)="messageToEdit = $event"
+        [message]="originMessage"
+      ></app-message>
+      <div class="message-divider">
+        <div class="message-divider-text">
+          {{ (messages$ | async)?.length ?? 0 }}
+          <ng-container *ngIf="messages.length > 1"> Antworten</ng-container>
+          <ng-container *ngIf="messages.length === 1"> Antwort</ng-container>
+        </div>
+        <div class="message-divider-line"></div>
+      </div>
+    </div>
     <div *ngFor="let message of messages$ | async" class="message">
       <app-message
         (messageToEdit)="messageToEdit = $event"
