@@ -15,7 +15,16 @@ export class MainService {
 
   constructor() {}
 
-  async sendMessage(messagePath: string, inputMessage: InputBoxData) {
+  async sendMessage(
+    messagePath: string,
+    inputMessage: InputBoxData,
+    receiverId: string | null
+  ) {
+    console.log('Message path:', messagePath);
+    console.log('Receiver ID:', receiverId);
+
+    const collection = messagePath.split('/')[0];
+    const docId = messagePath.split('/')[1];
     const id = this.firestore.getUniqueId();
     const userId = await this.authService.getCurrentUserUID();
     const name: string = await this.getSpaceName(messagePath);
@@ -37,9 +46,22 @@ export class MainService {
       ),
       space: name,
       reactions: [],
+      receiverId: receiverId || '',
     };
 
-    await this.firestore.sendMessage(messagePath + '/' + id, message);
+    // If it's a direct message, create a unique message path based on sorted user IDs
+    if (receiverId) {
+      const sortedUserIds = [userId, receiverId].sort(); // Ensure a consistent order
+      const directMessagePath = `directMessages/${sortedUserIds.join(
+        '_'
+      )}/messages`;
+      console.log('Direct message path:', directMessagePath); // Log for debugging
+      await this.firestore.sendMessage(directMessagePath + '/' + id, message);
+    } else {
+      // Otherwise, it's a channel message, and we use the existing message path
+      console.log('Channel message path:', messagePath); // Log for debugging
+      await this.firestore.sendMessage(messagePath + '/' + id, message);
+    }
   }
 
   async updateMessage(message: Message) {
@@ -52,6 +74,7 @@ export class MainService {
       thread: message.thread,
       space: message.space,
       reactions: JSON.parse(JSON.stringify(message.reactions)),
+      receiverId: message.receiverId || '',
     };
     await this.firestore.updateMessage(
       message.location + '/' + message.id,
