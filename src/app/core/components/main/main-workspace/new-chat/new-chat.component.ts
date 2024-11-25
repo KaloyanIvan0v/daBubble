@@ -33,33 +33,44 @@ export class NewChatComponent {
     }
   }
 
-  // Close the search results
   onSearchChange(): void {
     const searchText = this.searchQuery.trim();
 
-    this.selectedUserPhotoURL = null;
+    this.resetAutoSelectedIfMismatch(searchText);
 
-    if (
-      this.isAutoSelected &&
-      (!searchText || searchText !== `@${this.selectedUserName}`)
-    ) {
-      // Reset selection when user manually erases or modifies the input
+    if (searchText) {
+      this.handleSearchQuery(searchText);
+    } else {
+      this.clearSearchState();
+    }
+  }
+
+  resetAutoSelectedIfMismatch(searchText: string): void {
+    if (this.isAutoSelected && searchText !== `@${this.selectedUserName}`) {
+      this.selectedUserPhotoURL = null;
       this.selectedUserName = null;
       this.isAutoSelected = false;
     }
+  }
 
-    if (searchText) {
-      if (searchText.startsWith('@')) {
-        this.searchResults = [];
-        this.searchForUsers(searchText);
-      } else if (searchText.startsWith('#')) {
-        this.searchResults = [];
-        this.searchForChannels(searchText);
-      } else {
-        this.searchResults = [];
-        this.searchForUsers(searchText);
-      }
+  handleSearchQuery(searchText: string): void {
+    if (searchText.startsWith('@')) {
+      this.searchResults = [];
+      this.searchForUsers(searchText);
+    } else if (searchText.startsWith('#')) {
+      this.searchResults = [];
+      this.searchForChannels(searchText);
+    } else {
+      this.searchResults = [];
+      this.searchForUsers(searchText);
     }
+  }
+
+  clearSearchState(): void {
+    this.searchResults = [];
+    this.selectedUserPhotoURL = null;
+    this.selectedUserName = null;
+    this.isAutoSelected = false;
   }
 
   searchForUsers(queryText: string): void {
@@ -79,10 +90,13 @@ export class NewChatComponent {
   }
 
   autoSelectUser(user: any): void {
-    this.selectedUserPhotoURL = user.photoURL;
-    this.selectedUserName = user.name;
-    this.searchQuery = `@${user.name}`; // Update the input to match the user
-    this.searchResults = [];
+    if (!this.isAutoSelected) {
+      this.selectedUserPhotoURL = user.photoURL;
+      this.selectedUserName = user.name;
+      this.searchQuery = `@${user.name}`; // Update only on initial selection
+      this.searchResults = []; // Clear the results after auto-selecting
+      this.isAutoSelected = true;
+    }
   }
 
   searchForChannels(queryText: string): void {
