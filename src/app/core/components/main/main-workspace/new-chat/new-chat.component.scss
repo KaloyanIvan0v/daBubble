@@ -45,7 +45,8 @@ app-input-box {
 input:disabled {
   background-color: rgb(235, 235, 235);
   color: $purple1;
-  width: 20% !important;
+  max-width: 250px !important;
+  min-width: 100px !important;
   text-align: center;
 }
 

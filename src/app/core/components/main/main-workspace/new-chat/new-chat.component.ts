@@ -49,16 +49,15 @@ export class NewChatComponent {
   }
 
   handleSearchQuery(searchText: string): void {
-    if (searchText.startsWith('@')) {
-      this.searchResults = [];
-      this.searchForUsers(searchText);
-    } else if (searchText.startsWith('#')) {
-      this.searchResults = [];
-      this.searchForChannels(searchText);
-    } else {
-      this.searchResults = [];
-      this.searchForUsers(searchText);
-    }
+    this.searchResults = [];
+    this.firebaseService.search(searchText).subscribe(
+      (results) => {
+        this.searchResults = results;
+      },
+      (error) => {
+        console.error('Error fetching search results:', error);
+      }
+    );
   }
 
   clearSearchState(): void {
@@ -70,44 +69,15 @@ export class NewChatComponent {
     this.isAutoSelected = false;
   }
 
-  searchForUsers(queryText: string): void {
-    this.firebaseService.searchUsers(queryText).subscribe(
-      (results) => {
-        this.searchResults = results;
-
-        // Auto-select if there's exactly one match
-        if (queryText.length >= 3 && results.length === 1) {
-          this.autoSelectUser(results[0]);
-        }
-      },
-      (error) => {
-        console.error('Error fetching user search results:', error);
-      }
-    );
-  }
-
   autoSelectUser(user: any): void {
     if (!this.isAutoSelected) {
       this.selectedUserPhotoURL = user.photoURL;
       this.selectedUserName = user.name;
       this.isSelected = true;
-      this.selectedChannelName = user.name;
       this.searchQuery = `@${user.name}`;
       this.isAutoSelected = true;
       this.searchResults = [];
     }
-  }
-
-  searchForChannels(queryText: string): void {
-    const channelName = queryText.slice(1).trim();
-    this.firebaseService.searchChannels(channelName).subscribe(
-      (results) => {
-        this.searchResults = results;
-      },
-      (error) => {
-        console.error('Error fetching channel search results:', error);
-      }
-    );
   }
 
   onSelectResult(result: any) {

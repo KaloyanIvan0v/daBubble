@@ -347,8 +347,7 @@ export class FirebaseServicesService implements OnDestroy {
   }
 
   searchChannels(queryText: string): Observable<any[]> {
-    const lowerCaseQuery = queryText.trim().toLowerCase();
-    const channelName = lowerCaseQuery.slice(1);
+    const channelName = queryText.trim().slice(1);
     const channelsRef = collection(this.firestore, 'channels');
     const q = query(
       channelsRef,
@@ -356,5 +355,16 @@ export class FirebaseServicesService implements OnDestroy {
       where('name', '<=', channelName + '\uf8ff')
     );
     return this.getDocs(q);
+  }
+
+  search(queryText: string): Observable<any[]> {
+    if (queryText.startsWith('@')) {
+      return this.searchUsers(queryText); // User search
+    } else if (queryText.startsWith('#')) {
+      return this.searchChannels(queryText); // Channel search
+    } else {
+      // Default to user search if neither '@' nor '#' is found
+      return this.searchUsers(queryText);
+    }
   }
 }
