@@ -17,6 +17,7 @@ export class InputBoxComponent implements OnChanges {
   @Input() messagePath: string = '';
   @Input() showEmojiPicker: boolean = false;
   inputData = new InputBoxData('', []);
+  @Input() receiverId: string | null = null;
 
   @Input() messageToEdit: Message | null = null;
 
@@ -36,7 +37,11 @@ export class InputBoxComponent implements OnChanges {
       this.mainService.updateMessage(this.messageToEdit);
       this.messageToEdit = null;
     } else {
-      this.mainService.sendMessage(this.messagePath, this.inputData);
+      this.mainService.sendMessage(
+        this.messagePath,
+        this.inputData,
+        this.receiverId
+      );
     }
     this.inputData = new InputBoxData('', []);
   }

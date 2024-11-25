@@ -60,5 +60,9 @@
   </div>
 
   <div class="message-container">nachrichten</div>
-  <app-input-box></app-input-box>
+  <app-input-box
+    [messageToEdit]="messageToEdit"
+    [messagePath]="messagePath"
+    [receiverId]="selectedUserName || selectedChannelName"
+  ></app-input-box>
 </section>

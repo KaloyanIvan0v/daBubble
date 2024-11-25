@@ -12,6 +12,7 @@ export class Message {
   thread: Thread;
   space: string;
   reactions: Reaction[];
+  receiverId?: string | null;
 
   constructor(
     id: string,
@@ -20,7 +21,8 @@ export class Message {
     value: { text: string; imports: string[] },
     thread: Thread,
     space: string,
-    reactions: Reaction[]
+    reactions: Reaction[],
+    receiverId?: string | null
   ) {
     this.id = id;
     this.author = author;
@@ -30,5 +32,6 @@ export class Message {
     this.thread = thread;
     this.space = space;
     this.reactions = reactions;
+    this.receiverId = receiverId || null;
   }
 }

@@ -1,8 +1,13 @@
+import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
-import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
+import { Message } from 'src/app/core/shared/models/message.class';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { MainService } from '../../main.service';
+import { InputBoxData } from 'src/app/core/shared/models/input.class';
 
 @Component({
   selector: 'app-new-chat',
@@ -22,9 +27,26 @@ export class NewChatComponent {
   isAutoSelected: boolean = false;
   isSelected: boolean = false;
 
-  constructor(private firebaseService: FirebaseServicesService) {}
-  @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
+  private messages: Message[] = [];
 
+  newMessageContent: string = '';
+  currentChatId: string = ''; // Chat ID (set when navigating to the chat)
+  loggedInUserId: string | null = null;
+  messagePath: string = ''; // Initially empty, will be set dynamically
+  messages$!: Observable<Message[]>;
+  messageToEdit: Message | null = null;
+
+  constructor(
+    private mainService: MainService,
+    public firebaseService: FirebaseServicesService,
+    public authService: AuthService
+  ) {
+    this.authService.getCurrentUserUID().then((uid) => {
+      this.loggedInUserId = uid;
+    });
+  }
+
+  @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
     const clickedElement = event.target as HTMLElement;
@@ -35,6 +57,41 @@ export class NewChatComponent {
       !clickedElement.classList.contains('clear-button')
     ) {
       this.searchResults = [];
+    }
+  }
+
+  async onSendMessage(): Promise<void> {
+    const trimmedMessage = this.newMessageContent.trim();
+    if (!trimmedMessage) {
+      return; // Don't send empty messages
+    }
+
+    const userId = this.loggedInUserId; // The sender's ID
+    if (!userId) {
+      console.error('User is not logged in');
+      return;
+    }
+
+    let messagePath = '';
+    let receiverId: string | null = null;
+
+    if (this.selectedUserName) {
+      receiverId = this.selectedUserName;
+      messagePath = `directMessages/${userId}_${receiverId}/messages`;
+    } else if (this.selectedChannelName) {
+      messagePath = `channels/${this.selectedChannelName}/messages`;
+    } else {
+      console.error('No valid message target selected');
+      return;
+    }
+
+    const inputMessage = new InputBoxData(trimmedMessage, []);
+
+    try {
+      await this.mainService.sendMessage(messagePath, inputMessage, receiverId);
+      this.newMessageContent = '';
+    } catch (error) {
+      console.error('Error while sending message:', error);
     }
   }
 
