@@ -52,7 +52,7 @@ export class FirebaseServicesService implements OnDestroy {
     return collection(this.firestore, collectionName);
   }
 
-  private getDocRef(collectionName: string, docId: string) {
+  public getDocRef(collectionName: string, docId: string) {
     return doc(this.firestore, collectionName, docId);
   }
 
@@ -263,6 +263,10 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getCollection('chats', true);
   }
 
+  getDirectMessages(): Observable<any> {
+    return this.getCollection('directMessages', false);
+  }
+
   getUser(uid: string): Observable<any> {
     return this.getDoc('users', uid);
   }
@@ -290,6 +294,15 @@ export class FirebaseServicesService implements OnDestroy {
         })
         .catch((error) => observer.error(error));
     });
+  }
+
+  async checkDocExists(
+    collectionName: string,
+    docId: string
+  ): Promise<boolean> {
+    const docRef = this.getDocRef(collectionName, docId);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
   }
 
   searchUsers(queryText: string): Observable<any[]> {

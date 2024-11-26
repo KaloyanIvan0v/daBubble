@@ -4,20 +4,21 @@
       <div class="user-img">
         <img
           [src]="
-            dmUser?.photoURL ||
-            '/assets/img/profile-img/profile-img-placeholder.svg'
+            receiverId
+              ? receiverPhotoURL ||
+                '/assets/img/profile-img/profile-img-placeholder.svg'
+              : '/assets/img/profile-img/profile-img-placeholder.svg'
           "
           alt="user-img"
         />
       </div>
-      <div class="user-name">{{ dmUser?.name || "Name Placeholder" }}</div>
+      <div class="user-name">{{ receiverName || "Name Placeholder" }}</div>
     </div>
   </div>
   <div #messageContainer *ngIf="" class="message-container overflow-y-scroll">
     <div
       *ngFor="let message of messages"
-      [class.sent]="message.author === loggedInUserId"
-      [class.received]="message.author !== loggedInUserId"
+      [class.sent]="message.author === currentUser"
       class="message"
     ></div>
   </div>
@@ -27,5 +28,8 @@
   </div>
 
   <!-- Input Box for Sending Messages -->
-  <app-input-box></app-input-box>
+  <app-input-box
+    (send)="sendMessage()"
+    [receiverId]="receiverId"
+  ></app-input-box>
 </section>

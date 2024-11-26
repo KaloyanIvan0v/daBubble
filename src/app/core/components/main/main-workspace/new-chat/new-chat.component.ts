@@ -2,12 +2,11 @@ import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/f
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
-import { Message } from 'src/app/core/shared/models/message.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { MainService } from '../../main.service';
-import { InputBoxData } from 'src/app/core/shared/models/input.class';
+import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
+import { setDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-new-chat',
@@ -26,15 +25,7 @@ export class NewChatComponent {
   selectedChannelName: string | null = null;
   isAutoSelected: boolean = false;
   isSelected: boolean = false;
-
-  private messages: Message[] = [];
-
-  newMessageContent: string = '';
-  currentChatId: string = ''; // Chat ID (set when navigating to the chat)
   loggedInUserId: string | null = null;
-  messagePath: string = ''; // Initially empty, will be set dynamically
-  messages$!: Observable<Message[]>;
-  messageToEdit: Message | null = null;
 
   constructor(
     private mainService: MainService,
@@ -57,41 +48,6 @@ export class NewChatComponent {
       !clickedElement.classList.contains('clear-button')
     ) {
       this.searchResults = [];
-    }
-  }
-
-  async onSendMessage(): Promise<void> {
-    const trimmedMessage = this.newMessageContent.trim();
-    if (!trimmedMessage) {
-      return; // Don't send empty messages
-    }
-
-    const userId = this.loggedInUserId; // The sender's ID
-    if (!userId) {
-      console.error('User is not logged in');
-      return;
-    }
-
-    let messagePath = '';
-    let receiverId: string | null = null;
-
-    if (this.selectedUserName) {
-      receiverId = this.selectedUserName;
-      messagePath = `directMessages/${userId}_${receiverId}/messages`;
-    } else if (this.selectedChannelName) {
-      messagePath = `channels/${this.selectedChannelName}/messages`;
-    } else {
-      console.error('No valid message target selected');
-      return;
-    }
-
-    const inputMessage = new InputBoxData(trimmedMessage, []);
-
-    try {
-      await this.mainService.sendMessage(messagePath, inputMessage, receiverId);
-      this.newMessageContent = '';
-    } catch (error) {
-      console.error('Error while sending message:', error);
     }
   }
 
@@ -126,33 +82,121 @@ export class NewChatComponent {
     this.isAutoSelected = false;
   }
 
-  autoSelectUser(user: any): void {
-    if (!this.isAutoSelected) {
-      this.selectedUserPhotoURL = user.photoURL;
-      this.selectedUserName = user.name;
-      this.isSelected = true;
-      this.searchQuery = `@${user.name}`;
-      this.isAutoSelected = true;
-      this.searchResults = [];
+  async onSelectResult(result: any): Promise<void> {
+    const senderId = this.loggedInUserId;
+    const receiverId = result.uid;
+
+    if (!senderId) {
+      console.error('Sender ID is null');
+      return;
+    }
+
+    if (result.name) {
+      if (result.email) {
+        this.handleUserSelection(result);
+      } else {
+        this.handleChannelSelection(result);
+      }
+      await this.handleChatCreation(senderId, receiverId, result);
+    } else if (result.email) {
+      this.handleDirectMessaging(result);
+      await this.handleChatCreation(senderId, result.uid, result);
     }
   }
 
-  onSelectResult(result: any) {
-    if (result.name) {
-      if (result.email) {
-        this.searchQuery = `@${result.name}`;
-        this.selectedUserPhotoURL = result.photoURL || '';
-        this.isSelected = true;
+  // Handle user selection
+  handleUserSelection(result: any): void {
+    this.searchQuery = `@${result.name}`;
+    this.selectedUserPhotoURL = result.photoURL || '';
+    this.isSelected = true;
+  }
+
+  // Handle channel selection
+  handleChannelSelection(result: any): void {
+    this.searchQuery = `#${result.name}`;
+    this.selectedUserPhotoURL = ''; // No photo for channels
+    this.isSelected = true;
+  }
+
+  // Handle direct messaging when only an email is provided
+  handleDirectMessaging(result: any): void {
+    this.searchQuery = result.email;
+    this.isSelected = true;
+  }
+
+  // Handle checking and creating a chat if necessary
+  async handleChatCreation(
+    senderId: string,
+    receiverId: string,
+    result: any
+  ): Promise<void> {
+    const chatId = this.generateChatId(senderId, receiverId);
+
+    try {
+      const chatExists = await this.firebaseService.checkDocExists(
+        'directMessages',
+        chatId
+      );
+
+      if (!chatExists) {
+        await this.createDirectMessageChat(
+          chatId,
+          senderId,
+          receiverId,
+          result
+        );
       } else {
-        this.searchQuery = `#${result.name}`;
-        this.selectedUserPhotoURL = '';
-        this.isSelected = true;
+        console.log('Direct message chat already exists');
       }
-    } else if (result.email) {
-      this.searchQuery = result.email;
-      this.isSelected = true;
+
+      this.searchResults = []; // Clear search results
+    } catch (error) {
+      console.error('Error checking or creating direct message chat:', error);
     }
-    this.searchResults = [];
+  }
+
+  // Generate a unique chat ID for the sender and receiver
+  generateChatId(senderId: string, receiverId: string): string {
+    return senderId < receiverId
+      ? `${senderId}_${receiverId}`
+      : `${receiverId}_${senderId}`;
+  }
+
+  // Create the direct message chat document in Firestore
+  async createDirectMessageChat(
+    chatId: string,
+    senderId: string,
+    receiverId: string,
+    result: any
+  ): Promise<void> {
+    const directMessage = new DirectMessage(
+      chatId,
+      senderId,
+      receiverId,
+      new Date(),
+      { text: 'New chat initiated', attachments: [] },
+      []
+    );
+
+    const chatData = {
+      uid: [senderId, receiverId],
+      id: directMessage.id,
+      timestamp: directMessage.timestamp,
+      content: directMessage.content,
+      reactions: directMessage.reactions,
+    };
+
+    try {
+      const chatDocRef = this.firebaseService.getDocRef(
+        'directMessages',
+        chatId
+      );
+      await setDoc(chatDocRef, chatData);
+
+      console.log('Direct message chat created successfully');
+    } catch (error) {
+      console.error('Error creating direct message chat:', error);
+    }
   }
 
   selectedIndex: number = -1;

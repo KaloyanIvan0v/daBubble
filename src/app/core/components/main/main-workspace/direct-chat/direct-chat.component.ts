@@ -1,73 +1,91 @@
-import {
-  AfterViewChecked,
-  Component,
-  ElementRef,
-  ViewChild,
-  OnInit,
-  OnDestroy,
-  effect,
-} from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
-import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Chat } from 'src/app/core/shared/models/chat.class';
-import { User } from 'src/app/core/shared/models/user.class';
+import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Message } from 'src/app/core/shared/models/message.class';
+import { Thread } from 'src/app/core/shared/models/thread.class';
+import { InputBoxData } from 'src/app/core/shared/models/input.class';
+import { MainService } from '../../main.service';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 @Component({
-  selector: 'app-chat-message',
-  standalone: true,
-  imports: [FormsModule, CommonModule, InputBoxComponent],
+  selector: 'app-direct-chat',
   templateUrl: './direct-chat.component.html',
   styleUrls: ['./direct-chat.component.scss'],
+  standalone: true,
+  imports: [InputBoxComponent, CommonModule],
 })
-export class DirectChatComponent
-  implements OnInit, OnDestroy, AfterViewChecked
-{
-  private subscriptions = new Subscription();
-  private chatSubscription?: Subscription;
+export class DirectChatComponent implements OnInit, OnDestroy {
+  chatId: string = ''; // Chat ID, extracted from route or passed
+  currentUser: string = ''; // Logged-in user
+  messages: Message[] = []; // List of messages in the chat
+  newMessageText: string = ''; // New message input text
+  newMessageImports: string[] = []; // List of imports for the message (you can customize this)
+  thread: Thread = new Thread('threadId', 'threadName');
+  space: string = ''; // Define space for messages (e.g., "directChat")
+  receiverId: string | null = null; // Optional receiver ID for direct messages
 
-  loggedInUserId: string = ''; // ID of the logged-in user
-  dmChat?: Chat; // Instance of Chat representing the DM session
-  dmUser?: User; // Instance of the User class for the other user
-  messages: Message[] = []; // Array to hold messages
-  @ViewChild('messageContainer') private messageContainer!: ElementRef;
+  receiverName: string = ''; // Receiver's name
+  receiverPhotoURL: string = ''; // Receiver's profile photo URL
 
+  private messagesSubscription: Subscription = Subscription.EMPTY;
   constructor(
-    private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService
-  ) {
-    // Subscribe to the current active DM user to update the component when it changes
-    effect(() => {
-      const activeDmUser = this.workspaceService.currentActiveDmUser(); // Get the active DM user
-      if (activeDmUser) {
-        // this.dmUser = activeDmUser; // Set the dmUser to the active DM user
-      } else {
-        console.warn('No valid DM user available.');
-      }
+    private route: ActivatedRoute,
+    private firebaseService: FirebaseServicesService,
+    private authService: AuthService,
+    private mainService: MainService
+  ) {}
+
+  ngOnInit(): void {
+    // Get the chatId from the route params
+    this.route.params.subscribe((params) => {
+      this.chatId = params['chatId'];
+      this.loadMessages(); // Load the messages after chatId is available
+    });
+
+    // Get the logged-in user's UID
+    this.authService.getCurrentUserUID().then((uid) => {
+      this.currentUser = uid ?? '';
     });
   }
 
-  ngOnInit(): void {
-    this.loggedInUserId = this.workspaceService.currentActiveUserId();
-  }
-
-  // Auto-scroll to the latest message
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
-  }
-
-  private scrollToBottom(): void {
-    if (this.messageContainer) {
-      this.messageContainer.nativeElement.scrollTop =
-        this.messageContainer.nativeElement.scrollHeight;
+  ngOnDestroy(): void {
+    if (this.messagesSubscription) {
+      this.messagesSubscription.unsubscribe();
     }
   }
 
-  ngOnDestroy(): void {
-    this.chatSubscription?.unsubscribe();
-    this.subscriptions.unsubscribe();
+  loadMessages(): void {
+    // Use your getMessages method to load messages from the Firestore
+    this.messagesSubscription = this.firebaseService
+      .getMessages('directMessages', this.chatId)
+      .subscribe((messages: Message[]) => {
+        this.messages = messages; // Update messages array with the fetched data
+      });
+  }
+
+  sendMessage(): void {
+    if (this.newMessageText.trim() === '') return;
+
+    const inputMessage: InputBoxData = {
+      message: this.newMessageText,
+      imports: this.newMessageImports,
+    };
+
+    this.mainService
+      .sendMessage(
+        `directMessages/${this.chatId}/messages`,
+        inputMessage,
+        this.receiverId
+      )
+      .then(() => {
+        // Clear the input fields after sending
+        this.newMessageText = '';
+        this.newMessageImports = [];
+      })
+      .catch((error) => {
+        console.error('Error sending message:', error);
+      });
   }
 }
