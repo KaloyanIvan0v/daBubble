@@ -16,7 +16,7 @@ section {
       display: block;
     }
   }
-  padding: 10px 45px;
+  padding: 30px 45px;
 }
 
 .msg-wrapper {
@@ -84,7 +84,7 @@ section {
 .reactions-menu {
   position: absolute;
   right: 20px;
-  top: -23px;
+  top: -33px;
   display: none;
 }
 
@@ -160,12 +160,6 @@ section {
   z-index: 4;
   top: 35px;
 }
-
-// .emoji-picker-last-message {
-//   position: absolute;
-//   z-index: 4;
-//   bottom: 35px;
-// }
 
 .reaction-author-name {
   width: 100%;

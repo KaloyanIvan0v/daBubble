@@ -28,6 +28,7 @@ export class ReactionsMenuComponent implements OnInit {
   @Input() message!: Message;
   @Input() lastTwoReactions: string[] = [];
   @Input() ownMessage: boolean = false;
+  @Input() showThread: boolean = true;
   @Output() messageToEdit = new EventEmitter<Message>();
   currentUserId: string = '';
 

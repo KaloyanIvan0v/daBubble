@@ -14,7 +14,7 @@
     <div class="emoji">{{ lastTwoReactions[1] }}</div>
   </div>
   <div class="add-reaction" (click)="toggleEmojiPicker()"></div>
-  <div class="add-thread" (click)="openThread()"></div>
+  <div *ngIf="showThread" class="add-thread" (click)="openThread()"></div>
   <div
     (mouseleave)="closeEditMessage()"
     *ngIf="ownMessage"

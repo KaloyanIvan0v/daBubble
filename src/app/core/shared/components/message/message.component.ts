@@ -31,6 +31,7 @@ import { AuthService } from '../../services/auth-services/auth.service';
 })
 export class MessageComponent {
   @Input() message!: Message;
+  @Input() showThread: boolean = true;
   author$: Observable<User> = new Observable();
   showEmojiPicker = false;
   loggedInUserId: string | null = '';
