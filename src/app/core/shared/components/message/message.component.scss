@@ -179,3 +179,25 @@ section {
 .ai-end {
   align-items: end;
 }
+
+.thread-view {
+  width: max-content;
+  @include dFlex($ai: end, $jc: center);
+  gap: 10px;
+}
+
+.thread-amount {
+  font-size: 18px;
+  font-weight: 400;
+  color: $purple3;
+  &:hover {
+    cursor: pointer;
+    font-weight: 700;
+  }
+}
+
+.last-thread-response {
+  font-size: 14px;
+  font-weight: 400;
+  color: $text-grey;
+}
