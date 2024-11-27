@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 import { MainService } from '../../main.service';
 import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
 import { setDoc } from '@angular/fire/firestore';
+import { User } from 'src/app/core/shared/models/user.class';
 
 @Component({
   selector: 'app-new-chat',
@@ -167,23 +168,37 @@ export class NewChatComponent {
     chatId: string,
     senderId: string,
     receiverId: string,
-    result: any
+    result: User
   ): Promise<void> {
     const directMessage = new DirectMessage(
-      chatId,
+      [],
+      '',
       senderId,
       receiverId,
       new Date(),
-      { text: 'New chat initiated', attachments: [] },
-      []
+      [],
+      new User(
+        result.uid,
+        result.name,
+        result.email,
+        result.photoURL,
+        result.contacts || [],
+        result.status
+      )
     );
 
     const chatData = {
       uid: [senderId, receiverId],
       id: directMessage.id,
       timestamp: directMessage.timestamp,
-      content: directMessage.content,
-      reactions: directMessage.reactions,
+      user: {
+        uid: result.uid,
+        name: result.name,
+        email: result.email,
+        photoURL: result.photoURL,
+        contacts: result.contacts || [],
+        status: result.status,
+      },
     };
 
     try {

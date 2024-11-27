@@ -1,33 +1,30 @@
-import { Reaction } from './reaction.class';
-import { Thread } from './thread.class';
+import { Message } from './message.class';
+import { User } from './user.class';
 
 export class DirectMessage {
+  uid: string[];
   id: string;
   authorUid: string;
   recipientUid: string;
   timestamp: Date;
-  content: {
-    text: string;
-    attachments?: string[];
-  };
-  reactions: Reaction[];
-  thread?: Thread | null;
+  messages: Message[];
+  user?: User;
 
   constructor(
+    uid: string[],
     id: string,
     authorUid: string,
     recipientUid: string,
     timestamp: Date,
-    content: { text: string; attachments?: string[] },
-    reactions: Reaction[] = [],
-    thread?: Thread | null
+    messages: Message[],
+    user?: User
   ) {
+    this.uid = uid;
     this.id = id;
     this.authorUid = authorUid;
     this.recipientUid = recipientUid;
     this.timestamp = timestamp;
-    this.content = content;
-    this.reactions = reactions;
-    this.thread = thread || null;
+    this.messages = messages;
+    this.user = user;
   }
 }

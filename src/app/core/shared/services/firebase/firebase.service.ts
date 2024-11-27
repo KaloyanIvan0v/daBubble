@@ -19,6 +19,7 @@ import { where, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
+import { User } from '../../models/user.class';
 
 @Injectable({
   providedIn: 'root',
@@ -263,12 +264,76 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getCollection('chats', true);
   }
 
-  getDirectMessages(): Observable<any> {
-    return this.getCollection('directMessages', false);
+  getDirectChats(): Observable<any[]> {
+    const directMessagesCollection = this.getCollectionRef('directMessages');
+
+    return new Observable<any[]>((observer) => {
+      const unsubscribe = onSnapshot(
+        directMessagesCollection,
+        async (snapshot) => {
+          const chats = snapshot.docs.map((doc) =>
+            this.mapDocumentData<any>(doc)
+          );
+
+          try {
+            const chatsWithUser = await Promise.all(
+              chats.map(async (chat) => {
+                console.log('Fetching user data for chat:', chat);
+                const userData = await this.getUser(
+                  chat.recipientUid
+                ).toPromise();
+                return {
+                  ...chat,
+                  user: userData || {
+                    name: 'Unknown User',
+                    photoURL:
+                      'assets/img/profile-img/profile-img-placeholder.svg',
+                  },
+                };
+              })
+            );
+            observer.next(chatsWithUser);
+          } catch (error) {
+            observer.error(`Error adding user data to chats: ${error}`);
+          }
+        },
+        (error) => observer.error(`Error fetching direct messages: ${error}`)
+      );
+
+      return () => unsubscribe();
+    });
   }
 
-  getUser(uid: string): Observable<any> {
-    return this.getDoc('users', uid);
+  async addUserToChat(chat: any): Promise<any> {
+    try {
+      console.log('Fetching user data for recipientUid:', chat.recipientUid);
+
+      const userData = await this.getUser(chat.recipientUid).toPromise();
+      console.log('Fetched user data:', userData);
+
+      return {
+        ...chat,
+        user: userData || {
+          name: 'Unknown User', // Fallback for missing user data
+          photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
+        },
+      };
+    } catch (error) {
+      console.error('Error retrieving user data for chat:', error);
+      return {
+        ...chat,
+        user: {
+          name: 'Unknown User', // Fallback
+          photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
+        },
+      };
+    }
+  }
+
+  getUser(uid: string): Observable<User> {
+    console.log('Fetching user for UID:', uid); // Log to verify correct UID
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    return docData<User>(userDocRef, { idField: 'uid' }) as Observable<User>;
   }
 
   getChannel(channelId: string): Observable<Channel> {
@@ -283,6 +348,11 @@ export class FirebaseServicesService implements OnDestroy {
   getUniqueId() {
     const id = doc(collection(this.firestore, 'dummyCollection')).id;
     return id;
+  }
+
+  getUserByUid(uid: string): Observable<User> {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    return docData(userDocRef, { idField: 'uid' }) as Observable<User>;
   }
 
   private getDocs(q: any): Observable<any[]> {
