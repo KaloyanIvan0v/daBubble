@@ -161,7 +161,32 @@ app-input-box {
 }
 
 .daily-divider {
+  @include dFlex();
   width: 100%;
-  height: 2px;
-  background-color: $bg-color;
+  height: 1px;
+  margin: 20px 0px;
+}
+
+.daily-divider-line {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background-color: $light-purple;
+  margin: 0 35px;
+}
+
+.daily-divider-date {
+  width: max-content;
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  @include dFlex();
+  justify-content: center;
+  padding: 5px 15px;
+  background-color: white;
+  border-radius: 30px;
+  border: solid 1px $light-purple;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: 400;
 }

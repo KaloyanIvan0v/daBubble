@@ -19,7 +19,8 @@ import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-up
 import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
 import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edit-channel/edit-channel.component';
 import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
-
+import { Timestamp } from '@angular/fire/firestore';
+import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
 @Component({
   selector: 'app-channel-chat',
   standalone: true,
@@ -31,6 +32,7 @@ import { MessageComponent } from 'src/app/core/shared/components/message/message
     FormsModule,
     CommonModule,
     MessageComponent,
+    FirebaseDatePipe,
   ],
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
@@ -148,5 +150,31 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   openChannelUsersViewPopUp() {
     this.workspaceService.channelMembersPopUp.set(true);
+  }
+
+  isNewDay(
+    prevTimestamp: number | undefined,
+    currentTimestamp: number | undefined
+  ): boolean {
+    if (prevTimestamp === undefined || currentTimestamp === undefined)
+      return false;
+
+    const prevDate = new Date(prevTimestamp);
+    const currentDate = new Date(currentTimestamp);
+
+    return (
+      prevDate.getFullYear() !== currentDate.getFullYear() ||
+      prevDate.getMonth() !== currentDate.getMonth() ||
+      prevDate.getDate() !== currentDate.getDate()
+    );
+  }
+  getTimestamp(time: any): number | undefined {
+    if (time instanceof Timestamp) {
+      time = time.toDate(); // Convert Firestore Timestamp to Date
+    } else if (typeof time === 'number') {
+      time = new Date(time); // If it's a number, convert it to Date
+    }
+
+    return time instanceof Date ? time.getTime() : undefined;
   }
 }
