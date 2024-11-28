@@ -270,34 +270,31 @@ export class FirebaseServicesService implements OnDestroy {
     return new Observable<any[]>((observer) => {
       const unsubscribe = onSnapshot(
         directMessagesCollection,
-        async (snapshot) => {
-          const chats = snapshot.docs.map((doc) =>
-            this.mapDocumentData<any>(doc)
-          );
+        (snapshot) => {
+          const chats = snapshot.docs
+            .map((doc) => this.mapDocumentData<any>(doc))
+            .filter((chat) => {
+              // Validate that receiver data exists
+              if (!chat.receiver) {
+                console.error('Missing receiver data for chat:', chat);
+                return false; // Skip this chat
+              }
+              return true;
+            })
+            .map((chat) => {
+              // Directly use the receiver data
+              return {
+                ...chat,
+                user: chat.receiver, // No placeholder; rely on receiver data
+              };
+            });
 
-          try {
-            const chatsWithUser = await Promise.all(
-              chats.map(async (chat) => {
-                console.log('Fetching user data for chat:', chat);
-                const userData = await this.getUser(
-                  chat.recipientUid
-                ).toPromise();
-                return {
-                  ...chat,
-                  user: userData || {
-                    name: 'Unknown User',
-                    photoURL:
-                      'assets/img/profile-img/profile-img-placeholder.svg',
-                  },
-                };
-              })
-            );
-            observer.next(chatsWithUser);
-          } catch (error) {
-            observer.error(`Error adding user data to chats: ${error}`);
-          }
+          observer.next(chats);
         },
-        (error) => observer.error(`Error fetching direct messages: ${error}`)
+        (error) => {
+          console.error(`Error fetching direct messages: ${error}`);
+          observer.error(error);
+        }
       );
 
       return () => unsubscribe();
