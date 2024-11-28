@@ -4,9 +4,17 @@ import { Router } from '@angular/router';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { DirectChatService } from 'src/app/core/shared/services/direct-chat-services/direct-chat.service';
 import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  BehaviorSubject,
+  switchMap,
+  map,
+  of,
+  combineLatest,
+} from 'rxjs';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { User } from 'src/app/core/shared/models/user.class';
 
 @Component({
   selector: 'app-chat-list',
@@ -19,45 +27,44 @@ export class ChatListComponent implements OnInit {
   chatListOpen: boolean = false;
   loggedInUserId: string | null = null;
 
-  directChats$: Observable<any[]>;
-  userData$: Observable<any>;
+  chatsWithUsers$!: Observable<{ chat: DirectMessage; user: User | null }[]>;
 
   constructor(
     private router: Router,
     public firebaseService: FirebaseServicesService,
-    public directChatService: DirectChatService,
-    public workspaceService: WorkspaceService,
     public authService: AuthService
-  ) {
-    this.directChats$ = new Observable<any[]>();
-    this.userData$ = new Observable<any[]>();
-  }
+  ) {}
 
   ngOnInit(): void {
     this.authService.getCurrentUserUID().then((uid) => {
       this.loggedInUserId = uid;
-      this.directChats$ = this.firebaseService.getDirectChats();
+
+      // Combine chats and corresponding users into a single observable
+      this.chatsWithUsers$ = this.firebaseService.getDirectChats().pipe(
+        switchMap((chats: DirectMessage[]) => {
+          const chatsWithUserObservables = chats.map((chat) => {
+            const otherUserId = chat.uid.find(
+              (uid) => uid !== this.loggedInUserId
+            );
+            if (otherUserId) {
+              return this.firebaseService
+                .getUser(otherUserId)
+                .pipe(map((user) => ({ chat, user })));
+            } else {
+              return of({ chat, user: null });
+            }
+          });
+          return combineLatest(chatsWithUserObservables);
+        })
+      );
     });
-    this.directChats$.subscribe((chats) => {
-      console.log('Chats:', chats);
-    });
-    this.userData$ = this.workspaceService.loggedInUserData;
   }
 
   navigateToDirectChat(chatId: string): void {
-    // Navigate to the selected chat (using chatId)
-    console.log('Navigating to chat:', chatId);
+    this.router.navigate(['direct-chat', chatId]);
   }
 
-  toggleChatList() {
+  toggleChatList(): void {
     this.chatListOpen = !this.chatListOpen;
-  }
-
-  navigateToChat() {
-    this.router.navigate(['dashboard', 'direct-chat']);
-  }
-
-  openDirectChat() {
-    this.navigateToChat();
   }
 }

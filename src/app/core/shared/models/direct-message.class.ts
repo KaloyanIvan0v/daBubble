@@ -8,6 +8,7 @@ export class DirectMessage {
   recipientUid: string;
   timestamp: Date;
   messages: Message[];
+  user?: User;
 
   constructor(
     uid: string[],
@@ -15,7 +16,8 @@ export class DirectMessage {
     authorUid: string,
     recipientUid: string,
     timestamp: Date,
-    messages: Message[]
+    messages: Message[],
+    user?: User
   ) {
     this.uid = uid;
     this.id = id;
@@ -23,5 +25,6 @@ export class DirectMessage {
     this.recipientUid = recipientUid;
     this.timestamp = timestamp;
     this.messages = messages;
+    this.user = user;
   }
 }

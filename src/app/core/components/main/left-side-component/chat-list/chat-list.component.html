@@ -15,7 +15,7 @@
         }"
       ></div>
       <div class="person-black-blue-img"></div>
-      <div class="chat-tittle">Direktnachrichten</div>
+      <div class="chat-title">Direktnachrichten</div>
     </div>
   </header>
   <div
@@ -25,20 +25,19 @@
       'chat-items-open': chatListOpen
     }"
   >
-    <div
-      *ngFor="let chat of directChats$ | async"
-      class="chat-item"
-      (click)="navigateToDirectChat(chat.id)"
-    >
-      <div class="item-img">
-        <!-- <img
-          [src]="chat.user?.photoURL || 'assets/default-avatar.png'"
-          alt="User Avatar"
-        /> -->
-        <div class="status"></div>
-      </div>
-      <div class="item-name">
-        <!-- {{ chat.user?.name || "Unknown User" }} -->
+    <div *ngIf="chatsWithUsers$ | async as chatsWithUsers">
+      <div
+        *ngFor="let item of chatsWithUsers"
+        class="chat-item"
+        (click)="navigateToDirectChat(item.chat.id)"
+      >
+        <div class="item-img">
+          <img [src]="item.user?.photoURL" alt="User Avatar" />
+          <div class="status"></div>
+        </div>
+        <div class="item-name">
+          {{ item.user?.name || "Unknown User" }}
+        </div>
       </div>
     </div>
   </div>

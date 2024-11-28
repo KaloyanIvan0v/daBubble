@@ -7,6 +7,7 @@ import { ResetPasswordComponent } from './core/components/authentication/reset-p
 import { MainWorkspaceRoutes } from './core/components/main/main-workspace/main-workspace-routing';
 import { AuthGuard } from './auth.guard';
 import { ResetPasswordLinkComponent } from './core/components/authentication/reset-password-link/reset-password-link.component';
+import { DirectChatComponent } from './core/components/main/main-workspace/direct-chat/direct-chat.component';
 
 export const routes: Routes = [
   {
@@ -18,7 +19,13 @@ export const routes: Routes = [
     path: 'dashboard',
     component: MainComponent,
     canActivate: [AuthGuard],
-    children: MainWorkspaceRoutes,
+    children: [
+      ...MainWorkspaceRoutes,
+      {
+        path: 'direct-chat/:chatId',
+        component: DirectChatComponent,
+      },
+    ],
   },
   {
     path: 'app-authentication',
