@@ -6,6 +6,7 @@ import {
   EventEmitter,
   Output,
   OnInit,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message } from 'src/app/core/shared/models/message.class';
@@ -60,8 +61,18 @@ export class MessageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.author$ = this.firebaseService.getUser(this.message.author);
+    this.setAuthor();
     this.setThreadMessagesLength();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['message']) {
+      this.setAuthor();
+    }
+  }
+
+  setAuthor() {
+    this.author$ = this.firebaseService.getUser(this.message.author);
   }
 
   setThreadMessagesLength() {

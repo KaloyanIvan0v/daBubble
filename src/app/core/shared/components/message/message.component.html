@@ -30,9 +30,15 @@
       >
         {{ message.value.text }}
       </div>
-      <div *ngIf="threadMessages.length > 0" class="thread-view">
+      <div *ngIf="threadMessages.length > 0 && showThread" class="thread-view">
         <div class="thread-amount" (click)="openThread()">
-          {{ threadMessages.length }} Antworten
+          {{ threadMessages.length }}
+          <ng-container *ngIf="threadMessages.length > 1">
+            Antworten</ng-container
+          >
+          <ng-container *ngIf="threadMessages.length === 1">
+            Antwort</ng-container
+          >
         </div>
         <div *ngIf="lastThreadMessage" class="last-thread-response">
           Letzte Antwort {{ lastThreadMessage.time | firebaseTime }}

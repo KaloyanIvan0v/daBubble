@@ -22,11 +22,15 @@
     *ngIf="channelData"
     class="message-container overflow-y-scroll"
   >
-    <div *ngFor="let message of messages$ | async" class="message">
+    <div
+      *ngFor="let message of messages$ | async; let i = index"
+      class="message"
+    >
       <app-message
         (messageToEdit)="messageToEdit = $event"
         [message]="message"
       ></app-message>
+      <div class="daily-divider"></div>
     </div>
   </div>
   <app-input-box
