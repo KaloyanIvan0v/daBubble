@@ -26,9 +26,9 @@
     }"
   >
     <div
-      *ngFor="let chat of directChats"
+      *ngFor="let chat of directChats$ | async"
       class="chat-item"
-      (click)="navigateToDirectChat()"
+      (click)="navigateToDirectChat(chat.id)"
     >
       <div class="item-img">
         <!-- <img

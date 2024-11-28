@@ -14,12 +14,13 @@ import {
   query,
   setDoc,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Observer, switchMap } from 'rxjs';
 import { where, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { User } from '../../models/user.class';
+import { QuerySnapshot, DocumentData } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -268,66 +269,90 @@ export class FirebaseServicesService implements OnDestroy {
     const directMessagesCollection = this.getCollectionRef('directMessages');
 
     return new Observable<any[]>((observer) => {
-      const unsubscribe = onSnapshot(
+      const unsubscribe = this.setupDirectChatsListener(
         directMessagesCollection,
-        async (snapshot) => {
-          const chats = snapshot.docs.map((doc) =>
-            this.mapDocumentData<any>(doc)
-          );
-
-          try {
-            const chatsWithUser = await Promise.all(
-              chats.map(async (chat) => {
-                console.log('Fetching user data for chat:', chat);
-                const userData = await this.getUser(
-                  chat.recipientUid
-                ).toPromise();
-                return {
-                  ...chat,
-                  user: userData || {
-                    name: 'Unknown User',
-                    photoURL:
-                      'assets/img/profile-img/profile-img-placeholder.svg',
-                  },
-                };
-              })
-            );
-            observer.next(chatsWithUser);
-          } catch (error) {
-            observer.error(`Error adding user data to chats: ${error}`);
-          }
-        },
-        (error) => observer.error(`Error fetching direct messages: ${error}`)
+        observer
       );
-
       return () => unsubscribe();
     });
   }
 
+  private setupDirectChatsListener(
+    collectionRef: CollectionReference<DocumentData>,
+    observer: Observer<any>
+  ): () => void {
+    return onSnapshot(
+      collectionRef,
+      (snapshot) => this.handleSnapshot(snapshot, observer),
+      (error) => this.handleSnapshotError(error, observer)
+    );
+  }
+
+  private async handleSnapshot(
+    snapshot: QuerySnapshot<DocumentData>,
+    observer: Observer<any>
+  ): Promise<void> {
+    const chats = await this.processChatSnapshots(snapshot);
+    observer.next(chats);
+  }
+
+  private handleSnapshotError(error: Error, observer: Observer<any>): void {
+    console.error(`Error fetching direct messages: ${error}`);
+    observer.error(error);
+  }
+
+  private async processChatSnapshots(
+    snapshot: QuerySnapshot<DocumentData>
+  ): Promise<any[]> {
+    const chatPromises = snapshot.docs.map((doc: any) => {
+      const chat = this.mapDocumentData<any>(doc);
+      return this.resolveUserData(chat);
+    });
+    return Promise.all(chatPromises);
+  }
+
   async addUserToChat(chat: any): Promise<any> {
+    return this.resolveUserData(chat);
+  }
+
+  private async resolveUserData(chat: any): Promise<any> {
+    if (chat.receiver) {
+      return this.useReceiverData(chat);
+    }
+
+    if (chat.recipientUid) {
+      return await this.fetchUserData(chat);
+    }
+
+    return this.useFallbackUserData(chat);
+  }
+
+  private useReceiverData(chat: any): any {
+    return { ...chat, user: chat.receiver };
+  }
+
+  private async fetchUserData(chat: any): Promise<any> {
     try {
-      console.log('Fetching user data for recipientUid:', chat.recipientUid);
-
       const userData = await this.getUser(chat.recipientUid).toPromise();
-      console.log('Fetched user data:', userData);
-
       return {
         ...chat,
-        user: userData || {
-          name: 'Unknown User', // Fallback for missing user data
-          photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
-        },
+        user: userData || this.getFallbackUserData(),
       };
     } catch (error) {
       console.error('Error retrieving user data for chat:', error);
-      return {
-        ...chat,
-        user: {
-          name: 'Unknown User', // Fallback
-          photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
-        },
-      };
+      return this.useFallbackUserData(chat);
     }
+  }
+
+  private useFallbackUserData(chat: any): any {
+    return { ...chat, user: this.getFallbackUserData() };
+  }
+
+  private getFallbackUserData(): any {
+    return {
+      name: 'Unknown User',
+      photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
+    };
   }
 
   getUser(uid: string): Observable<any> {
