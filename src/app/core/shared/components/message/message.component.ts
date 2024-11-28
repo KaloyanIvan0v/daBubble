@@ -35,6 +35,7 @@ import { ThreadService } from '../../services/thread-service/thread.service';
 export class MessageComponent implements OnInit {
   @Input() message!: Message;
   @Input() showThread: boolean = true;
+  @Input() editActive: boolean = false;
   author$: Observable<User> = new Observable();
   showEmojiPicker = false;
   loggedInUserId: string | null = '';
@@ -91,6 +92,7 @@ export class MessageComponent implements OnInit {
 
   setMessageToEdit($event: any) {
     this.messageToEdit.emit($event);
+    this.setEditActive();
   }
 
   setLastTwoReactions() {
@@ -128,6 +130,14 @@ export class MessageComponent implements OnInit {
   openThread() {
     this.threadService.openThread(this.message);
     this.threadService.threadOpen.next(true);
+  }
+
+  cancelEdit() {
+    this.editActive = false;
+  }
+
+  setEditActive() {
+    this.editActive = true;
   }
 
   // calculatePopupDirection() {

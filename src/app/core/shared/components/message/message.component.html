@@ -1,10 +1,16 @@
 <section>
   <div
-    [ngClass]="{ 'fd-reverse': message.author === loggedInUserId }"
+    *ngIf="author$ | async as author"
+    [ngClass]="{
+      'fd-reverse': message.author === loggedInUserId,
+      'purple-border': editActive
+    }"
     (mouseleave)="closeEmojiPicker()"
     class="msg-wrapper"
-    *ngIf="author$ | async as author"
   >
+    <div *ngIf="editActive" class="cancel-edit" (click)="cancelEdit()">
+      Cancel edit
+    </div>
     <div class="img-wrapper">
       <img src="{{ (author$ | async)?.photoURL }}" alt="" />
     </div>

@@ -203,3 +203,25 @@ section {
   font-weight: 400;
   color: $text-grey;
 }
+
+.purple-border {
+  border: solid 2px $purple3;
+  border-radius: 30px;
+  padding: 10px 15px;
+}
+
+.cancel-edit {
+  position: absolute;
+  top: -3px;
+  right: 50%;
+  background-color: $purple3;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 5px 8px;
+  transform: translate(50%, 0);
+  &:hover {
+    cursor: pointer;
+    background-color: $purple2;
+  }
+}
