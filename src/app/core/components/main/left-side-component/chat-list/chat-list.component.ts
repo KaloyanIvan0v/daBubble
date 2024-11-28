@@ -25,6 +25,8 @@ export class ChatListComponent implements OnInit {
   ngOnInit(): void {
     this.directChatService.getChats();
     this.directChatService.directChats.subscribe((directChat) => {
+      console.log('Fetched chats:', directChat);
+
       this.directChats = directChat;
     });
   }

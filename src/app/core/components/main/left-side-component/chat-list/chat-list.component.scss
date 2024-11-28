@@ -81,9 +81,6 @@ header {
   max-height: 0;
 }
 
-.chat-items-open {
-}
-
 .chat-item {
   @include dFlex();
   width: max-content;

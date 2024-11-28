@@ -28,7 +28,7 @@ export class DirectChatService {
     const userDataPromises = chats.map(async (chat) => {
       const uid = chat.recipientUid;
       if (uid) {
-        const user = await this.firebaseService.getUserByUid(uid).toPromise();
+        const user = await this.firebaseService.getUser(uid).toPromise();
         return {
           ...chat,
           user,

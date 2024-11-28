@@ -330,10 +330,8 @@ export class FirebaseServicesService implements OnDestroy {
     }
   }
 
-  getUser(uid: string): Observable<User> {
-    console.log('Fetching user for UID:', uid); // Log to verify correct UID
-    const userDocRef = doc(this.firestore, `users/${uid}`);
-    return docData<User>(userDocRef, { idField: 'uid' }) as Observable<User>;
+  getUser(uid: string): Observable<any> {
+    return this.getDoc('users', uid);
   }
 
   getChannel(channelId: string): Observable<Channel> {

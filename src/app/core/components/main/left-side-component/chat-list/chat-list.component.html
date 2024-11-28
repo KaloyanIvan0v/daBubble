@@ -27,20 +27,18 @@
   >
     <div
       *ngFor="let chat of directChats"
-      class="direct-chat-item"
+      class="chat-item"
       (click)="navigateToDirectChat()"
     >
-      <div class="chat-item" (click)="navigateToChat()">
-        <div class="item-img">
-          <img
-            [src]="chat.user?.photoURL || 'assets/default-avatar.png'"
-            alt="User Avatar"
-          />
-          <div class="status"></div>
-        </div>
-        <div class="item-name">
-          {{ chat.user?.name || "Unknown User" }}
-        </div>
+      <div class="item-img">
+        <img
+          [src]="chat.user?.photoURL || 'assets/default-avatar.png'"
+          alt="User Avatar"
+        />
+        <div class="status"></div>
+      </div>
+      <div class="item-name">
+        {{ chat.user?.name || "Unknown User" }}
       </div>
     </div>
   </div>

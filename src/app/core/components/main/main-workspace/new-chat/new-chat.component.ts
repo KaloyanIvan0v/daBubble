@@ -8,6 +8,8 @@ import { MainService } from '../../main.service';
 import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
 import { setDoc } from '@angular/fire/firestore';
 import { User } from 'src/app/core/shared/models/user.class';
+import { Observable } from 'rxjs';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-new-chat',
@@ -28,11 +30,15 @@ export class NewChatComponent {
   isSelected: boolean = false;
   loggedInUserId: string | null = null;
 
+  userData$: Observable<any>;
+
   constructor(
     private mainService: MainService,
     public firebaseService: FirebaseServicesService,
+    public workspaceService: WorkspaceService,
     public authService: AuthService
   ) {
+    this.userData$ = this.workspaceService.loggedInUserData;
     this.authService.getCurrentUserUID().then((uid) => {
       this.loggedInUserId = uid;
     });
@@ -163,41 +169,34 @@ export class NewChatComponent {
       : `${receiverId}_${senderId}`;
   }
 
-  // Create the direct message chat document in Firestore
   async createDirectMessageChat(
     chatId: string,
     senderId: string,
     receiverId: string,
-    result: User
+    result: any
   ): Promise<void> {
     const directMessage = new DirectMessage(
-      [],
-      '',
+      [senderId, receiverId],
+      chatId,
       senderId,
       receiverId,
       new Date(),
-      [],
-      new User(
-        result.uid,
-        result.name,
-        result.email,
-        result.photoURL,
-        result.contacts || [],
-        result.status
-      )
+      []
     );
 
     const chatData = {
       uid: [senderId, receiverId],
-      id: directMessage.id,
+      id: chatId,
       timestamp: directMessage.timestamp,
-      user: {
-        uid: result.uid,
+      sender: {
+        uid: senderId,
         name: result.name,
-        email: result.email,
         photoURL: result.photoURL,
-        contacts: result.contacts || [],
-        status: result.status,
+      },
+      receiver: {
+        uid: receiverId,
+        name: result.name,
+        photoURL: result.photoURL,
       },
     };
 
