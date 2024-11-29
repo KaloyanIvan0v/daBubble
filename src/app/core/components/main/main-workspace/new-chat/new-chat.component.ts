@@ -10,6 +10,7 @@ import { setDoc } from '@angular/fire/firestore';
 import { User } from 'src/app/core/shared/models/user.class';
 import { Observable } from 'rxjs';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-chat',
@@ -36,7 +37,8 @@ export class NewChatComponent {
     private mainService: MainService,
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
-    public authService: AuthService
+    public authService: AuthService,
+    private router: Router
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
     this.authService.getCurrentUserUID().then((uid) => {
@@ -147,21 +149,26 @@ export class NewChatComponent {
         chatId
       );
 
-      if (!chatExists) {
+      if (chatExists) {
+        this.navigateToDirectChat(chatId);
+      } else {
+        // Chat doesn't exist, create a new one
         await this.createDirectMessageChat(
           chatId,
           senderId,
           receiverId,
           result
         );
-      } else {
-        console.log('Direct message chat already exists');
       }
 
       this.searchResults = []; // Clear search results
     } catch (error) {
       console.error('Error checking or creating direct message chat:', error);
     }
+  }
+
+  navigateToDirectChat(chatId: string): void {
+    this.router.navigate(['dashboard', 'direct-chat', chatId]);
   }
 
   // Generate a unique chat ID for the sender and receiver
