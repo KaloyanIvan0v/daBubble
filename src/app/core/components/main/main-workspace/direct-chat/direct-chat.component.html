@@ -2,34 +2,33 @@
   <div class="header">
     <div class="header-left">
       <div class="user-img">
-        <img
-          [src]="
-            receiverId
-              ? receiverPhotoURL ||
-                '/assets/img/profile-img/profile-img-placeholder.svg'
-              : '/assets/img/profile-img/profile-img-placeholder.svg'
-          "
-          alt="user-img"
-        />
+        <img [src]="receiverPhotoURL$ | async" alt="user-img" />
       </div>
-      <div class="user-name">{{ receiverName || "Name Placeholder" }}</div>
+      <div class="user-name">
+        {{ receiverName$ | async }}
+      </div>
     </div>
   </div>
-  <div #messageContainer *ngIf="" class="message-container overflow-y-scroll">
+  <!-- Messages Container -->
+  <div
+    #messageContainer
+    *ngIf="messages && messages.length"
+    class="message-container overflow-y-scroll"
+  >
     <div
       *ngFor="let message of messages"
-      [class.sent]="message.author === currentUser"
+      [class.sent]="message.author === currentUserUid"
       class="message"
-    ></div>
+    >
+      <!-- Message content goes here -->
+      {{ message.value.text }}
+    </div>
   </div>
   <!-- Placeholder for no messages -->
-  <div class="no-messages" *ngIf="!messages?.length">
+  <div class="no-messages" *ngIf="!messages || !messages.length">
     No messages yet. Say hello!
   </div>
 
   <!-- Input Box for Sending Messages -->
-  <app-input-box
-    (send)="sendMessage()"
-    [receiverId]="receiverId"
-  ></app-input-box>
+  <app-input-box></app-input-box>
 </section>

@@ -61,7 +61,7 @@ export class ChatListComponent implements OnInit {
   }
 
   navigateToDirectChat(chatId: string): void {
-    this.router.navigate(['direct-chat', chatId]);
+    this.router.navigate(['dashboard', 'direct-chat', chatId]);
   }
 
   toggleChatList(): void {

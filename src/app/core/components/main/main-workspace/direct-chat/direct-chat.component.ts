@@ -1,14 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, of } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { Message } from 'src/app/core/shared/models/message.class';
-import { Thread } from 'src/app/core/shared/models/thread.class';
-import { InputBoxData } from 'src/app/core/shared/models/input.class';
-import { MainService } from '../../main.service';
+import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
+import { User } from 'src/app/core/shared/models/user.class';
+import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
+import { Message } from 'src/app/core/shared/models/message.class';
+
 @Component({
   selector: 'app-direct-chat',
   templateUrl: './direct-chat.component.html',
@@ -17,75 +18,85 @@ import { InputBoxComponent } from 'src/app/core/shared/components/input-box/inpu
   imports: [InputBoxComponent, CommonModule],
 })
 export class DirectChatComponent implements OnInit, OnDestroy {
-  chatId: string = ''; // Chat ID, extracted from route or passed
-  currentUser: string = ''; // Logged-in user
-  messages: Message[] = []; // List of messages in the chat
-  newMessageText: string = ''; // New message input text
-  newMessageImports: string[] = []; // List of imports for the message (you can customize this)
-  thread: Thread = new Thread('threadId', 'threadName');
-  space: string = ''; // Define space for messages (e.g., "directChat")
-  receiverId: string | null = null; // Optional receiver ID for direct messages
+  chatId: string = '';
+  currentUserUid: string = '';
+  receiverId: string | null | undefined = null;
+  receiverName$: Observable<string> = of('Name Placeholder');
+  receiverPhotoURL$: Observable<string> = of(
+    '/assets/img/profile-img/profile-img-placeholder.svg'
+  );
 
-  receiverName: string = ''; // Receiver's name
-  receiverPhotoURL: string = ''; // Receiver's profile photo URL
+  messages: Message[] = []; // Initialize as an empty array
 
-  private messagesSubscription: Subscription = Subscription.EMPTY;
+  private subscriptions: Subscription = new Subscription();
+
   constructor(
     private route: ActivatedRoute,
     private firebaseService: FirebaseServicesService,
-    private authService: AuthService,
-    private mainService: MainService
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    // Get the chatId from the route params
-    this.route.params.subscribe((params) => {
-      this.chatId = params['chatId'];
-      this.loadMessages(); // Load the messages after chatId is available
-    });
-
-    // Get the logged-in user's UID
-    this.authService.getCurrentUserUID().then((uid) => {
-      this.currentUser = uid ?? '';
-    });
+    this.initializeComponent();
   }
 
   ngOnDestroy(): void {
-    if (this.messagesSubscription) {
-      this.messagesSubscription.unsubscribe();
-    }
+    this.subscriptions.unsubscribe();
   }
 
-  loadMessages(): void {
-    // Use your getMessages method to load messages from the Firestore
-    this.messagesSubscription = this.firebaseService
-      .getMessages('directMessages', this.chatId)
-      .subscribe((messages: Message[]) => {
-        this.messages = messages; // Update messages array with the fetched data
-      });
+  private initializeComponent(): void {
+    this.authService.getCurrentUserUID().then((uid) => {
+      this.currentUserUid = uid ?? '';
+      this.initializeReceiverData();
+    });
   }
 
-  sendMessage(): void {
-    if (this.newMessageText.trim() === '') return;
+  private initializeReceiverData(): void {
+    const chatData$ = this.route.params.pipe(
+      switchMap((params) => this.getChatData(params['chatId']))
+    );
 
-    const inputMessage: InputBoxData = {
-      message: this.newMessageText,
-      imports: this.newMessageImports,
-    };
+    const receiverData$ = chatData$.pipe(
+      switchMap((chatData) => this.getReceiverData(chatData))
+    );
 
-    this.mainService
-      .sendMessage(
-        `directMessages/${this.chatId}/messages`,
-        inputMessage,
-        this.receiverId
-      )
-      .then(() => {
-        // Clear the input fields after sending
-        this.newMessageText = '';
-        this.newMessageImports = [];
+    this.subscriptions.add(
+      receiverData$.subscribe((user) => {
+        if (user) {
+          this.receiverName$ = of(user.name);
+          this.receiverPhotoURL$ = of(user.photoURL);
+        }
       })
-      .catch((error) => {
-        console.error('Error sending message:', error);
-      });
+    );
+  }
+
+  private getChatData(chatId: string): Observable<DirectMessage | null> {
+    this.chatId = chatId;
+    return this.firebaseService.getDoc<DirectMessage>('directMessages', chatId);
+  }
+
+  private getReceiverData(
+    chatData: DirectMessage | null
+  ): Observable<User | null> {
+    if (chatData && chatData.uid) {
+      this.receiverId = chatData.uid.find((uid) => uid !== this.currentUserUid);
+      if (this.receiverId) {
+        return this.firebaseService
+          .getUser(this.receiverId)
+          .pipe(map((user) => user || this.getDefaultUser()));
+      } else {
+        console.error('Receiver ID not found in chat data.');
+      }
+    } else {
+      console.error('Chat data not found or malformed.');
+    }
+    return of(this.getDefaultUser());
+  }
+
+  private getDefaultUser(): User {
+    return {
+      name: 'Unknown User',
+      photoURL: '/assets/img/profile-img/profile-img-placeholder.svg',
+    } as User;
   }
 }
