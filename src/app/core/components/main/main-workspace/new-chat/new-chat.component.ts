@@ -72,7 +72,9 @@ export class NewChatComponent {
     this.searchResults = [];
     this.firebaseService.search(searchText).subscribe(
       (results) => {
-        this.searchResults = results;
+        this.searchResults = results.filter(
+          (result) => result.uid !== this.loggedInUserId
+        );
       },
       (error) => {
         console.error('Error fetching search results:', error);
