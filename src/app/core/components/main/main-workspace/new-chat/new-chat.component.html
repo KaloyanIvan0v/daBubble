@@ -61,6 +61,8 @@
 
   <div class="message-container">nachrichten</div>
   <app-input-box
-    [receiverId]="selectedUserName || selectedChannelName"
+    [messagePath]="messagePath"
+    [receiverId]="selectedUserId"
+    (messageSent)="onMessageSent()"
   ></app-input-box>
 </section>

@@ -1,20 +1,21 @@
 <section>
+  <!-- Header  -->
   <div class="header">
-    <div class="header-left">
-      <div class="user-img">
+    <div
+      class="header-user-info"
+      (click)="receiverId && openProfileView(receiverId)"
+    >
+      <div class="header-user-img">
         <img [src]="receiverPhotoURL$ | async" alt="user-img" />
+        <div class="status"></div>
       </div>
-      <div class="user-name">
-        {{ receiverName$ | async }}
-      </div>
+      <div class="font24-700">{{ receiverName$ | async }}</div>
+      <div class="drop-down-icon"></div>
     </div>
   </div>
+
   <!-- Messages Container -->
-  <div
-    #messageContainer
-    *ngIf="messages && messages.length"
-    class="message-container overflow-y-scroll"
-  >
+  <div #messageContainer class="message-container overflow-y-scroll">
     <div
       *ngFor="let message of messages"
       [class.sent]="message.author === currentUserUid"
@@ -24,9 +25,29 @@
       {{ message.value.text }}
     </div>
   </div>
-  <!-- Placeholder for no messages -->
-  <div class="no-messages" *ngIf="!messages || !messages.length">
-    No messages yet. Say hello!
+
+  <!-- Receiver content goes here -->
+  <div class="receiver-info-container">
+    <div
+      class="receiver-info"
+      (click)="receiverId && openProfileView(receiverId)"
+    >
+      <div class="user-img">
+        <img [src]="receiverPhotoURL$ | async" alt="user-img" />
+      </div>
+      <div class="user-name">
+        {{ receiverName$ | async }}
+      </div>
+    </div>
+    <div class="user-text">
+      Diese Unterhaltung findet nur zwischen
+      <span
+        class="user-text-name"
+        (click)="receiverId && openProfileView(receiverId)"
+        >&#64;{{ receiverName$ | async }}</span
+      >
+      und dir statt.
+    </div>
   </div>
 
   <!-- Input Box for Sending Messages -->

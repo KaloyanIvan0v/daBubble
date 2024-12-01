@@ -9,6 +9,7 @@ import { User } from 'src/app/core/shared/models/user.class';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { Message } from 'src/app/core/shared/models/message.class';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-direct-chat',
@@ -26,14 +27,15 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     '/assets/img/profile-img/profile-img-placeholder.svg'
   );
 
-  messages: Message[] = []; // Initialize as an empty array
+  messages: Message[] = [];
 
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
     private firebaseService: FirebaseServicesService,
-    private authService: AuthService
+    private authService: AuthService,
+    private workspaceService: WorkspaceService
   ) {}
 
   ngOnInit(): void {
@@ -98,5 +100,10 @@ export class DirectChatComponent implements OnInit, OnDestroy {
       name: 'Unknown User',
       photoURL: '/assets/img/profile-img/profile-img-placeholder.svg',
     } as User;
+  }
+
+  openProfileView(uid: string) {
+    this.workspaceService.currentActiveUserId.set(uid);
+    this.workspaceService.profileViewPopUp.set(true);
   }
 }

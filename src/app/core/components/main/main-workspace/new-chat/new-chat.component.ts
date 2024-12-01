@@ -30,6 +30,8 @@ export class NewChatComponent {
   isAutoSelected: boolean = false;
   isSelected: boolean = false;
   loggedInUserId: string | null = null;
+  selectedUserId: string | null = null;
+  messagePath: string = '';
 
   userData$: Observable<any>;
 
@@ -120,6 +122,7 @@ export class NewChatComponent {
     this.searchQuery = `@${result.name}`;
     this.selectedUserPhotoURL = result.photoURL || '';
     this.isSelected = true;
+    this.selectedUserId = result.uid;
   }
 
   // Handle channel selection
@@ -219,6 +222,15 @@ export class NewChatComponent {
       console.log('Direct message chat created successfully');
     } catch (error) {
       console.error('Error creating direct message chat:', error);
+    }
+  }
+
+  onMessageSent(): void {
+    if (this.selectedUserId) {
+      const senderId = this.loggedInUserId!;
+      const receiverId = this.selectedUserId;
+      const chatId = this.generateChatId(senderId, receiverId);
+      this.navigateToDirectChat(chatId);
     }
   }
 
