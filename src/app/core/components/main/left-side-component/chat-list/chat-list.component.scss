@@ -28,7 +28,7 @@ header {
         "/assets/img/icons/account_circle-blue.svg"
       );
     }
-    .chat-tittle {
+    .chat-title {
       color: $purple3;
     }
   }
@@ -48,7 +48,7 @@ header {
         "/assets/img/icons/account_circle-blue.svg"
       );
     }
-    .chat-tittle {
+    .chat-title {
       color: $purple3;
     }
   }
@@ -61,7 +61,7 @@ header {
   );
 }
 
-.chat-tittle {
+.chat-title {
   font-size: 20px;
   font-weight: 600;
   &:hover {
@@ -91,6 +91,11 @@ header {
     background-color: $bg-color;
     border-radius: 30px;
   }
+
+  &.active {
+    background-color: $bg-color;
+    border-radius: 30px;
+  }
 }
 
 .item-img {
@@ -109,6 +114,11 @@ header {
   @include dFlex();
   font-size: 18px;
   font-weight: 400;
+
+  &.active {
+    color: $purple3;
+    font-weight: 700;
+  }
 }
 
 .status {

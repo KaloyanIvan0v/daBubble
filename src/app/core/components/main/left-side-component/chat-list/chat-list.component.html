@@ -29,13 +29,19 @@
       <div
         *ngFor="let item of chatsWithUsers"
         class="chat-item"
+        [routerLink]="['/dashboard/direct-chat', item.chat.id]"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
         (click)="navigateToDirectChat(item.chat.id)"
       >
         <div class="item-img">
           <img [src]="item.user?.photoURL" alt="User Avatar" />
           <div class="status"></div>
         </div>
-        <div class="item-name">
+        <div
+          class="item-name"
+          [ngClass]="{ active: item.chat.id === selectedChatId }"
+        >
           {{ item.user?.name || "Unknown User" }}
         </div>
       </div>
