@@ -1,10 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { UploadCareService } from '../../../services/uploadcare-service/uploadcare.service';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth-services/auth.service';
-import { User } from '../../../models/user.class';
 @Component({
   selector: 'app-edit-avatar',
   standalone: true,

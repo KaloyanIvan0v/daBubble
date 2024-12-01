@@ -80,7 +80,6 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Fetch and set the user UID once on component initialization
     this.authService.getCurrentUserUID().then((uid) => {
       this.firebaseService.setUserUID(uid);
     });

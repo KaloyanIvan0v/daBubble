@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { User } from '../../../models/user.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SafeResourceUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-own-profile-edit',
   standalone: true,

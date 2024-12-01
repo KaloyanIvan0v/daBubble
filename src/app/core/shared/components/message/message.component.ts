@@ -7,11 +7,12 @@ import {
   Output,
   OnInit,
   SimpleChanges,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { User } from '../../models/user.class';
-import { Observable, map } from 'rxjs';
+import { Observable, Subject, catchError, map, of, takeUntil } from 'rxjs';
 import { FirebaseTimePipe } from 'src/app/shared/pipes/firebase-time.pipe';
 import { WorkspaceService } from '../../services/workspace-service/workspace.service';
 import { ReactionsMenuComponent } from './reactions-menu/reactions-menu.component';
@@ -30,9 +31,9 @@ import { ThreadService } from '../../services/thread-service/thread.service';
     EmojiPickerComponent,
   ],
   templateUrl: './message.component.html',
-  styleUrl: './message.component.scss',
+  styleUrls: ['./message.component.scss'],
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, OnDestroy {
   @Input() message!: Message;
   @Input() showThread: boolean = true;
   @Input() editActive: boolean = false;
@@ -44,9 +45,7 @@ export class MessageComponent implements OnInit {
   threadMessages: Message[] = [];
   @Output() messageToEdit = new EventEmitter<Message>();
   lastThreadMessage: Message | null = null;
-
-  //@ViewChild('messageElement', { static: true }) messageElement!: ElementRef;
-  //popupDirection: 'up' | 'down' = 'down';
+  private destroy$ = new Subject<void>();
 
   constructor(
     private firebaseService: FirebaseServicesService,
@@ -54,16 +53,20 @@ export class MessageComponent implements OnInit {
     private emojiPickerService: EmojiPickerService,
     private authService: AuthService,
     private threadService: ThreadService
-  ) {
+  ) {}
+
+  ngOnInit() {
     this.authService.getCurrentUserUID().then((uid) => {
       this.loggedInUserId = uid;
       this.setLastTwoReactions();
     });
-  }
-
-  ngOnInit() {
     this.setAuthor();
     this.setThreadMessagesLength();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -73,7 +76,18 @@ export class MessageComponent implements OnInit {
   }
 
   setAuthor() {
-    this.author$ = this.firebaseService.getUser(this.message.author);
+    this.author$ = this.firebaseService.getUser(this.message.author).pipe(
+      catchError(() =>
+        of({
+          uid: '',
+          name: 'Unbekannt',
+          email: '',
+          photoURL: '',
+          contacts: [],
+          status: false,
+        } as User)
+      )
+    );
   }
 
   setThreadMessagesLength() {
@@ -81,27 +95,25 @@ export class MessageComponent implements OnInit {
       .getThreadMessages(
         this.message.location + '/' + this.message.id + '/messages'
       )
+      .pipe(takeUntil(this.destroy$))
       .subscribe((threads) => {
         this.threadMessages = threads;
-
-        // Set the last message
         this.lastThreadMessage =
           this.threadMessages[this.threadMessages.length - 1] || null;
       });
   }
 
-  setMessageToEdit($event: any) {
+  setMessageToEdit($event: Message) {
     this.messageToEdit.emit($event);
     this.setEditActive();
   }
 
   setLastTwoReactions() {
-    const reactions = this.message.reactions
-      .slice(-2)
-      .map((reaction) => reaction?.value || '');
-    this.lastTwoReactions = [reactions[0] || '', reactions[1] || ''];
+    const reactions = this.message?.reactions || [];
+    this.lastTwoReactions = Array(2)
+      .fill('')
+      .map((_, index) => reactions[reactions.length - 2 + index]?.value || '');
   }
-
   onEmojiSelected(emoji: string) {
     this.emojiPickerService.addReaction(emoji, this.message);
     this.setLastTwoReactions();
@@ -139,19 +151,4 @@ export class MessageComponent implements OnInit {
   setEditActive() {
     this.editActive = true;
   }
-
-  // calculatePopupDirection() {
-  //   const messageRect =
-  //     this.messageElement.nativeElement.getBoundingClientRect();
-  //   const containerRect =
-  //     this.containerRef.nativeElement.getBoundingClientRect();
-
-  //   const distanceToBottom = containerRect.bottom - messageRect.bottom;
-
-  //   if (distanceToBottom <= 200) {
-  //     this.popupDirection = 'up';
-  //   } else {
-  //     this.popupDirection = 'down';
-  //   }
-  // }
 }

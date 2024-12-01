@@ -22,7 +22,7 @@ import { AddChannelComponent } from '../add-channel/add-channel.component';
   standalone: true,
   imports: [FormsModule, CommonModule, AddChannelComponent],
   templateUrl: './add-user-to-channel.component.html',
-  styleUrl: './add-user-to-channel.component.scss',
+  styleUrls: ['./add-user-to-channel.component.scss'],
 })
 export class AddUserToChannelComponent implements OnDestroy {
   currentChannelId: string;
@@ -40,14 +40,20 @@ export class AddUserToChannelComponent implements OnDestroy {
     private renderer: Renderer2
   ) {
     this.currentChannelId = this.workspaceService.currentActiveUnitId();
+    this.initializeUsers();
+    this.initializeChannelData();
+  }
 
+  private initializeUsers() {
     this.firebaseService
       .getUsers()
       .pipe(takeUntil(this.destroy$))
       .subscribe((users) => {
         this.users = users;
       });
+  }
 
+  private initializeChannelData() {
     effect(() => {
       this.currentChannelId = this.workspaceService.currentActiveUnitId();
       this.channelData$ = this.firebaseService.getChannel(
@@ -71,34 +77,57 @@ export class AddUserToChannelComponent implements OnDestroy {
 
   addUsers() {
     this.closePopUp();
-    const newUids = this.selectedUsers.map((user) => user.uid);
+    const newUids = this.getSelectedUserUids();
+    this.updateChannelUserIds(newUids);
+    this.clearSelectedUsers();
+  }
+
+  private getSelectedUserUids(): string[] {
+    return this.selectedUsers.map((user) => user.uid);
+  }
+
+  private updateChannelUserIds(newUids: string[]) {
     this.channelData.uid = [...new Set([...this.channelData.uid, ...newUids])];
     this.firebaseService.updateDoc('channels', this.currentChannelId, {
       uid: this.channelData.uid,
     });
+  }
+
+  private clearSelectedUsers() {
     this.selectedUsers = [];
   }
 
-  addUserChip(user: any) {
-    const userExists = this.selectedUsers.some(
+  addUserChip(user: User) {
+    if (!this.isUserAlreadySelected(user)) {
+      this.addUserToSelected(user);
+    } else {
+      this.animateExistingUserChip(user);
+    }
+  }
+
+  private isUserAlreadySelected(user: User): boolean {
+    return this.selectedUsers.some(
       (existingUser) => existingUser.uid === user.uid
     );
+  }
 
-    if (!userExists) {
-      this.selectedUsers.push(user);
-      this.searchText = '';
-    } else {
-      const userChip = this.userChips.find(
-        (chip) => chip.nativeElement.id === user.uid
-      );
+  private addUserToSelected(user: User) {
+    this.selectedUsers.push(user);
+    this.searchText = '';
+  }
 
-      if (userChip) {
-        this.renderer.addClass(userChip.nativeElement, 'shake-div');
-        setTimeout(() => {
-          this.renderer.removeClass(userChip.nativeElement, 'shake-div');
-        }, 300);
-      }
+  private animateExistingUserChip(user: User) {
+    const userChip = this.findUserChipById(user.uid);
+    if (userChip) {
+      this.renderer.addClass(userChip.nativeElement, 'shake-div');
+      setTimeout(() => {
+        this.renderer.removeClass(userChip.nativeElement, 'shake-div');
+      }, 300);
     }
+  }
+
+  private findUserChipById(uid: string): ElementRef | undefined {
+    return this.userChips.find((chip) => chip.nativeElement.id === uid);
   }
 
   removeUserChip(user: User) {

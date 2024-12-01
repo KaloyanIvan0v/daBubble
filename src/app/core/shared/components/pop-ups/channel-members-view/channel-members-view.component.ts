@@ -1,11 +1,10 @@
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { Component, effect, OnDestroy, OnInit } from '@angular/core';
+import { Component, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { Subscription, BehaviorSubject } from 'rxjs';
-import { User } from 'src/app/core/shared/models/user.class';
 
 @Component({
   selector: 'app-channel-members-view',
@@ -27,19 +26,30 @@ export class ChannelMembersViewComponent implements OnDestroy {
     public AuthService: AuthService
   ) {
     this.setLoggedInUserUid();
-    effect(async () => {
-      this.subscriptions.forEach((sub) => sub.unsubscribe());
-      const unitId = this.workspaceService.currentActiveUnitId();
-      const channelSub = this.firebaseService
-        .getChannel(unitId)
-        .subscribe(async (channel) => {
-          this.channelData = channel;
-          this.channelUsers$.next(await this.getUsersOfChannel());
-          this.updateChannelUsers();
-        });
+    this.initializeChannelEffect();
+  }
 
-      this.subscriptions.push(channelSub);
-    });
+  private initializeChannelEffect() {
+    effect(this.channelEffectCallback.bind(this));
+  }
+
+  private async channelEffectCallback() {
+    this.unsubscribeAll();
+    const unitId = this.workspaceService.currentActiveUnitId();
+    const channelSub = this.firebaseService
+      .getChannel(unitId)
+      .subscribe(this.channelSubscriptionCallback.bind(this));
+    this.subscriptions.push(channelSub);
+  }
+
+  private async channelSubscriptionCallback(channel: Channel) {
+    this.channelData = channel;
+    this.channelUsers$.next(await this.getUsersOfChannel());
+    this.updateChannelUsers();
+  }
+
+  private unsubscribeAll() {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   async setLoggedInUserUid() {
@@ -62,16 +72,20 @@ export class ChannelMembersViewComponent implements OnDestroy {
   async getUsersOfChannel(): Promise<any[]> {
     if (this.channelData) {
       const uids = this.channelData.uid;
-      const users: any[] = [];
-      for (const uid of uids) {
-        const user = await this.firebaseService.getDocOnce('users', uid);
-        if (user) {
-          users.push(user);
-        }
-      }
-      return users;
+      return await this.fetchUsersByUids(uids);
     }
     return [];
+  }
+
+  private async fetchUsersByUids(uids: string[]): Promise<any[]> {
+    const users: any[] = [];
+    for (const uid of uids) {
+      const user = await this.firebaseService.getDocOnce('users', uid);
+      if (user) {
+        users.push(user);
+      }
+    }
+    return users;
   }
 
   closePopUp() {

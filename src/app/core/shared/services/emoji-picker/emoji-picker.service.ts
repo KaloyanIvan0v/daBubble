@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { FirebaseServicesService } from '../firebase/firebase.service';
 import { AuthService } from '../auth-services/auth.service';
 import { Message } from 'src/app/core/shared/models/message.class';
@@ -8,82 +8,90 @@ import { Reaction } from 'src/app/core/shared/models/reaction.class';
   providedIn: 'root',
 })
 export class EmojiPickerService {
-  private firebaseService: FirebaseServicesService = inject(
-    FirebaseServicesService
-  );
-  private authService: AuthService = inject(AuthService);
-  currentUserId: string = '';
-  message!: Message;
+  constructor(
+    private firebaseService: FirebaseServicesService,
+    private authService: AuthService
+  ) {}
 
-  addReaction(emoji: string, message: Message) {
-    this.message = message;
-    this.authService.getCurrentUserUID().then((currentUserId) => {
-      this.currentUserId = currentUserId as string;
-      this.processReaction(emoji);
-      this.updateMessageData();
-    });
-  }
-
-  private processReaction(emoji: string) {
-    let reaction = this.findReaction(emoji);
-
-    if (!reaction) {
-      reaction = this.createReaction(emoji);
-      this.message.reactions.push(reaction);
-    } else {
-      this.updateReactionAuthors(reaction);
+  async addReaction(emoji: string, message: Message): Promise<void> {
+    try {
+      const currentUserId = await this.authService.getCurrentUserUID();
+      if (!currentUserId) {
+        return;
+      }
+      this.processReaction(emoji, message, currentUserId);
+      this.updateMessageData(message);
+    } catch (error) {
+      console.error('Fehler beim Hinzufügen der Reaktion:', error);
     }
   }
 
-  private findReaction(emoji: string): Reaction | undefined {
-    return this.message.reactions.find((r: Reaction) => r.value === emoji);
+  private processReaction(
+    emoji: string,
+    message: Message,
+    currentUserId: string
+  ): void {
+    let reaction = this.findReaction(emoji, message);
+
+    if (!reaction) {
+      reaction = this.createReaction(emoji, currentUserId);
+      message.reactions.push(reaction);
+    } else {
+      this.updateReactionAuthors(reaction, currentUserId, message);
+    }
   }
 
-  private createReaction(emoji: string): Reaction {
+  private findReaction(emoji: string, message: Message): Reaction | undefined {
+    return message.reactions.find((r: Reaction) => r.value === emoji);
+  }
+
+  private createReaction(emoji: string, currentUserId: string): Reaction {
     const newReactionId = this.firebaseService.getUniqueId();
-    return new Reaction(newReactionId, [this.currentUserId], emoji);
+    return new Reaction(newReactionId, [currentUserId], emoji);
   }
 
-  private updateReactionAuthors(reaction: Reaction) {
-    const userIndex = reaction.authors.indexOf(this.currentUserId);
+  private updateReactionAuthors(
+    reaction: Reaction,
+    currentUserId: string,
+    message: Message
+  ): void {
+    const userIndex = reaction.authors.indexOf(currentUserId);
     if (userIndex === -1) {
-      reaction.authors.push(this.currentUserId);
+      reaction.authors.push(currentUserId);
     } else {
       reaction.authors.splice(userIndex, 1);
       if (reaction.authors.length === 0) {
-        this.removeReaction(reaction);
+        this.removeReaction(reaction, message);
       }
     }
   }
 
-  private removeReaction(reaction: Reaction) {
-    const reactionIndex = this.message.reactions.indexOf(reaction);
+  private removeReaction(reaction: Reaction, message: Message): void {
+    const reactionIndex = message.reactions.indexOf(reaction);
     if (reactionIndex !== -1) {
-      this.message.reactions.splice(reactionIndex, 1);
+      message.reactions.splice(reactionIndex, 1);
     }
   }
 
-  private updateMessageData() {
-    const reactionsPlain = this.getPlainReactions();
-    const messageData = this.createMessageData(reactionsPlain);
+  private updateMessageData(message: Message): void {
+    const reactionsPlain = this.getPlainReactions(message);
+    const messageData = this.createMessageData(message, reactionsPlain);
     this.saveMessageData(messageData);
   }
 
-  private getPlainReactions() {
-    return this.message.reactions.map((r: Reaction) => r.toPlainObject());
+  private getPlainReactions(message: Message): any[] {
+    return message.reactions.map((r: Reaction) => r.toPlainObject());
   }
 
-  private createMessageData(reactionsPlain: any): any {
+  private createMessageData(message: Message, reactionsPlain: any[]): Message {
     return {
-      ...this.message,
+      ...message,
       reactions: reactionsPlain,
     };
   }
 
-  private saveMessageData(messageData: any) {
-    const messagePath = messageData.location + '/' + messageData.id;
+  private saveMessageData(messageData: Message): void {
+    const messagePath = `${messageData.location}/${messageData.id}`;
     this.firebaseService.updateMessage(messagePath, messageData);
   }
-
-  constructor() {}
 }

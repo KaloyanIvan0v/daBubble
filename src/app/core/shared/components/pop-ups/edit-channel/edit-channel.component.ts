@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { User } from 'src/app/core/shared/models/user.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ import { takeUntil } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './edit-channel.component.html',
-  styleUrl: './edit-channel.component.scss',
+  styleUrls: ['./edit-channel.component.scss'],
 })
 export class EditChannelComponent implements OnDestroy {
   channelData$!: Observable<Channel>;
@@ -24,24 +24,35 @@ export class EditChannelComponent implements OnDestroy {
   channelCreator$!: Observable<User>;
   private destroy$ = new Subject<void>();
 
+  editNameActive: boolean = false;
+  editDescriptionActive: boolean = false;
+
   constructor(
     public workspaceService: WorkspaceService,
     public firebaseService: FirebaseServicesService,
     public authService: AuthService,
     private router: Router
   ) {
+    this.initializeChannelData();
+  }
+
+  private initializeChannelData() {
     effect(() => {
       this.currentChannelId = this.workspaceService.currentActiveUnitId();
       this.channelData$ = this.firebaseService.getChannel(
         this.currentChannelId
       );
       this.setInputValues();
-      this.channelData$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((channelData: Channel) => {
-          this.setChannelCreator(channelData.creator);
-        });
+      this.subscribeToChannelData();
     });
+  }
+
+  private subscribeToChannelData() {
+    this.channelData$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((channelData: Channel) => {
+        this.setChannelCreator(channelData.creator);
+      });
   }
 
   async setChannelCreator(creatorUid: string) {
@@ -61,9 +72,6 @@ export class EditChannelComponent implements OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-  editNameActive: boolean = false;
-  editDescriptionActive: boolean = false;
 
   toggleEditName() {
     this.editNameActive = !this.editNameActive;
@@ -86,13 +94,17 @@ export class EditChannelComponent implements OnDestroy {
   }
 
   async leaveChannel() {
+    await this.removeCurrentUserFromChannel();
+    this.saveChanges();
+    this.closeEditChannelPopUp();
+    this.navigateToNewChat();
+  }
+
+  private async removeCurrentUserFromChannel() {
     const currentLoggedInUserUid = await this.authService.getCurrentUserUID();
     this.channelData.uid = this.channelData.uid.filter(
       (uid) => uid !== currentLoggedInUserUid
     );
-    this.saveChanges();
-    this.closeEditChannelPopUp();
-    this.navigateToNewChat();
   }
 
   navigateToNewChat() {

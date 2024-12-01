@@ -1,4 +1,3 @@
-import { OwnProfileEditComponent } from './../own-profile-edit/own-profile-edit.component';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
