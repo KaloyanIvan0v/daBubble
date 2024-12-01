@@ -5,22 +5,21 @@ import {
   OnInit,
   OnDestroy,
   effect,
-  NgZone,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Observable, Subscription } from 'rxjs';
-import { Channel } from 'src/app/core/shared/models/channel.class';
-import { Message } from 'src/app/core/shared/models/message.class';
 import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
 import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
 import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edit-channel/edit-channel.component';
 import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
+import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { Timestamp } from '@angular/fire/firestore';
 import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
+import { Channel } from 'src/app/core/shared/models/channel.class';
+import { Message } from 'src/app/core/shared/models/message.class';
 @Component({
   selector: 'app-channel-chat',
   standalone: true,
@@ -41,33 +40,35 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   private channelSubscription?: Subscription;
   private messagesSubscription?: Subscription;
+
   channelData!: Channel;
   channelName: string = '';
   channelId: string = '';
   userAmount: number = 0;
   channelUsers: any[] = [];
   popUpStates: { [key: string]: boolean } = {};
+
   private lastMessageLength: number = 0;
   private popUpStatesSubscription?: Subscription;
-  messagePath = '/channels/' + this.channelId + '/messages';
-
   messages$!: Observable<Message[]>;
   private messages: Message[] = [];
   lastRenderedMessage: Message | null = null;
   messageToEdit: Message | null = null;
 
+  get messagePath(): string {
+    return `/channels/${this.channelId}/messages`;
+  }
+
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService,
-    private ngZone: NgZone
+    private firebaseService: FirebaseServicesService
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
       if (this.channelId) {
         this.loadChannelData(this.channelId);
-        this.messagePath = '/channels/' + this.channelId + '/messages';
       } else {
-        console.warn('Keine gültige channelId verfügbar.');
+        console.warn('No valid channelId available.');
       }
     });
   }
@@ -91,37 +92,55 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   }
 
   loadChannelData(channelId: string): void {
+    this.unsubscribeFromPrevious();
+    this.resetChannelData();
+    this.subscribeToChannel(channelId);
+    this.subscribeToMessages(channelId);
+  }
+
+  private unsubscribeFromPrevious(): void {
     this.channelSubscription?.unsubscribe();
     this.messagesSubscription?.unsubscribe();
+  }
 
+  private resetChannelData(): void {
     this.channelUsers = [];
+  }
 
+  private subscribeToChannel(channelId: string): void {
     this.channelSubscription = this.firebaseService
       .getChannel(channelId)
       .subscribe({
-        next: (channel) => {
-          if (channel) {
-            this.channelData = channel;
-            this.channelName = channel.name;
-            this.userAmount = channel.uid.length;
-            this.loadUsers();
-          }
-        },
+        next: (channel) => this.handleChannelData(channel),
         error: (error) =>
           console.error('Fehler beim Laden des Channels:', error),
       });
+  }
 
+  private handleChannelData(channel: Channel): void {
+    if (channel) {
+      this.channelData = channel;
+      this.channelName = channel.name;
+      this.userAmount = channel.uid.length;
+      this.loadUsers();
+    }
+  }
+
+  private subscribeToMessages(channelId: string): void {
     this.messages$ = this.firebaseService.getMessages('channels', channelId);
+    this.messagesSubscription = this.messages$.subscribe((messages) =>
+      this.handleMessages(messages)
+    );
+  }
 
-    this.messagesSubscription = this.messages$.subscribe((messages) => {
-      if (messages) {
-        this.messages = messages;
-        setTimeout(() => {
-          // to ensure messages are rendered before scrolling
-          this.checkForNewMessages();
-        });
-      }
-    });
+  private handleMessages(messages: Message[]): void {
+    if (messages) {
+      this.messages = messages;
+      setTimeout(() => {
+        // to ensure messages are rendered before scrolling
+        this.checkForNewMessages();
+      });
+    }
   }
 
   async loadUsers() {
@@ -152,29 +171,27 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     this.workspaceService.channelMembersPopUp.set(true);
   }
 
-  isNewDay(
-    prevTimestamp: number | undefined,
-    currentTimestamp: number | undefined
-  ): boolean {
-    if (prevTimestamp === undefined || currentTimestamp === undefined)
-      return false;
-
+  isNewDay(prevTimestamp?: number, currentTimestamp?: number): boolean {
+    if (!prevTimestamp || !currentTimestamp) return false;
     const prevDate = new Date(prevTimestamp);
     const currentDate = new Date(currentTimestamp);
+    return !this.isSameDay(prevDate, currentDate);
+  }
 
+  private isSameDay(date1: Date, date2: Date): boolean {
     return (
-      prevDate.getFullYear() !== currentDate.getFullYear() ||
-      prevDate.getMonth() !== currentDate.getMonth() ||
-      prevDate.getDate() !== currentDate.getDate()
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
     );
   }
-  getTimestamp(time: any): number | undefined {
-    if (time instanceof Timestamp) {
-      time = time.toDate(); // Convert Firestore Timestamp to Date
-    } else if (typeof time === 'number') {
-      time = new Date(time); // If it's a number, convert it to Date
-    }
 
+  getTimestamp(time: Timestamp | Date | number): number | undefined {
+    if (time instanceof Timestamp) {
+      time = time.toDate();
+    } else if (typeof time === 'number') {
+      time = new Date(time);
+    }
     return time instanceof Date ? time.getTime() : undefined;
   }
 }

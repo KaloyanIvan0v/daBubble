@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { FormsModule } from '@angular/forms';
-import { MainService } from 'src/app/core/components/main/main.service';
+import { MainService } from 'src/app/core/shared/services/main-service/main.service';
 import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 
 @Component({

@@ -4,7 +4,7 @@ import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { MainService } from '../../main.service';
+import { MainService } from '../../../../shared/services/main-service/main.service';
 import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
 import { setDoc } from '@angular/fire/firestore';
 import { User } from 'src/app/core/shared/models/user.class';
