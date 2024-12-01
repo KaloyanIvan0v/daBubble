@@ -1,33 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { DirectChatService } from 'src/app/core/shared/services/direct-chat-services/direct-chat.service';
 import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
-import {
-  Observable,
-  BehaviorSubject,
-  switchMap,
-  map,
-  of,
-  combineLatest,
-} from 'rxjs';
-import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { Observable, switchMap, map, of, combineLatest, Subject } from 'rxjs';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { User } from 'src/app/core/shared/models/user.class';
-
+import { RouterLink, RouterLinkActive } from '@angular/router';
 @Component({
   selector: 'app-chat-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './chat-list.component.html',
-  styleUrl: './chat-list.component.scss',
+  styleUrls: ['./chat-list.component.scss'],
 })
 export class ChatListComponent implements OnInit {
   chatListOpen: boolean = false;
   loggedInUserId: string | null = null;
+  selectedChatId: string | null = null;
 
   chatsWithUsers$!: Observable<{ chat: DirectMessage; user: User | null }[]>;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -60,7 +53,14 @@ export class ChatListComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   navigateToDirectChat(chatId: string): void {
+    this.selectedChatId = chatId;
+
     this.router.navigate(['dashboard', 'direct-chat', chatId]);
   }
 
