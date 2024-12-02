@@ -9,16 +9,12 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class WorkspaceService {
-  private authService: AuthService = inject(AuthService);
-  private firebaseService: FirebaseServicesService = inject(
-    FirebaseServicesService
-  );
-  private sessionStorageService: SessionStorageService = inject(
-    SessionStorageService
-  );
+  private authService = inject(AuthService);
+  private firebaseService = inject(FirebaseServicesService);
+  private sessionStorageService = inject(SessionStorageService);
 
   currentActiveUnitId = signal('');
-  currentActiveUserId = signal('123456789'); //open UserView PopUp
+  currentActiveUserId = signal('123456789'); // Open UserView PopUp
   currentActiveDmUser = signal<User | null>(null);
 
   loggedInUserData = new BehaviorSubject<User | null>(null);
@@ -41,51 +37,18 @@ export class WorkspaceService {
   userUpdates$ = this.userUpdates.asObservable();
 
   constructor() {
+    this.initializeActiveUnit();
+    this.subscribeToUserStateChanges();
+    this.setupAuthEffect();
     this.loadUserData();
-    effect(() => {
-      if (this.authService.authStatusChanged()) {
-        this.loadUserData();
-      }
-      this.sessionStorageService.setItem(
-        'activeUnit',
-        this.currentActiveUnitId()
-      );
-    });
-    this.currentActiveUnitId.set(
-      this.sessionStorageService.getItem('activeUnit') ?? ''
-    );
-
-    this.authService.userStateChanged.subscribe(() => {
-      this.loadUserData();
-    });
   }
 
   updateUser(user: any) {
     this.userUpdates.next(user);
   }
 
-  setPopUp(popUpName: any, visible: boolean) {
-    popUpName.set(visible);
-  }
-
-  private async loadUserData() {
-    try {
-      const userUID: string | null = await this.authService.getCurrentUserUID();
-      if (userUID) {
-        this.firebaseService.getDoc('users', userUID).subscribe({
-          next: (data: any) => {
-            this.loggedInUserData.next(data);
-
-            if (data && data.avatar) {
-              this.loggedInUserData.next({ ...data, avatar: data.avatar });
-            }
-          },
-          error: (error) => console.error('Error fetching user data:', error),
-        });
-      }
-    } catch (error) {
-      console.error('Error initializing user data:', error);
-    }
+  setPopUp(popUpSignal: any, visible: boolean) {
+    popUpSignal.set(visible);
   }
 
   setActiveDmUser(dmUser: User) {
@@ -98,5 +61,52 @@ export class WorkspaceService {
 
   updateLoggedInUserData(userData: any) {
     this.loggedInUserData.next(userData);
+  }
+
+  private initializeActiveUnit() {
+    const activeUnit = this.sessionStorageService.getItem('activeUnit') ?? '';
+    this.currentActiveUnitId.set(activeUnit as string);
+  }
+
+  private subscribeToUserStateChanges() {
+    this.authService.userStateChanged.subscribe(() => {
+      this.loadUserData();
+    });
+  }
+
+  private setupAuthEffect() {
+    effect(() => {
+      if (this.authService.authStatusChanged()) {
+        this.loadUserData();
+      }
+      this.sessionStorageService.setItem(
+        'activeUnit',
+        this.currentActiveUnitId()
+      );
+    });
+  }
+
+  private async loadUserData() {
+    try {
+      const userUID = await this.authService.getCurrentUserUID();
+      if (userUID) {
+        this.fetchUserData(userUID);
+      }
+    } catch (error) {
+      console.error('Error initializing user data:', error);
+    }
+  }
+
+  private fetchUserData(userUID: string) {
+    this.firebaseService.getDoc('users', userUID).subscribe({
+      next: (data: any) => this.handleUserData(data),
+      error: (error) => console.error('Error fetching user data:', error),
+    });
+  }
+
+  private handleUserData(data: any) {
+    if (data) {
+      this.loggedInUserData.next({ ...data, avatar: data.avatar });
+    }
   }
 }

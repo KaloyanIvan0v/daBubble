@@ -1,13 +1,5 @@
-import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Message } from 'src/app/core/shared/models/message.class';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { FormsModule } from '@angular/forms';
@@ -26,13 +18,10 @@ export class InputBoxComponent implements OnChanges {
   @Input() showEmojiPicker: boolean = false;
   inputData = new InputBoxData('', []);
   @Input() receiverId: string | null = null;
-  @Output() messageSent = new EventEmitter<void>();
+
   @Input() messageToEdit: Message | null = null;
 
-  constructor(
-    private mainService: MainService,
-    public firebaseService: FirebaseServicesService
-  ) {}
+  constructor(private mainService: MainService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['messageToEdit']) {
@@ -48,8 +37,6 @@ export class InputBoxComponent implements OnChanges {
       this.mainService.updateMessage(this.messageToEdit);
       this.messageToEdit = null;
     } else {
-      console.log(this.messagePath);
-
       this.mainService.sendMessage(
         this.messagePath,
         this.inputData,
@@ -58,37 +45,6 @@ export class InputBoxComponent implements OnChanges {
     }
     this.inputData = new InputBoxData('', []);
   }
-
-  // sendMessage() {
-  //   if (this.messageToEdit !== null) {
-  //     this.messageToEdit.value.text = this.inputData.message;
-  //     this.mainService.updateMessage(this.messageToEdit);
-  //     this.messageToEdit = null;
-  //   } else {
-  //     const isDirectMessage = !!this.receiverId;
-  //     const messagePath = isDirectMessage
-  //       ? this.generateDirectMessagePath()
-  //       : this.messagePath;
-
-  //     this.mainService.sendMessage(
-  //       messagePath,
-  //       this.inputData,
-  //       this.receiverId
-  //     );
-  //   }
-  //   this.inputData = new InputBoxData('', []);
-  // }
-
-  // private generateDirectMessagePath(): string {
-  //   const senderId = this.mainService.currentUserUid!;
-  //   const receiverId = this.receiverId!;
-  //   const chatId =
-  //     senderId < receiverId
-  //       ? `${senderId}_${receiverId}`
-  //       : `${receiverId}_${senderId}`;
-  //   const messageId = this.firebaseService.getUniqueId();
-  //   return `directMessages/${chatId}/messages/${messageId}`;
-  // }
 
   onEmojiSelected(emoji: string) {
     this.inputData.message += ' ' + emoji;
