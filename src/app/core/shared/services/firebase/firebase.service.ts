@@ -68,46 +68,35 @@ export class FirebaseServicesService implements OnDestroy {
       this.firestore,
       `${collectionName}/${docId}/messages`
     );
-
     const q = query(messagesCollectionRef, orderBy('time'));
-
-    return new Observable<Message[]>((observer) => {
-      const unsubscribe = onSnapshot(
-        q,
-        (snapshot) => {
-          const messages = snapshot.docs.map((doc) =>
-            this.mapDocumentData<Message>(doc)
-          );
-          observer.next(messages);
-        },
-        (error) => {
-          observer.error(`Error fetching messages: ${error}`);
-        }
-      );
-
-      return () => unsubscribe();
-    });
+    return this.createObservableFromQuery<Message[]>(
+      q,
+      'Error fetching messages'
+    );
   }
 
   getThreadMessages(threadPath: string): Observable<Message[]> {
     const threadMessagesCollectionRef = collection(this.firestore, threadPath);
-
     const q = query(threadMessagesCollectionRef, orderBy('time'));
+    return this.createObservableFromQuery<Message[]>(
+      q,
+      'Error fetching thread messages'
+    );
+  }
 
-    return new Observable<Message[]>((observer) => {
+  private createObservableFromQuery<T>(
+    q: any,
+    errorMsg: string
+  ): Observable<T> {
+    return new Observable<T>((observer) => {
       const unsubscribe = onSnapshot(
         q,
-        (snapshot) => {
-          const messages = snapshot.docs.map((doc) =>
-            this.mapDocumentData<Message>(doc)
-          );
-          observer.next(messages);
+        (snapshot: QuerySnapshot) => {
+          const data = snapshot.docs.map((doc) => this.mapDocumentData(doc));
+          observer.next(data as unknown as T);
         },
-        (error) => {
-          observer.error(`Error fetching thread messages: ${error}`);
-        }
+        (error) => observer.error(`${errorMsg}: ${error}`)
       );
-
       return () => unsubscribe();
     });
   }
@@ -123,13 +112,10 @@ export class FirebaseServicesService implements OnDestroy {
     messageId: string,
     threadMessage: Message
   ) {
-    // Referenz zur Thread-Nachricht unter der Hauptnachricht
     const threadMessageDocRef = doc(
       this.firestore,
       `${collectionName}/${docId}/messages/${messageId}/thread/messages/${threadMessage.id}`
     );
-
-    // Thread-Nachricht in Firestore speichern
     await setDoc(threadMessageDocRef, threadMessage);
   }
 
@@ -158,77 +144,87 @@ export class FirebaseServicesService implements OnDestroy {
     uidAccess: boolean
   ): Observable<T[]> {
     const refCollection = this.getCollectionRef(collectionName);
-
     return this.userUIDSubject.pipe(
       switchMap((uid) => {
-        const userSpecificQuery =
-          uidAccess && uid
-            ? query(refCollection, where('uid', 'array-contains', uid))
-            : refCollection;
-        return new Observable<T[]>((observer) => {
-          const unsubscribe = onSnapshot(
-            userSpecificQuery,
-            (snapshot) => {
-              const data = snapshot.docs.map((doc) =>
-                this.mapDocumentData<T>(doc)
-              );
-              observer.next(data);
-            },
-            (error) => {
-              observer.error(
-                `Error fetching collection ${collectionName}: ${error}`
-              );
-            }
-          );
-          return () => {
-            unsubscribe();
-          };
-        });
+        const userSpecificQuery = this.createUserSpecificQuery(
+          refCollection,
+          uidAccess,
+          uid
+        );
+        return this.createCollectionObservable<T>(
+          userSpecificQuery,
+          collectionName
+        );
       })
     );
   }
 
+  private createUserSpecificQuery(
+    refCollection: CollectionReference,
+    uidAccess: boolean,
+    uid: string | null
+  ) {
+    return uidAccess && uid
+      ? query(refCollection, where('uid', 'array-contains', uid))
+      : refCollection;
+  }
+
+  private createCollectionObservable<T>(
+    userSpecificQuery: any,
+    collectionName: string
+  ): Observable<T[]> {
+    return new Observable<T[]>((observer) => {
+      const unsubscribe = onSnapshot(
+        userSpecificQuery,
+        (snapshot: QuerySnapshot<DocumentData>) => {
+          const data = snapshot.docs.map((doc) => this.mapDocumentData<T>(doc));
+          observer.next(data);
+        },
+        (error) =>
+          observer.error(
+            `Error fetching collection ${collectionName}: ${error}`
+          )
+      );
+      return () => unsubscribe();
+    });
+  }
+
   getDoc<T>(collectionName: string, docId: string): Observable<T> {
     const cacheKey = `${collectionName}-${docId}`;
-
     if (!this.dataSubjects.has(cacheKey)) {
-      const subject = new BehaviorSubject<T | null>(null);
-      this.dataSubjects.set(cacheKey, subject);
-
-      const docRef = this.getDocRef(collectionName, docId);
-
-      const unsubscribe = onSnapshot(
-        docRef,
-        (snapshot) => {
-          if (snapshot.exists()) {
-            const data = this.mapDocumentData<T>(snapshot);
-            subject.next(data);
-          } else {
-            subject.next(null);
-          }
-        },
-        (error) => {
-          subject.error(`Error fetching document ${docId}: ${error}`);
-        }
-      );
-
-      this.unsubscribeFunctions.set(cacheKey, unsubscribe);
+      this.createDocSubject<T>(collectionName, docId, cacheKey);
     }
-
     return this.dataSubjects.get(cacheKey)!.asObservable();
+  }
+
+  private createDocSubject<T>(
+    collectionName: string,
+    docId: string,
+    cacheKey: string
+  ): void {
+    const subject = new BehaviorSubject<T | null>(null);
+    this.dataSubjects.set(cacheKey, subject);
+    const docRef = this.getDocRef(collectionName, docId);
+    const unsubscribe = onSnapshot(
+      docRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = this.mapDocumentData<T>(snapshot);
+          subject.next(data);
+        } else {
+          subject.next(null);
+        }
+      },
+      (error) => subject.error(`Error fetching document ${docId}: ${error}`)
+    );
+    this.unsubscribeFunctions.set(cacheKey, unsubscribe);
   }
 
   async getDocOnce(collectionName: string, docId: string): Promise<any> {
     try {
       const docRef = doc(this.firestore, `${collectionName}/${docId}`);
       const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        return docSnap.data();
-      } else {
-        console.log('No such document!');
-        return undefined;
-      }
+      return docSnap.exists() ? docSnap.data() : undefined;
     } catch (error) {
       console.error('Error getting document:', error);
       return undefined;
@@ -267,7 +263,6 @@ export class FirebaseServicesService implements OnDestroy {
 
   getDirectChats(): Observable<any[]> {
     const directMessagesCollection = this.getCollectionRef('directMessages');
-
     return new Observable<any[]>((observer) => {
       const unsubscribe = this.setupDirectChatsListener(
         directMessagesCollection,
@@ -316,14 +311,8 @@ export class FirebaseServicesService implements OnDestroy {
   }
 
   private async resolveUserData(chat: any): Promise<any> {
-    if (chat.receiver) {
-      return this.useReceiverData(chat);
-    }
-
-    if (chat.recipientUid) {
-      return await this.fetchUserData(chat);
-    }
-
+    if (chat.receiver) return this.useReceiverData(chat);
+    if (chat.recipientUid) return await this.fetchUserData(chat);
     return this.useFallbackUserData(chat);
   }
 
@@ -334,10 +323,7 @@ export class FirebaseServicesService implements OnDestroy {
   private async fetchUserData(chat: any): Promise<any> {
     try {
       const userData = await this.getUser(chat.recipientUid).toPromise();
-      return {
-        ...chat,
-        user: userData || this.getFallbackUserData(),
-      };
+      return { ...chat, user: userData || this.getFallbackUserData() };
     } catch (error) {
       console.error('Error retrieving user data for chat:', error);
       return this.useFallbackUserData(chat);
@@ -401,13 +387,10 @@ export class FirebaseServicesService implements OnDestroy {
   searchUsers(queryText: string): Observable<any[]> {
     const usersRef = collection(this.firestore, 'users');
     const lowerCaseQuery = queryText.trim().toLowerCase();
-
     if (queryText.startsWith('@')) {
       const username = queryText.slice(1).toLowerCase();
       return this.searchByUsername(usersRef, username);
-    }
-    // Search by email
-    else if (this.isEmail(queryText)) {
+    } else if (this.isEmail(queryText)) {
       const email = queryText.toLowerCase();
       return this.searchByEmail(usersRef, email);
     } else {
@@ -465,11 +448,10 @@ export class FirebaseServicesService implements OnDestroy {
 
   search(queryText: string): Observable<any[]> {
     if (queryText.startsWith('@')) {
-      return this.searchUsers(queryText); // User search
+      return this.searchUsers(queryText);
     } else if (queryText.startsWith('#')) {
-      return this.searchChannels(queryText); // Channel search
+      return this.searchChannels(queryText);
     } else {
-      // Default to user search if neither '@' nor '#' is found
       return this.searchUsers(queryText);
     }
   }

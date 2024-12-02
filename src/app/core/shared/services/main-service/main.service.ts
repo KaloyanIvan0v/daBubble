@@ -12,62 +12,86 @@ import { Thread } from 'src/app/core/shared/models/thread.class';
 export class MainService {
   private firestore: FirebaseServicesService = inject(FirebaseServicesService);
   private authService: AuthService = inject(AuthService);
-  currentUserUid: string | null = null;
 
-  constructor() {
-    this.authService.getCurrentUserUID().then((uid) => {
-      this.currentUserUid = uid;
-    });
-  }
+  constructor() {}
 
   async sendMessage(
     messagePath: string,
     inputMessage: InputBoxData,
     receiverId: string | null
   ) {
-    const userId = this.currentUserUid!;
+    console.log('Message path:', messagePath);
+    console.log('Receiver ID:', receiverId);
+
     const id = this.firestore.getUniqueId();
-    let name: string = '';
+    const userId = await this.authService.getCurrentUserUID();
 
-    let finalMessagePath: string;
+    const message = await this.createMessage(
+      id,
+      messagePath,
+      inputMessage,
+      receiverId,
+      userId!
+    );
 
-    if (receiverId) {
-      // It's a direct message
-      const sortedUserIds = [userId, receiverId].sort();
-      const chatId = sortedUserIds.join('_');
-      finalMessagePath = `directMessages/${chatId}/messages/${id}`;
-      name = await this.getUserName(receiverId);
-    } else if (messagePath) {
-      // It's a channel message
-      finalMessagePath = `${messagePath}/${id}`;
-      name = await this.getSpaceName(messagePath);
-    } else {
-      console.error('Neither receiverId nor messagePath is provided.');
-      return;
-    }
+    const targetPath = receiverId
+      ? this.getDirectMessagePath(userId!, receiverId, id)
+      : `${messagePath}/${id}`;
 
-    // Extract collection and docId if needed
-    const collection = finalMessagePath.split('/')[0];
-    const docId = finalMessagePath.split('/')[1];
+    console.log(
+      receiverId ? 'Direct message path:' : 'Channel message path:',
+      targetPath
+    );
 
-    const plainInputMessage = {
-      text: inputMessage.message,
-      imports: inputMessage.imports,
-    };
+    await this.sendToFirestore(targetPath, message);
+  }
 
-    const message: Message = {
+  private async createMessage(
+    id: string,
+    messagePath: string,
+    inputMessage: InputBoxData,
+    receiverId: string | null,
+    userId: string
+  ): Promise<Message> {
+    const name = await this.getSpaceName(messagePath);
+
+    const plainInputMessage = this.buildPlainInputMessage(inputMessage);
+
+    return {
       id: id,
       author: userId,
       time: new Date(),
-      location: finalMessagePath,
+      location: messagePath,
       value: plainInputMessage,
-      thread: JSON.parse(JSON.stringify(new Thread(finalMessagePath, name))),
+      thread: this.createThread(messagePath, id, name),
       space: name,
       reactions: [],
       receiverId: receiverId || '',
     };
+  }
 
-    await this.firestore.sendMessage(finalMessagePath, message);
+  private buildPlainInputMessage(inputMessage: InputBoxData) {
+    return {
+      text: inputMessage.message,
+      imports: inputMessage.imports,
+    };
+  }
+
+  private createThread(messagePath: string, id: string, name: string): Thread {
+    return JSON.parse(JSON.stringify(new Thread(`${messagePath}/${id}`, name)));
+  }
+
+  private getDirectMessagePath(
+    userId: string,
+    receiverId: string,
+    id: string
+  ): string {
+    const sortedUserIds = [userId, receiverId].sort();
+    return `directMessages/${sortedUserIds.join('_')}/messages/${id}`;
+  }
+
+  private async sendToFirestore(path: string, message: Message): Promise<void> {
+    await this.firestore.sendMessage(path, message);
   }
 
   async updateMessage(message: Message) {
@@ -100,13 +124,5 @@ export class MainService {
     } else {
       return '';
     }
-  }
-
-  async getUserName(userId: string): Promise<string> {
-    const userObservable = this.firestore.getUser(userId);
-    const user = await firstValueFrom(
-      userObservable.pipe(map((user) => user?.name ?? ''))
-    );
-    return user;
   }
 }
