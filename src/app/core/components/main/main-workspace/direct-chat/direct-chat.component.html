@@ -48,7 +48,7 @@
   </div>
 
   <!-- Receiver content goes here -->
-  <div class="receiver-info-container">
+  <div class="receiver-info-container" *ngIf="messages.length === 0">
     <div
       class="receiver-info"
       (click)="receiverId && openProfileView(receiverId)"

@@ -1,7 +1,7 @@
 @import "global.scss";
 section {
   position: relative;
-  @include dFlex($fd: column);
+  @include dFlex($fd: column, $ai: stretch);
   padding: 10px 30px 30px 30px;
   box-sizing: border-box;
 }

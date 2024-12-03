@@ -109,11 +109,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
         return this.firebaseService
           .getUser(this.receiverId)
           .pipe(map((user) => user || this.getDefaultUser()));
-      } else {
-        console.error('Receiver ID not found in chat data.');
       }
-    } else {
-      console.error('Chat data not found or malformed.');
     }
     return of(this.getDefaultUser());
   }
