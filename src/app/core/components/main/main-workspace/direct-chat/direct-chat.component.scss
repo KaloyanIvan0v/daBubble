@@ -121,6 +121,10 @@ section {
   padding-bottom: 24px;
 }
 
+.message {
+  width: 100%;
+}
+
 app-input-box {
   @include dFlex();
   width: 100%;

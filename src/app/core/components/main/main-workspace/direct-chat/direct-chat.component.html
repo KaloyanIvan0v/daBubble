@@ -21,8 +21,29 @@
       [class.sent]="message.author === currentUserUid"
       class="message"
     >
-      <!-- Message content goes here -->
-      {{ message.value.text }}
+      <div *ngIf="messages$ | async as messages" class="message">
+        <div *ngFor="let message of messages; let i = index" class="message">
+          <div
+            class="daily-divider"
+            *ngIf="
+              isNewDay(
+                i > 0 ? getTimestamp(messages[i - 1].time) : undefined,
+                getTimestamp(message.time)
+              )
+            "
+          >
+            <div class="daily-divider-line">
+              <div class="daily-divider-date">
+                {{ message.time | firebaseDate }}
+              </div>
+            </div>
+          </div>
+          <app-message
+            (messageToEdit)="messageToEdit = $event"
+            [message]="message"
+          ></app-message>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -51,5 +72,8 @@
   </div>
 
   <!-- Input Box for Sending Messages -->
-  <app-input-box></app-input-box>
+  <app-input-box
+    [messageToEdit]="messageToEdit"
+    [messagePath]="messagePath"
+  ></app-input-box>
 </section>

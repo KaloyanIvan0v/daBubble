@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
@@ -8,15 +14,23 @@ import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
 import { User } from 'src/app/core/shared/models/user.class';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
-import { Message } from 'src/app/core/shared/models/message.class';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { Message } from 'src/app/core/shared/models/message.class';
+import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
+import { Timestamp } from '@angular/fire/firestore';
+import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
 
 @Component({
   selector: 'app-direct-chat',
   templateUrl: './direct-chat.component.html',
   styleUrls: ['./direct-chat.component.scss'],
   standalone: true,
-  imports: [InputBoxComponent, CommonModule],
+  imports: [
+    InputBoxComponent,
+    CommonModule,
+    MessageComponent,
+    FirebaseDatePipe,
+  ],
 })
 export class DirectChatComponent implements OnInit, OnDestroy {
   chatId: string = '';
@@ -27,7 +41,10 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     '/assets/img/profile-img/profile-img-placeholder.svg'
   );
 
+  messages$!: Observable<Message[]>;
   messages: Message[] = [];
+  messageToEdit: Message | null = null;
+  private lastMessageLength: number = 0;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -37,6 +54,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private workspaceService: WorkspaceService
   ) {}
+
+  @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
   ngOnInit(): void {
     this.initializeComponent();
@@ -49,7 +68,11 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   private initializeComponent(): void {
     this.authService.getCurrentUserUID().then((uid) => {
       this.currentUserUid = uid ?? '';
-      this.initializeReceiverData();
+      this.route.params.subscribe((params) => {
+        this.chatId = params['chatId'];
+        this.initializeReceiverData();
+        this.subscribeToMessages(this.chatId);
+      });
     });
   }
 
@@ -105,5 +128,64 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   openProfileView(uid: string) {
     this.workspaceService.currentActiveUserId.set(uid);
     this.workspaceService.profileViewPopUp.set(true);
+  }
+
+  private subscribeToMessages(chatId: string): void {
+    this.messages$ = this.firebaseService.getMessages('directMessages', chatId);
+    this.subscriptions.add(
+      this.messages$.subscribe((messages) => this.handleMessages(messages))
+    );
+  }
+
+  private handleMessages(messages: Message[]): void {
+    if (messages) {
+      this.messages = messages;
+      setTimeout(() => {
+        // Ensure messages are rendered before scrolling
+        this.checkForNewMessages();
+      });
+    }
+  }
+
+  private checkForNewMessages(): void {
+    if (this.lastMessageLength !== this.messages.length) {
+      this.scrollToBottom();
+      this.lastMessageLength = this.messages.length;
+    }
+  }
+
+  private scrollToBottom(): void {
+    if (this.messageContainer) {
+      this.messageContainer.nativeElement.scrollTop =
+        this.messageContainer.nativeElement.scrollHeight;
+    }
+  }
+
+  get messagePath(): string {
+    return `/directMessages/${this.chatId}/messages`;
+  }
+
+  isNewDay(prevTimestamp?: number, currentTimestamp?: number): boolean {
+    if (!prevTimestamp || !currentTimestamp) return false;
+    const prevDate = new Date(prevTimestamp);
+    const currentDate = new Date(currentTimestamp);
+    return !this.isSameDay(prevDate, currentDate);
+  }
+
+  private isSameDay(date1: Date, date2: Date): boolean {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  }
+
+  getTimestamp(time: Timestamp | Date | number): number | undefined {
+    if (time instanceof Timestamp) {
+      time = time.toDate();
+    } else if (typeof time === 'number') {
+      time = new Date(time);
+    }
+    return time instanceof Date ? time.getTime() : undefined;
   }
 }
