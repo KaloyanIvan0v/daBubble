@@ -48,6 +48,24 @@
       </div>
     </div>
   </div>
+
+  <div class="receiver-info-container" *ngIf="messages.length === 0">
+    <div
+      class="receiver-info"
+      (click)="channelId && openChannelUsersViewPopUp()"
+    >
+      <div class="channel-name"># {{ channelName }}</div>
+    </div>
+    <div class="channel-text">
+      Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels
+      <span
+        class="channel-text-name"
+        (click)="channelId && openChannelUsersViewPopUp()"
+        ># {{ channelName }}</span
+      >
+    </div>
+  </div>
+
   <app-input-box
     [messageToEdit]="messageToEdit"
     [messagePath]="messagePath"
