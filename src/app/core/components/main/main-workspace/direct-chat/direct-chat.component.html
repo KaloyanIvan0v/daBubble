@@ -17,33 +17,29 @@
   <!-- Messages Container -->
   <div #messageContainer class="message-container overflow-y-scroll">
     <div
-      *ngFor="let message of messages"
+      *ngFor="let message of messages; let i = index"
       [class.sent]="message.author === currentUserUid"
       class="message"
     >
-      <div *ngIf="messages$ | async as messages" class="message">
-        <div *ngFor="let message of messages; let i = index" class="message">
-          <div
-            class="daily-divider"
-            *ngIf="
-              isNewDay(
-                i > 0 ? getTimestamp(messages[i - 1].time) : undefined,
-                getTimestamp(message.time)
-              )
-            "
-          >
-            <div class="daily-divider-line">
-              <div class="daily-divider-date">
-                {{ message.time | firebaseDate }}
-              </div>
-            </div>
+      <div
+        class="daily-divider"
+        *ngIf="
+          isNewDay(
+            i > 0 ? getTimestamp(messages[i - 1].time) : undefined,
+            getTimestamp(message.time)
+          )
+        "
+      >
+        <div class="daily-divider-line">
+          <div class="daily-divider-date">
+            {{ message.time | firebaseDate }}
           </div>
-          <app-message
-            (messageToEdit)="messageToEdit = $event"
-            [message]="message"
-          ></app-message>
         </div>
       </div>
+      <app-message
+        (messageToEdit)="messageToEdit = $event"
+        [message]="message"
+      ></app-message>
     </div>
   </div>
 

@@ -127,6 +127,11 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToMessages(chatId: string): void {
+    if (this.messages$) {
+      this.subscriptions.unsubscribe();
+      this.subscriptions = new Subscription();
+    }
+
     this.messages$ = this.firebaseService.getMessages('directMessages', chatId);
     this.subscriptions.add(
       this.messages$.subscribe((messages) => this.handleMessages(messages))
