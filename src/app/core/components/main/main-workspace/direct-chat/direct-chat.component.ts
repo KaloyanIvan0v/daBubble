@@ -109,11 +109,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
         return this.firebaseService
           .getUser(this.receiverId)
           .pipe(map((user) => user || this.getDefaultUser()));
-      } else {
-        console.error('Receiver ID not found in chat data.');
       }
-    } else {
-      console.error('Chat data not found or malformed.');
     }
     return of(this.getDefaultUser());
   }
@@ -131,6 +127,11 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToMessages(chatId: string): void {
+    if (this.messages$) {
+      this.subscriptions.unsubscribe();
+      this.subscriptions = new Subscription();
+    }
+
     this.messages$ = this.firebaseService.getMessages('directMessages', chatId);
     this.subscriptions.add(
       this.messages$.subscribe((messages) => this.handleMessages(messages))
