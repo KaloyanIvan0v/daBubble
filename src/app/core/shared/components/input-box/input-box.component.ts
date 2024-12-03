@@ -19,7 +19,7 @@ export class InputBoxComponent implements OnChanges {
   inputData = new InputBoxData('', []);
   @Input() receiverId: string | null = null;
 
-  @Input() messageToEdit: Message | null = null;
+  @Input() messageToEdit: Message | undefined = undefined;
 
   constructor(private mainService: MainService) {}
 
@@ -32,10 +32,10 @@ export class InputBoxComponent implements OnChanges {
   }
 
   sendMessage() {
-    if (this.messageToEdit !== null) {
+    if (this.messageToEdit !== undefined) {
       this.messageToEdit.value.text = this.inputData.message;
       this.mainService.updateMessage(this.messageToEdit);
-      this.messageToEdit = null;
+      this.messageToEdit = undefined;
     } else {
       this.mainService.sendMessage(
         this.messagePath,

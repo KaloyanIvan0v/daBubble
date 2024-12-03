@@ -43,7 +43,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
 
   messages$!: Observable<Message[]>;
   messages: Message[] = [];
-  messageToEdit: Message | null = null;
+  messageToEdit: Message | undefined = undefined;
   private lastMessageLength: number = 0;
 
   private subscriptions: Subscription = new Subscription();

@@ -146,6 +146,7 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   cancelEdit() {
     this.editActive = false;
+    this.messageToEdit.emit(undefined);
   }
 
   setEditActive() {

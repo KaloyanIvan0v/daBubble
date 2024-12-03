@@ -53,7 +53,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   messages$!: Observable<Message[]>;
   private messages: Message[] = [];
   lastRenderedMessage: Message | null = null;
-  messageToEdit: Message | null = null;
+  messageToEdit: Message | undefined = undefined;
 
   get messagePath(): string {
     return `/channels/${this.channelId}/messages`;

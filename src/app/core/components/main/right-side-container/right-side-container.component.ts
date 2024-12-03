@@ -29,7 +29,7 @@ export class RightSideContainerComponent {
   private lastMessageLength: number = 0;
   messages$!: Observable<Message[]>;
   messages: Message[] = [];
-  messageToEdit: Message | null = null;
+  messageToEdit: Message | undefined = undefined;
   threadPath: string = '';
   threadOpen: boolean = false;
   messagePath: string = '';
