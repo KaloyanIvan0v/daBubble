@@ -35,9 +35,11 @@ export class AddChannelComponent {
   async createChannel() {
     const uid = await this.authService.getCurrentUserUID();
 
+    const channelId = this.firebaseService.getUniqueId();
+
     const newChannel: Channel = {
       uid: [uid ?? ''],
-      id: '',
+      id: channelId,
       name: this.channelName,
       description: this.chanelDescription,
       creator: uid ?? '',

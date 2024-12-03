@@ -8,6 +8,7 @@ import { MainWorkspaceRoutes } from './core/components/main/main-workspace/main-
 import { AuthGuard } from './auth.guard';
 import { ResetPasswordLinkComponent } from './core/components/authentication/reset-password-link/reset-password-link.component';
 import { DirectChatComponent } from './core/components/main/main-workspace/direct-chat/direct-chat.component';
+import { ChannelChatComponent } from './core/components/main/main-workspace/channel-chat/channel-chat.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,10 @@ export const routes: Routes = [
       {
         path: 'direct-chat/:chatId',
         component: DirectChatComponent,
+      },
+      {
+        path: 'channel-chat/:channelId',
+        component: ChannelChatComponent,
       },
     ],
   },

@@ -20,7 +20,7 @@ import { Router } from '@angular/router';
   styleUrl: './new-chat.component.scss',
 })
 export class NewChatComponent {
-  searchQuery: string = ''; // This will bind to the input field
+  searchQuery: string = '';
   searchResults: any[] = [];
   searchText: string = '';
   isSearching: boolean = false;
@@ -32,6 +32,8 @@ export class NewChatComponent {
   loggedInUserId: string | null = null;
   selectedUserId: string | null = null;
   messagePath: string = '';
+  channelName: string = '';
+  channelDescription: string = '';
 
   userData$: Observable<any>;
 
@@ -107,14 +109,106 @@ export class NewChatComponent {
     if (result.name) {
       if (result.email) {
         this.handleUserSelection(result);
+        await this.handleDirectChat(senderId, receiverId, result);
       } else {
         this.handleChannelSelection(result);
+        await this.handleChannelChat(result);
       }
-      await this.handleChatCreation(senderId, receiverId, result);
     } else if (result.email) {
       this.handleDirectMessaging(result);
-      await this.handleChatCreation(senderId, result.uid, result);
+      await this.handleDirectChat(senderId, receiverId, result);
     }
+  }
+
+  async handleDirectChat(
+    senderId: string,
+    receiverId: string,
+    result: any
+  ): Promise<void> {
+    const chatId = this.generateChatId(senderId, receiverId);
+
+    try {
+      const chatExists = await this.firebaseService.checkDocExists(
+        'directMessages',
+        chatId
+      );
+
+      if (chatExists) {
+        this.navigateToDirectChat(chatId);
+      } else {
+        await this.createDirectMessageChat(
+          chatId,
+          senderId,
+          receiverId,
+          result
+        );
+        this.navigateToDirectChat(chatId);
+      }
+    } catch (error) {
+      console.error('Error checking or creating direct message chat:', error);
+    }
+  }
+
+  navigateToDirectChat(chatId: string): void {
+    this.router.navigate(['dashboard', 'direct-chat', chatId]);
+  }
+
+  async handleChannelChat(result: any): Promise<void> {
+    const channelId = result.id; // Assuming `result` has the channel's ID
+    const channelName = result.name; // Assuming `result` has the channel's name
+
+    if (!channelId) {
+      console.error('Channel ID is undefined or invalid:', result);
+      return;
+    }
+
+    try {
+      const chatExists = await this.firebaseService.checkDocExists(
+        'channelChats',
+        channelId
+      );
+
+      if (chatExists) {
+        this.navigateToChannelChat(channelId);
+      } else {
+        await this.createChannelChat(channelId, channelName, result);
+        this.navigateToChannelChat(channelId);
+      }
+    } catch (error) {
+      console.error('Error checking or creating channel chat:', error);
+    }
+  }
+
+  async createChannelChat(
+    channelId: string,
+    channelName: string,
+    result: any
+  ): Promise<void> {
+    const chatData = {
+      id: channelId,
+      name: channelName,
+      description: result.description || '',
+      creator: result.creator || '',
+      timestamp: new Date(),
+      members: result.uid || [],
+    };
+
+    try {
+      const chatDocRef = this.firebaseService.getDocRef(
+        'channelChats',
+        channelId
+      );
+      await setDoc(chatDocRef, chatData);
+      console.log(
+        `Channel chat created successfully for channel: ${channelName}`
+      );
+    } catch (error) {
+      console.error('Error creating channel chat:', error);
+    }
+  }
+
+  navigateToChannelChat(channelId: string): void {
+    this.router.navigate(['dashboard', 'channel-chat', channelId]);
   }
 
   // Handle user selection
@@ -123,6 +217,7 @@ export class NewChatComponent {
     this.selectedUserPhotoURL = result.photoURL || '';
     this.isSelected = true;
     this.selectedUserId = result.uid;
+    this.selectedChannelName = null;
   }
 
   // Handle channel selection
@@ -130,6 +225,7 @@ export class NewChatComponent {
     this.searchQuery = `#${result.name}`;
     this.selectedUserPhotoURL = ''; // No photo for channels
     this.isSelected = true;
+    this.selectedChannelName = null;
   }
 
   // Handle direct messaging when only an email is provided
@@ -168,10 +264,6 @@ export class NewChatComponent {
     } catch (error) {
       console.error('Error checking or creating direct message chat:', error);
     }
-  }
-
-  navigateToDirectChat(chatId: string): void {
-    this.router.navigate(['dashboard', 'direct-chat', chatId]);
   }
 
   // Generate a unique chat ID for the sender and receiver
