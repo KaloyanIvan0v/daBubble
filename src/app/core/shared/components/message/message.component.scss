@@ -41,6 +41,11 @@ section {
   @include dFlex($fd: column, $ai: start);
   flex-grow: 1;
   gap: 8px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 .name-date-wrapper {

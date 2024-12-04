@@ -10,6 +10,7 @@ import { MessageComponent } from 'src/app/core/shared/components/message/message
 import { RouterModule } from '@angular/router';
 import { Thread } from 'src/app/core/shared/models/thread.class';
 import { ThreadService } from 'src/app/core/shared/services/thread-service/thread.service';
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 @Component({
   selector: 'app-right-side-container',
   standalone: true,
@@ -39,7 +40,8 @@ export class RightSideContainerComponent {
   constructor(
     private workspaceService: WorkspaceService,
     private firebaseService: FirebaseServicesService,
-    private threadService: ThreadService
+    private threadService: ThreadService,
+    private statefulWindowService: StatefulWindowServiceService
   ) {
     this.threadService.currentThreadPath.subscribe((path) => {
       this.threadPath = path;
@@ -102,6 +104,10 @@ export class RightSideContainerComponent {
   }
 
   closeThread() {
-    this.threadService.threadOpen.next(false);
+    this.statefulWindowService.closeRightSideComponentState();
+  }
+
+  get rightSideComponentOpen() {
+    return this.statefulWindowService.rightSideComponentState();
   }
 }

@@ -13,6 +13,7 @@ import { Reaction } from 'src/app/core/shared/models/reaction.class';
 import { EmojiPickerService } from '../../../services/emoji-picker/emoji-picker.service';
 import { MessageService } from '../../../services/message-service/message.service';
 import { ThreadService } from '../../../services/thread-service/thread.service';
+import { StatefulWindowServiceService } from '../../../services/stateful-window-service/stateful-window-service.service';
 @Component({
   selector: 'app-reactions-menu',
   standalone: true,
@@ -35,7 +36,8 @@ export class ReactionsMenuComponent implements OnInit {
   constructor(
     private emojiPickerService: EmojiPickerService,
     private messageService: MessageService,
-    private threadService: ThreadService
+    private threadService: ThreadService,
+    private statefulWindowService: StatefulWindowServiceService
   ) {}
 
   ngOnInit() {
@@ -88,6 +90,6 @@ export class ReactionsMenuComponent implements OnInit {
 
   openThread() {
     this.threadService.openThread(this.message);
-    this.threadService.threadOpen.next(true);
+    this.statefulWindowService.openRightSideComponentState();
   }
 }

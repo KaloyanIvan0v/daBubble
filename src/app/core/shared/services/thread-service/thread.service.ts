@@ -7,7 +7,7 @@ import { Message } from '../../models/message.class';
 })
 export class ThreadService {
   currentThreadPath: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  threadOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  //threadOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   originMessage: BehaviorSubject<Message | null> =
     new BehaviorSubject<Message | null>(null);
   constructor() {}

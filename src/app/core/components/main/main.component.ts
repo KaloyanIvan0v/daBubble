@@ -1,6 +1,6 @@
 import { UploadCareService } from './../../shared/services/uploadcare-service/uploadcare.service';
 import { SignupComponent } from './../authentication/signup/signup.component';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainWorkspaceComponent } from './main-workspace/main-workspace.component';
 import { LeftSideComponentComponent } from './left-side-component/left-side-component.component';
@@ -19,6 +19,7 @@ import { ChooseAvatarComponent } from '../authentication/choose-avatar/choose-av
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
 import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar/edit-avatar.component';
 import { ThreadService } from '../../shared/services/thread-service/thread.service';
+import { StatefulWindowServiceService } from '../../shared/services/stateful-window-service/stateful-window-service.service';
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -41,9 +42,6 @@ import { ThreadService } from '../../shared/services/thread-service/thread.servi
 export class MainComponent implements OnInit, OnDestroy {
   chooseAvatarComponent: ChooseAvatarComponent;
   signupComponent: SignupComponent;
-
-  workSpaceOpen: boolean = false;
-  threadOpen: boolean = false;
   workspaceButtonText: string = 'Workspace-Menu öffnen';
   popUpShadowVisible: boolean = false;
   private popUpStatesSubscription!: Subscription;
@@ -51,13 +49,17 @@ export class MainComponent implements OnInit, OnDestroy {
   userDataSubscription!: Subscription;
   currentUser: any = null;
 
+  resizeSubscription!: Subscription;
+  innerWidth: number = window.innerWidth;
+
   constructor(
     private authService: AuthService,
     private firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     private authUIService: AuthUIService,
     public uploadCareService: UploadCareService,
-    private threadService: ThreadService
+    private threadService: ThreadService,
+    private statefulWindowService: StatefulWindowServiceService
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
     this.chooseAvatarComponent = new ChooseAvatarComponent(
@@ -71,9 +73,9 @@ export class MainComponent implements OnInit, OnDestroy {
       this.authService,
       this.workspaceService
     );
-    this.threadService.threadOpen.subscribe((value) => {
-      this.threadOpen = value;
-    });
+    // this.threadService.threadOpen.subscribe((value) => {
+    //   this.threadOpen = value;
+    // });
   }
 
   ngOnInit(): void {
@@ -90,15 +92,35 @@ export class MainComponent implements OnInit, OnDestroy {
     if (this.userDataSubscription) {
       this.userDataSubscription.unsubscribe();
     }
+    if (this.resizeSubscription) {
+      this.resizeSubscription.unsubscribe();
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    if (window.innerWidth < 1400 && window.innerWidth > 900) {
+      if (this.leftSideComponentOpen && this.rightSideComponentOpen) {
+        this.statefulWindowService.closeLeftSideComponentState();
+      }
+    }
+  }
+
+  get leftSideComponentOpen() {
+    return this.statefulWindowService.leftSideComponentState();
+  }
+
+  get rightSideComponentOpen() {
+    return this.statefulWindowService.rightSideComponentState();
   }
 
   toggleWorkspace() {
-    this.workSpaceOpen = !this.workSpaceOpen;
+    this.statefulWindowService.toggleLeftSideComponentState();
     this.changeText();
   }
 
   changeText() {
-    this.workspaceButtonText = this.workSpaceOpen
+    this.workspaceButtonText = this.leftSideComponentOpen
       ? 'Workspace-Menu schließen'
       : 'Workspace-Menu öffnen';
   }

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
@@ -12,6 +12,7 @@ import { Thread } from 'src/app/core/shared/models/thread.class';
 export class MainService {
   private firestore: FirebaseServicesService = inject(FirebaseServicesService);
   private authService: AuthService = inject(AuthService);
+  activeMobileUnitId = signal('');
 
   constructor() {}
 
@@ -108,6 +109,4 @@ export class MainService {
       return '';
     }
   }
-
-  
 }

@@ -20,6 +20,7 @@ import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { EmojiPickerService } from '../../services/emoji-picker/emoji-picker.service';
 import { AuthService } from '../../services/auth-services/auth.service';
 import { ThreadService } from '../../services/thread-service/thread.service';
+import { StatefulWindowServiceService } from '../../services/stateful-window-service/stateful-window-service.service';
 
 @Component({
   selector: 'app-message',
@@ -52,7 +53,8 @@ export class MessageComponent implements OnInit, OnDestroy {
     private workspaceService: WorkspaceService,
     private emojiPickerService: EmojiPickerService,
     private authService: AuthService,
-    private threadService: ThreadService
+    private threadService: ThreadService,
+    private statefulWindowService: StatefulWindowServiceService
   ) {}
 
   ngOnInit() {
@@ -141,7 +143,7 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   openThread() {
     this.threadService.openThread(this.message);
-    this.threadService.threadOpen.next(true);
+    this.statefulWindowService.openRightSideComponentState();
   }
 
   cancelEdit() {
