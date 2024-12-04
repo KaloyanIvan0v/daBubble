@@ -31,6 +31,7 @@ export class NewChatComponent {
   isSelected: boolean = false;
   loggedInUserId: string | null = null;
   selectedUserId: string | null = null;
+  selectedIndex: number = -1;
   messagePath: string = '';
   channelName: string = '';
   channelDescription: string = '';
@@ -51,50 +52,53 @@ export class NewChatComponent {
   }
 
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
+
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
     const clickedElement = event.target as HTMLElement;
-
-    if (
-      this.searchContainer &&
-      !this.searchContainer.nativeElement.contains(event.target) &&
-      !clickedElement.classList.contains('clear-button')
-    ) {
-      this.searchResults = [];
-    }
-  }
-
-  onSearchChange(): void {
-    const searchText = this.searchQuery.trim();
-
-    if (searchText) {
-      this.handleSearchQuery(searchText);
-    } else {
+    if (this.isClickOutsideSearch(clickedElement)) {
       this.clearSearchState();
     }
   }
 
+  private isClickOutsideSearch(clickedElement: HTMLElement): boolean {
+    return (
+      this.searchContainer &&
+      !this.searchContainer.nativeElement.contains(clickedElement) &&
+      !clickedElement.classList.contains('clear-button')
+    );
+  }
+
+  onSearchChange(): void {
+    const searchText = this.searchQuery.trim();
+    searchText ? this.handleSearchQuery(searchText) : this.clearSearchState();
+  }
+
   handleSearchQuery(searchText: string): void {
-    this.searchResults = [];
     this.firebaseService.search(searchText).subscribe(
       (results) => {
-        this.searchResults = results.filter(
-          (result) => result.uid !== this.loggedInUserId
-        );
+        this.filterSearchResults(results);
       },
-      (error) => {
-        console.error('Error fetching search results:', error);
-      }
+      (error) => console.error('Error fetching search results:', error)
+    );
+  }
+
+  private filterSearchResults(results: any[]): void {
+    this.searchResults = results.filter(
+      (result) => result.uid !== this.loggedInUserId
     );
   }
 
   clearSearchState(): void {
     this.searchResults = [];
+    this.resetSelection();
+  }
+
+  private resetSelection(): void {
     this.selectedUserPhotoURL = null;
-    this.selectedUserName = null;
     this.isSelected = false;
-    this.selectedChannelName = null;
-    this.isAutoSelected = false;
+    this.selectedUserId = null;
+    this.selectedIndex = -1; // Reset index on clearing
   }
 
   async onSelectResult(result: any): Promise<void> {
@@ -106,136 +110,59 @@ export class NewChatComponent {
       return;
     }
 
-    if (result.name) {
-      if (result.email) {
-        this.handleUserSelection(result);
-        await this.handleDirectChat(senderId, receiverId, result);
-      } else {
-        this.handleChannelSelection(result);
-        await this.handleChannelChat(result);
-      }
-    } else if (result.email) {
-      this.handleDirectMessaging(result);
-      await this.handleDirectChat(senderId, receiverId, result);
-    }
+    this.selectedUserId = receiverId;
+    this.messagePath = `directMessages/${this.generateChatId(
+      senderId,
+      receiverId
+    )}`;
+    result.name
+      ? this.handleUserOrChannelSelection(result, senderId, receiverId)
+      : this.handleDirectMessaging(result, senderId, receiverId);
   }
 
-  async handleDirectChat(
+  private handleUserOrChannelSelection(
+    result: any,
     senderId: string,
-    receiverId: string,
-    result: any
+    receiverId: string
+  ): void {
+    result.email
+      ? this.prepareUserSelection(result, senderId, receiverId)
+      : this.prepareChannelSelection(result);
+  }
+
+  private async prepareUserSelection(
+    result: any,
+    senderId: string,
+    receiverId: string
   ): Promise<void> {
-    const chatId = this.generateChatId(senderId, receiverId);
-
-    try {
-      const chatExists = await this.firebaseService.checkDocExists(
-        'directMessages',
-        chatId
-      );
-
-      if (chatExists) {
-        this.navigateToDirectChat(chatId);
-      } else {
-        await this.createDirectMessageChat(
-          chatId,
-          senderId,
-          receiverId,
-          result
-        );
-        this.navigateToDirectChat(chatId);
-      }
-    } catch (error) {
-      console.error('Error checking or creating direct message chat:', error);
-    }
+    this.handleUserSelection(result);
+    await this.checkOrCreateChat(senderId, receiverId, result);
   }
 
-  navigateToDirectChat(chatId: string): void {
-    this.router.navigate(['dashboard', 'direct-chat', chatId]);
-  }
-
-  async handleChannelChat(result: any): Promise<void> {
-    const channelId = result.id; // Assuming `result` has the channel's ID
-    const channelName = result.name; // Assuming `result` has the channel's name
-
-    if (!channelId) {
-      console.error('Channel ID is undefined or invalid:', result);
-      return;
-    }
-
-    try {
-      const chatExists = await this.firebaseService.checkDocExists(
-        'channelChats',
-        channelId
-      );
-
-      if (chatExists) {
-        this.navigateToChannelChat(channelId);
-      } else {
-        await this.createChannelChat(channelId, channelName, result);
-        this.navigateToChannelChat(channelId);
-      }
-    } catch (error) {
-      console.error('Error checking or creating channel chat:', error);
-    }
-  }
-
-  async createChannelChat(
-    channelId: string,
-    channelName: string,
-    result: any
-  ): Promise<void> {
-    const chatData = {
-      id: channelId,
-      name: channelName,
-      description: result.description || '',
-      creator: result.creator || '',
-      timestamp: new Date(),
-      members: result.uid || [],
-    };
-
-    try {
-      const chatDocRef = this.firebaseService.getDocRef(
-        'channelChats',
-        channelId
-      );
-      await setDoc(chatDocRef, chatData);
-      console.log(
-        `Channel chat created successfully for channel: ${channelName}`
-      );
-    } catch (error) {
-      console.error('Error creating channel chat:', error);
-    }
-  }
-
-  navigateToChannelChat(channelId: string): void {
-    this.router.navigate(['dashboard', 'channel-chat', channelId]);
-  }
-
-  // Handle user selection
-  handleUserSelection(result: any): void {
+  private handleUserSelection(result: any): void {
     this.searchQuery = `@${result.name}`;
     this.selectedUserPhotoURL = result.photoURL || '';
     this.isSelected = true;
     this.selectedUserId = result.uid;
-    this.selectedChannelName = null;
   }
 
-  // Handle channel selection
-  handleChannelSelection(result: any): void {
+  private prepareChannelSelection(result: any): void {
     this.searchQuery = `#${result.name}`;
-    this.selectedUserPhotoURL = ''; // No photo for channels
+    this.selectedUserPhotoURL = null;
     this.isSelected = true;
-    this.selectedChannelName = null;
   }
 
-  // Handle direct messaging when only an email is provided
-  handleDirectMessaging(result: any): void {
+  private async handleDirectMessaging(
+    result: any,
+    senderId: string,
+    receiverId: string
+  ): Promise<void> {
     this.searchQuery = result.email;
     this.isSelected = true;
+    await this.checkOrCreateChat(senderId, receiverId, result);
   }
 
-  // Handle checking and creating a chat if necessary
-  async handleChatCreation(
+  private async checkOrCreateChat(
     senderId: string,
     receiverId: string,
     result: any
@@ -247,62 +174,32 @@ export class NewChatComponent {
         'directMessages',
         chatId
       );
-
-      if (chatExists) {
-        this.navigateToDirectChat(chatId);
-      } else {
-        // Chat doesn't exist, create a new one
-        await this.createDirectMessageChat(
-          chatId,
-          senderId,
-          receiverId,
-          result
-        );
-      }
-
-      this.searchResults = []; // Clear search results
+      chatExists
+        ? this.navigateToDirectChat(chatId)
+        : await this.createDirectMessageChat(
+            chatId,
+            senderId,
+            receiverId,
+            result
+          );
     } catch (error) {
-      console.error('Error checking or creating direct message chat:', error);
+      console.error('Error handling chat creation:', error);
     }
   }
 
-  // Generate a unique chat ID for the sender and receiver
   generateChatId(senderId: string, receiverId: string): string {
     return senderId < receiverId
       ? `${senderId}_${receiverId}`
       : `${receiverId}_${senderId}`;
   }
 
-  async createDirectMessageChat(
+  private async createDirectMessageChat(
     chatId: string,
     senderId: string,
     receiverId: string,
     result: any
   ): Promise<void> {
-    const directMessage = new DirectMessage(
-      [senderId, receiverId],
-      chatId,
-      senderId,
-      receiverId,
-      new Date(),
-      []
-    );
-
-    const chatData = {
-      uid: [senderId, receiverId],
-      id: chatId,
-      timestamp: directMessage.timestamp,
-      sender: {
-        uid: senderId,
-        name: result.name,
-        photoURL: result.photoURL,
-      },
-      receiver: {
-        uid: receiverId,
-        name: result.name,
-        photoURL: result.photoURL,
-      },
-    };
+    const chatData = this.buildChatData(chatId, senderId, receiverId, result);
 
     try {
       const chatDocRef = this.firebaseService.getDocRef(
@@ -310,39 +207,66 @@ export class NewChatComponent {
         chatId
       );
       await setDoc(chatDocRef, chatData);
-
-      console.log('Direct message chat created successfully');
+      this.navigateToDirectChat(chatId);
     } catch (error) {
       console.error('Error creating direct message chat:', error);
     }
   }
 
-  onMessageSent(): void {
-    if (this.selectedUserId) {
-      const senderId = this.loggedInUserId!;
-      const receiverId = this.selectedUserId;
-      const chatId = this.generateChatId(senderId, receiverId);
-      this.navigateToDirectChat(chatId);
-    }
+  private buildChatData(
+    chatId: string,
+    senderId: string,
+    receiverId: string,
+    result: any
+  ): any {
+    return {
+      uid: [senderId, receiverId],
+      id: chatId,
+      timestamp: new Date(),
+      sender: { uid: senderId, name: result.name, photoURL: result.photoURL },
+      receiver: {
+        uid: receiverId,
+        name: result.name,
+        photoURL: result.photoURL,
+      },
+    };
   }
 
-  selectedIndex: number = -1;
+  navigateToDirectChat(chatId: string): void {
+    this.router.navigate(['dashboard', 'direct-chat', chatId]);
+  }
 
-  onKeyDown(event: KeyboardEvent) {
+  onMessageSent(): void {
+    // Placeholder for further actions when a message is sent
+    console.log('Message sent successfully');
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
     if (!this.searchResults.length) return;
 
-    if (event.key === 'ArrowDown') {
-      this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
-      event.preventDefault();
-    } else if (event.key === 'ArrowUp') {
-      this.selectedIndex =
-        (this.selectedIndex - 1 + this.searchResults.length) %
-        this.searchResults.length;
-      event.preventDefault();
-    } else if (event.key === 'Enter' && this.selectedIndex >= 0) {
-      this.onSelectResult(this.searchResults[this.selectedIndex]);
+    event.key === 'ArrowDown'
+      ? this.selectNextResult(event)
+      : event.key === 'ArrowUp'
+      ? this.selectPreviousResult(event)
+      : event.key === 'Enter' && this.selectedIndex >= 0
+      ? this.onEnterKey(event)
+      : null;
+  }
 
-      event.preventDefault();
-    }
+  private selectNextResult(event: KeyboardEvent): void {
+    this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
+    event.preventDefault();
+  }
+
+  private selectPreviousResult(event: KeyboardEvent): void {
+    this.selectedIndex =
+      (this.selectedIndex - 1 + this.searchResults.length) %
+      this.searchResults.length;
+    event.preventDefault();
+  }
+
+  private onEnterKey(event: KeyboardEvent): void {
+    this.onSelectResult(this.searchResults[this.selectedIndex]);
+    event.preventDefault();
   }
 }
