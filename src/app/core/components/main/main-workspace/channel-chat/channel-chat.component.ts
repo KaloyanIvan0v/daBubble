@@ -51,7 +51,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   private lastMessageLength: number = 0;
   private popUpStatesSubscription?: Subscription;
   messages$!: Observable<Message[]>;
-  private messages: Message[] = [];
+  messages: Message[] = [];
   lastRenderedMessage: Message | null = null;
   messageToEdit: Message | undefined = undefined;
 
