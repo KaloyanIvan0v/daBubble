@@ -48,6 +48,13 @@ export class NewChatComponent {
     this.authService.getCurrentUserUID().then((uid) => {
       this.loggedInUserId = uid;
     });
+
+    const channelId = this.workspaceService.getActiveChannelId();
+    if (channelId) {
+      console.log('Retrieved Channel ID:', channelId);
+    } else {
+      console.warn('No Channel ID available.');
+    }
   }
 
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
@@ -154,13 +161,15 @@ export class NewChatComponent {
   }
 
   async handleChannelChat(result: any): Promise<void> {
-    const channelId = result.id; // Assuming `result` has the channel's ID
-    const channelName = result.name; // Assuming `result` has the channel's name
+    const channelId = result.id;
+    const channelName = result.name;
 
     if (!channelId) {
       console.error('Channel ID is undefined or invalid:', result);
       return;
     }
+
+    console.log('Navigating to Channel:', channelId);
 
     try {
       const chatExists = await this.firebaseService.checkDocExists(
@@ -208,6 +217,12 @@ export class NewChatComponent {
   }
 
   navigateToChannelChat(channelId: string): void {
+    if (!channelId) {
+      console.error('Invalid channelId for navigation:', channelId);
+      return;
+    }
+
+    console.log('Navigating to dashboard/channel-chat:', channelId);
     this.router.navigate(['dashboard', 'channel-chat', channelId]);
   }
 

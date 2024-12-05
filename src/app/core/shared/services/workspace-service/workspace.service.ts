@@ -3,7 +3,7 @@ import { Injectable, inject, signal, effect } from '@angular/core';
 import { AuthService } from '../auth-services/auth.service';
 import { FirebaseServicesService } from './../firebase/firebase.service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +16,7 @@ export class WorkspaceService {
   currentActiveUnitId = signal('');
   currentActiveUserId = signal('123456789'); // Open UserView PopUp
   currentActiveDmUser = signal<User | null>(null);
+  private activeChannelId = new BehaviorSubject<string | null>(null);
 
   loggedInUserData = new BehaviorSubject<User | null>(null);
   loggedInUserData$ = this.loggedInUserData.asObservable();
@@ -41,6 +42,14 @@ export class WorkspaceService {
     this.subscribeToUserStateChanges();
     this.setupAuthEffect();
     this.loadUserData();
+  }
+
+  setActiveChannelId(channelId: string): void {
+    this.activeChannelId.next(channelId);
+  }
+
+  getActiveChannelId(): Observable<string | null> {
+    return this.activeChannelId.asObservable();
   }
 
   updateUser(user: any) {

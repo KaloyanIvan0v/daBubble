@@ -66,6 +66,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
       if (this.channelId) {
+        this.workspaceService.setActiveChannelId(this.channelId);
         this.loadChannelData(this.channelId);
       } else {
         console.warn('No valid channelId available.');
