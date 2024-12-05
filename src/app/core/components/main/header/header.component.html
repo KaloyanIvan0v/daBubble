@@ -3,8 +3,34 @@
     <img src="assets/img/logo-long.svg" alt="logo" />
   </div>
   <div class="search-wrapper">
-    <input type="text" name="" id="" placeholder="Devspace durchsuchen" />
+    <input
+      #searchInput
+      type="text"
+      name="search-all"
+      id="search-all"
+      placeholder="Devspace durchsuchen"
+      (input)="onSearch($event)"
+    />
     <img src="assets/img/icons/search-grey.svg" alt="search-icon" />
+    <div
+      *ngIf="searchResults$ | async as searchResults"
+      class="search-results-container"
+    >
+      <div *ngFor="let result of searchResults" class="search-result-item">
+        <div class="results-info-container">
+          <img
+            *ngIf="result.photoURL"
+            [src]="result.photoURL"
+            alt="{{ result.name }}"
+            class="user-profile-image"
+          />
+          <span *ngIf="result.type === 'user'"
+            >&#64;{{ result.name || result.email }}</span
+          >
+          <span *ngIf="result.type === 'channel'">#{{ result.name }}</span>
+        </div>
+      </div>
+    </div>
   </div>
   <!-- Use *ngIf to assign the async value to a template variable -->
   <div

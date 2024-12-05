@@ -455,4 +455,46 @@ export class FirebaseServicesService implements OnDestroy {
       return this.searchUsers(queryText);
     }
   }
+
+  searchAllChannelsAndUsers(queryText: string): Observable<any[]> {
+    const lowerCaseQuery = queryText.trim().toLowerCase();
+
+    // Search all users
+    const usersRef = collection(this.firestore, 'users');
+    const userQuery = query(
+      usersRef,
+      where('name', '>=', lowerCaseQuery),
+      where('name', '<=', lowerCaseQuery + '\uf8ff')
+    );
+
+    // Search all channels
+    const channelsRef = collection(this.firestore, 'channels');
+    const channelQuery = query(
+      channelsRef,
+      where('name', '>=', lowerCaseQuery),
+      where('name', '<=', lowerCaseQuery + '\uf8ff')
+    );
+
+    return new Observable((observer) => {
+      Promise.all([
+        getDocs(userQuery).then((snapshot) =>
+          snapshot.docs.map((doc) => ({
+            ...this.mapDocumentData(doc),
+            type: 'user',
+          }))
+        ),
+        getDocs(channelQuery).then((snapshot) =>
+          snapshot.docs.map((doc) => ({
+            ...this.mapDocumentData(doc),
+            type: 'channel',
+          }))
+        ),
+      ])
+        .then(([users, channels]) => {
+          const combinedResults = [...users, ...channels];
+          observer.next(combinedResults);
+        })
+        .catch((error) => observer.error(error));
+    });
+  }
 }
