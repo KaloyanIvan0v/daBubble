@@ -21,6 +21,7 @@ import { Observable, of } from 'rxjs';
 export class HeaderComponent {
   userData$: Observable<any>;
   searchResults$: Observable<any[]> = new Observable();
+  loggedInUserId: string | null = null;
 
   constructor(
     public firebaseService: FirebaseServicesService,

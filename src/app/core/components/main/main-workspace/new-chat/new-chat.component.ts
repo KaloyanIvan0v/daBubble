@@ -162,7 +162,6 @@ export class NewChatComponent {
 
   async handleChannelChat(result: any): Promise<void> {
     const channelId = result.id;
-    const channelName = result.name;
 
     if (!channelId) {
       console.error('Channel ID is undefined or invalid:', result);
@@ -172,47 +171,16 @@ export class NewChatComponent {
     console.log('Navigating to Channel:', channelId);
 
     try {
-      const chatExists = await this.firebaseService.checkDocExists(
-        'channelChats',
+      const channelExists = await this.firebaseService.checkDocExists(
+        'channels',
         channelId
       );
 
-      if (chatExists) {
-        this.navigateToChannelChat(channelId);
-      } else {
-        await this.createChannelChat(channelId, channelName, result);
+      if (channelExists) {
         this.navigateToChannelChat(channelId);
       }
     } catch (error) {
       console.error('Error checking or creating channel chat:', error);
-    }
-  }
-
-  async createChannelChat(
-    channelId: string,
-    channelName: string,
-    result: any
-  ): Promise<void> {
-    const chatData = {
-      id: channelId,
-      name: channelName,
-      description: result.description || '',
-      creator: result.creator || '',
-      timestamp: new Date(),
-      members: result.uid || [],
-    };
-
-    try {
-      const chatDocRef = this.firebaseService.getDocRef(
-        'channelChats',
-        channelId
-      );
-      await setDoc(chatDocRef, chatData);
-      console.log(
-        `Channel chat created successfully for channel: ${channelName}`
-      );
-    } catch (error) {
-      console.error('Error creating channel chat:', error);
     }
   }
 
