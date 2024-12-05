@@ -47,6 +47,7 @@ p {
 .main-container {
   position: relative;
   display: flex;
+  gap: 20px;
   z-index: auto;
   width: 100%;
   box-sizing: border-box;
@@ -57,7 +58,6 @@ p {
     width: 366px;
     background-color: white;
     border-radius: 30px;
-    margin-right: 20px;
     max-height: calc(100vh - 140px);
     overflow: scroll;
     scrollbar-width: none;
@@ -72,7 +72,6 @@ p {
     flex: 1;
     background-color: white;
     border-radius: 30px;
-    margin-right: 20px;
     max-height: 100%;
     z-index: auto;
   }
@@ -81,7 +80,6 @@ p {
     width: 485px;
     background-color: white;
     border-radius: 30px;
-    margin-right: 20px;
     max-height: calc(100vh - 140px);
     overflow: scroll;
     scrollbar-width: none;
@@ -194,5 +192,25 @@ p {
 @media (min-width: 1980px) {
   .workspace-menu-btn {
     border-radius: 20px;
+  }
+}
+
+@media (max-width: 960px) {
+  .inner-section {
+    padding: 0;
+  }
+  .workspace-menu-btn {
+    display: none;
+  }
+
+  app-main-workspace {
+    margin: 0px !important;
+  }
+
+  app-left-side-component {
+    margin: 0px !important;
+  }
+  app-right-side-container {
+    margin: 0px !important;
   }
 }

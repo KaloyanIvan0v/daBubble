@@ -10,7 +10,7 @@ export class StatefulWindowServiceService {
   rightSideComponentState = signal<boolean>(false);
   currentActiveComponentMobile = signal<string>('');
   startWidth = 1400;
-  endWidth = 900;
+  endWidth = 960;
 
   toggleLeftSideComponentState() {
     if (this.leftSideComponentState()) {

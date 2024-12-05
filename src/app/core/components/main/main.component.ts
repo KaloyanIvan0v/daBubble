@@ -82,6 +82,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.authService.getCurrentUserUID().then((uid) => {
       this.firebaseService.setUserUID(uid);
     });
+    this.checkIfMobile();
   }
 
   ngOnDestroy(): void {
@@ -99,12 +100,21 @@ export class MainComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
-    if (window.innerWidth < 1400 && window.innerWidth > 900) {
+    if (window.innerWidth < 1400 && window.innerWidth > 960) {
       if (this.leftSideComponentOpen && this.rightSideComponentOpen) {
         this.statefulWindowService.closeLeftSideComponentState();
       }
+    } else if (window.innerWidth < 960) {
     }
   }
+
+  checkIfMobile() {
+    if (window.innerWidth < 960) {
+      this.setMobile();
+    }
+  }
+
+  setMobile() {}
 
   get leftSideComponentOpen() {
     return this.statefulWindowService.leftSideComponentState();

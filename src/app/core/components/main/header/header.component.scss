@@ -19,6 +19,7 @@ section {
   min-width: 100px;
   background-color: white;
   border-radius: 42px;
+  margin: 0px 20px;
 
   input {
     width: 100%;
@@ -118,4 +119,17 @@ section {
 
 .search-results-container:empty {
   display: none;
+}
+@media (max-width: 960px) {
+  .search-wrapper {
+    display: none;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .user-menu {
+    display: none;
+  }
 }
