@@ -15,12 +15,11 @@ import { User } from 'src/app/core/shared/models/user.class';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AddChannelComponent } from '../add-channel/add-channel.component';
 
 @Component({
   selector: 'app-add-user-to-channel',
   standalone: true,
-  imports: [FormsModule, CommonModule, AddChannelComponent],
+  imports: [FormsModule, CommonModule],
   templateUrl: './add-user-to-channel.component.html',
   styleUrls: ['./add-user-to-channel.component.scss'],
 })
