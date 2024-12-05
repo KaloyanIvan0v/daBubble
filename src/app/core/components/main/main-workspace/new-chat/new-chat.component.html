@@ -14,7 +14,7 @@
           #searchInput
           [(ngModel)]="searchQuery"
           (input)="onSearchChange()"
-          (keydown)="onKeyDown($event)"
+          (keydown)="searchService.onKeyDown($event)"
           placeholder="An: #channel, @jemand, oder E-Mail Adresse"
           type="text"
           [disabled]="isSelected"
@@ -32,10 +32,10 @@
         <div
           *ngFor="let result of searchResults; let i = index"
           class="search-result-item"
-          [class.active]="i === selectedIndex"
+          [class.active]="i === searchService.selectedIndex"
           role="option"
-          (click)="onSelectResult(result)"
-          (keydown.enter)="onSelectResult(result)"
+          (click)="searchService.onSelectResult(result)"
+          (keydown.enter)="searchService.onSelectResult(result)"
           tabindex="0"
         >
           <div

@@ -118,4 +118,5 @@ export class WorkspaceService {
       this.loggedInUserData.next({ ...data, avatar: data.avatar });
     }
   }
+
 }

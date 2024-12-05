@@ -10,13 +10,19 @@
       id="search-all"
       placeholder="Devspace durchsuchen"
       (input)="onSearch($event)"
+      (keydown)="searchService.onKeyDown($event)"
     />
     <img src="assets/img/icons/search-grey.svg" alt="search-icon" />
-    <div
-      *ngIf="searchResults$ | async as searchResults"
-      class="search-results-container"
-    >
-      <div *ngFor="let result of searchResults" class="search-result-item">
+    <div *ngIf="searchResults.length > 0" class="search-results-container">
+      <div
+        *ngFor="let result of searchResults; let i = index"
+        class="search-result-item"
+        [class.active]="i === searchService.selectedIndex"
+        role="option"
+        (click)="searchService.onSelectResult(result)"
+        (keydown.enter)="searchService.onSelectResult(result)"
+        tabindex="0"
+      >
         <div class="results-info-container">
           <img
             *ngIf="result.photoURL"

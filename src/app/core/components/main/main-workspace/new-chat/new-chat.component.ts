@@ -1,13 +1,11 @@
+import { SearchService } from './../../../../shared/services/search-service/search.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { MainService } from '../../../../shared/services/main-service/main.service';
-import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
 import { setDoc } from '@angular/fire/firestore';
-import { User } from 'src/app/core/shared/models/user.class';
 import { Observable } from 'rxjs';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { Router } from '@angular/router';
@@ -27,7 +25,6 @@ export class NewChatComponent {
   selectedUserPhotoURL: string | null = null;
   selectedUserName: string | null = null;
   selectedChannelName: string | null = null;
-  isAutoSelected: boolean = false;
   isSelected: boolean = false;
   loggedInUserId: string | null = null;
   selectedUserId: string | null = null;
@@ -38,11 +35,10 @@ export class NewChatComponent {
   userData$: Observable<any>;
 
   constructor(
-    private mainService: MainService,
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     public authService: AuthService,
-    private router: Router
+    public searchService: SearchService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
     this.authService.getCurrentUserUID().then((uid) => {
@@ -101,117 +97,6 @@ export class NewChatComponent {
     this.selectedUserName = null;
     this.isSelected = false;
     this.selectedChannelName = null;
-    this.isAutoSelected = false;
-  }
-
-  async onSelectResult(result: any): Promise<void> {
-    const senderId = this.loggedInUserId;
-    const receiverId = result.uid;
-
-    if (!senderId) {
-      console.error('Sender ID is null');
-      return;
-    }
-
-    if (result.name) {
-      if (result.email) {
-        this.handleUserSelection(result);
-        await this.handleDirectChat(senderId, receiverId, result);
-      } else {
-        this.handleChannelSelection(result);
-        await this.handleChannelChat(result);
-      }
-    } else if (result.email) {
-      this.handleDirectMessaging(result);
-      await this.handleDirectChat(senderId, receiverId, result);
-    }
-  }
-
-  async handleDirectChat(
-    senderId: string,
-    receiverId: string,
-    result: any
-  ): Promise<void> {
-    const chatId = this.generateChatId(senderId, receiverId);
-
-    try {
-      const chatExists = await this.firebaseService.checkDocExists(
-        'directMessages',
-        chatId
-      );
-
-      if (chatExists) {
-        this.navigateToDirectChat(chatId);
-      } else {
-        await this.createDirectMessageChat(
-          chatId,
-          senderId,
-          receiverId,
-          result
-        );
-        this.navigateToDirectChat(chatId);
-      }
-    } catch (error) {
-      console.error('Error checking or creating direct message chat:', error);
-    }
-  }
-
-  navigateToDirectChat(chatId: string): void {
-    this.router.navigate(['dashboard', 'direct-chat', chatId]);
-  }
-
-  async handleChannelChat(result: any): Promise<void> {
-    const channelId = result.id;
-
-    if (!channelId) {
-      console.error('Channel ID is undefined or invalid:', result);
-      return;
-    }
-
-    console.log('Navigating to Channel:', channelId);
-
-    try {
-      const channelExists = await this.firebaseService.checkDocExists(
-        'channels',
-        channelId
-      );
-
-      if (channelExists) {
-        this.navigateToChannelChat(channelId);
-      }
-    } catch (error) {
-      console.error('Error checking or creating channel chat:', error);
-    }
-  }
-
-  navigateToChannelChat(channelId: string): void {
-    if (!channelId) {
-      console.error('Invalid channelId for navigation:', channelId);
-      return;
-    }
-
-    console.log('Navigating to dashboard/channel-chat:', channelId);
-    this.router.navigate(['dashboard', 'channel-chat', channelId]);
-  }
-
-  handleUserSelection(result: any): void {
-    this.searchQuery = `@${result.name}`;
-    this.selectedUserPhotoURL = result.photoURL || '';
-    this.isSelected = true;
-    this.selectedUserId = result.uid;
-    this.selectedChannelName = null;
-  }
-
-  handleChannelSelection(result: any): void {
-    this.searchQuery = `#${result.name}`;
-    this.selectedUserPhotoURL = '';
-    this.isSelected = true;
-    this.selectedChannelName = null;
-  }
-
-  handleDirectMessaging(result: any): void {
-    this.searchQuery = result.email;
-    this.isSelected = true;
   }
 
   async handleChatCreation(
@@ -224,7 +109,7 @@ export class NewChatComponent {
     try {
       const chatExists = await this.checkChatExists(chatId);
       if (chatExists) {
-        this.navigateToDirectChat(chatId);
+        this.searchService.navigateToDirectChat(chatId);
       } else {
         await this.initiateChat(chatId, senderId, receiverId, result);
       }
@@ -254,7 +139,7 @@ export class NewChatComponent {
   ): Promise<void> {
     try {
       await this.createDirectMessageChat(chatId, senderId, receiverId, result);
-      this.navigateToDirectChat(chatId);
+      this.searchService.navigateToDirectChat(chatId);
     } catch (error) {
       console.error('Error creating or navigating to chat:', error);
     }
@@ -307,38 +192,9 @@ export class NewChatComponent {
       const senderId = this.loggedInUserId!;
       const receiverId = this.selectedUserId;
       const chatId = this.generateChatId(senderId, receiverId);
-      this.navigateToDirectChat(chatId);
+      this.searchService.navigateToDirectChat(chatId);
     }
   }
 
-  selectedIndex: number = -1;
 
-  onKeyDown(event: KeyboardEvent) {
-    if (!this.searchResults.length) return;
-
-    if (event.key === 'ArrowDown') {
-      this.handleArrowDown(event);
-    } else if (event.key === 'ArrowUp') {
-      this.handleArrowUp(event);
-    } else if (event.key === 'Enter' && this.selectedIndex >= 0) {
-      this.handleEnter(event);
-    }
-  }
-
-  private handleArrowDown(event: KeyboardEvent) {
-    this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
-    event.preventDefault();
-  }
-
-  private handleArrowUp(event: KeyboardEvent) {
-    this.selectedIndex =
-      (this.selectedIndex - 1 + this.searchResults.length) %
-      this.searchResults.length;
-    event.preventDefault();
-  }
-
-  private handleEnter(event: KeyboardEvent) {
-    this.onSelectResult(this.searchResults[this.selectedIndex]);
-    event.preventDefault();
-  }
 }

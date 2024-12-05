@@ -9,7 +9,8 @@ import { CommonModule } from '@angular/common';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
 
 @Component({
   selector: 'app-header',
@@ -20,14 +21,16 @@ import { Observable, of } from 'rxjs';
 })
 export class HeaderComponent {
   userData$: Observable<any>;
-  searchResults$: Observable<any[]> = new Observable();
+  searchResults: any[] = [];
+
   loggedInUserId: string | null = null;
 
   constructor(
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     public authService: AuthService,
-    public cdRef: ChangeDetectorRef
+    public cdRef: ChangeDetectorRef,
+    public searchService: SearchService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
@@ -39,7 +42,7 @@ export class HeaderComponent {
       this.searchContainer &&
       !this.searchContainer.nativeElement.contains(event.target)
     ) {
-      this.searchResults$ = of([]);
+      this.searchResults = [];
     }
   }
 
@@ -50,7 +53,14 @@ export class HeaderComponent {
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     const queryText = input.value;
-    this.searchResults$ =
-      this.firebaseService.searchAllChannelsAndUsers(queryText);
+    if (queryText.trim()) {
+      this.firebaseService
+        .searchAllChannelsAndUsers(queryText)
+        .subscribe((results) => {
+          this.searchResults = results;
+        });
+    } else {
+      this.searchResults = [];
+    }
   }
 }
