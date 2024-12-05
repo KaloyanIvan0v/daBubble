@@ -54,7 +54,7 @@ p {
   flex-grow: 1;
   background-color: $bg-color;
 
-  app-left-side-component {
+  .left-side-component {
     width: 366px;
     background-color: white;
     border-radius: 30px;
@@ -68,7 +68,7 @@ p {
   app-left-side-component::-webkit-scrollbar {
     display: none;
   }
-  app-main-workspace {
+  .main-workspace {
     flex: 1;
     background-color: white;
     border-radius: 30px;
@@ -76,7 +76,7 @@ p {
     z-index: auto;
   }
 
-  app-right-side-container {
+  .right-side-component {
     width: 485px;
     background-color: white;
     border-radius: 30px;
@@ -199,18 +199,24 @@ p {
   .inner-section {
     padding: 0;
   }
+  .main-container {
+    gap: 0px;
+
+    .main-workspace {
+      margin: 0px;
+      border-radius: 0px;
+    }
+
+    .left-side-component {
+      margin: 0px;
+      border-radius: 0px;
+    }
+    .right-side-component {
+      margin: 0px;
+      border-radius: 0px;
+    }
+  }
   .workspace-menu-btn {
     display: none;
-  }
-
-  app-main-workspace {
-    margin: 0px !important;
-  }
-
-  app-left-side-component {
-    margin: 0px !important;
-  }
-  app-right-side-container {
-    margin: 0px !important;
   }
 }
