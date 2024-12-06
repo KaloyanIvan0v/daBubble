@@ -19,7 +19,6 @@ import { Router } from '@angular/router';
 })
 export class NewChatComponent {
   searchQuery: string = '';
-  searchResults: any[] = [];
   searchText: string = '';
   isSearching: boolean = false;
   selectedUserPhotoURL: string | null = null;
@@ -63,7 +62,7 @@ export class NewChatComponent {
       !this.searchContainer.nativeElement.contains(event.target) &&
       !clickedElement.classList.contains('clear-button')
     ) {
-      this.searchResults = [];
+      this.searchService.newChatSearchResults = [];
     }
   }
 
@@ -78,10 +77,10 @@ export class NewChatComponent {
   }
 
   handleSearchQuery(searchText: string): void {
-    this.searchResults = [];
+    this.searchService.newChatSearchResults = [];
     this.firebaseService.search(searchText).subscribe(
       (results) => {
-        this.searchResults = results.filter(
+        this.searchService.newChatSearchResults = results.filter(
           (result) => result.uid !== this.loggedInUserId
         );
       },
@@ -92,7 +91,7 @@ export class NewChatComponent {
   }
 
   clearSearchState(): void {
-    this.searchResults = [];
+    this.searchService.newChatSearchResults = [];
     this.selectedUserPhotoURL = null;
     this.selectedUserName = null;
     this.isSelected = false;
@@ -146,7 +145,7 @@ export class NewChatComponent {
   }
 
   private clearSearchResults(): void {
-    this.searchResults = [];
+    this.searchService.newChatSearchResults = [];
   }
 
   generateChatId(senderId: string, receiverId: string): string {
@@ -195,6 +194,4 @@ export class NewChatComponent {
       this.searchService.navigateToDirectChat(chatId);
     }
   }
-
-
 }

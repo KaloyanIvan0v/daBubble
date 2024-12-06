@@ -21,7 +21,6 @@ import { SearchService } from 'src/app/core/shared/services/search-service/searc
 })
 export class HeaderComponent {
   userData$: Observable<any>;
-  searchResults: any[] = [];
 
   loggedInUserId: string | null = null;
 
@@ -42,7 +41,7 @@ export class HeaderComponent {
       this.searchContainer &&
       !this.searchContainer.nativeElement.contains(event.target)
     ) {
-      this.searchResults = [];
+      this.searchService.headerSearchResults = [];
     }
   }
 
@@ -57,10 +56,10 @@ export class HeaderComponent {
       this.firebaseService
         .searchAllChannelsAndUsers(queryText)
         .subscribe((results) => {
-          this.searchResults = results;
+          this.searchService.headerSearchResults = results;
         });
     } else {
-      this.searchResults = [];
+      this.searchService.headerSearchResults = [];
     }
   }
 }

@@ -10,8 +10,12 @@ import { setDoc } from 'firebase/firestore';
   providedIn: 'root',
 })
 export class SearchService {
+  headerSearchResults: any[] = [];
+  newChatSearchResults: any[] = [];
+  headerSelectedIndex: number = -1;
+  newChatSelectedIndex: number = -1;
+
   searchQuery: string = '';
-  searchResults: any[] = [];
   searchText: string = '';
   isSearching: boolean = false;
   selectedUserPhotoURL: string | null = null;
@@ -178,34 +182,40 @@ export class SearchService {
     this.router.navigate(['dashboard', 'direct-chat', channelId]);
   }
 
-  selectedIndex: number = -1;
+  private getContextData(context: 'header' | 'newChat'): {
+    results: any[];
+    selectedIndex: number;
+  } {
+    return context === 'header'
+      ? {
+          results: this.headerSearchResults,
+          selectedIndex: this.headerSelectedIndex,
+        }
+      : {
+          results: this.newChatSearchResults,
+          selectedIndex: this.newChatSelectedIndex,
+        };
+  }
 
-  onKeyDown(event: KeyboardEvent) {
-    if (!this.searchResults.length) return;
+  private setContextIndex(context: 'header' | 'newChat', index: number): void {
+    if (context === 'header') this.headerSelectedIndex = index;
+    else this.newChatSelectedIndex = index;
+  }
 
+  onKeyDown(event: KeyboardEvent, context: 'header' | 'newChat'): void {
+    const { results, selectedIndex } = this.getContextData(context);
+    if (!results.length) return;
+    let newIndex = selectedIndex;
     if (event.key === 'ArrowDown') {
-      this.handleArrowDown(event);
+      event.preventDefault();
+      newIndex = (selectedIndex + 1) % results.length;
     } else if (event.key === 'ArrowUp') {
-      this.handleArrowUp(event);
-    } else if (event.key === 'Enter' && this.selectedIndex >= 0) {
-      this.handleEnter(event);
+      event.preventDefault();
+      newIndex = (selectedIndex - 1 + results.length) % results.length;
+    } else if (event.key === 'Enter' && selectedIndex >= 0) {
+      event.preventDefault();
+      this.onSelectResult(results[selectedIndex]);
     }
-  }
-
-  private handleArrowDown(event: KeyboardEvent) {
-    this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
-    event.preventDefault();
-  }
-
-  private handleArrowUp(event: KeyboardEvent) {
-    this.selectedIndex =
-      (this.selectedIndex - 1 + this.searchResults.length) %
-      this.searchResults.length;
-    event.preventDefault();
-  }
-
-  private handleEnter(event: KeyboardEvent) {
-    this.onSelectResult(this.searchResults[this.selectedIndex]);
-    event.preventDefault();
+    this.setContextIndex(context, newIndex);
   }
 }
