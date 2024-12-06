@@ -14,7 +14,7 @@ import {
   query,
   setDoc,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, Observer, switchMap } from 'rxjs';
+import { BehaviorSubject, map, Observable, Observer, switchMap } from 'rxjs';
 import { where, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
@@ -384,76 +384,75 @@ export class FirebaseServicesService implements OnDestroy {
     return docSnap.exists();
   }
 
-  searchUsers(queryText: string): Observable<any[]> {
-    const usersRef = collection(this.firestore, 'users');
-    const lowerCaseQuery = queryText.trim().toLowerCase();
-    if (queryText.startsWith('@')) {
-      const username = queryText.slice(1).toLowerCase();
-      return this.searchByUsername(usersRef, username);
-    } else if (this.isEmail(queryText)) {
-      const email = queryText.toLowerCase();
-      return this.searchByEmail(usersRef, email);
-    } else {
-      return this.searchByEmailPrefix(usersRef, lowerCaseQuery);
-    }
-  }
-
-  private searchByEmailPrefix(
-    usersRef: CollectionReference,
-    emailPrefix: string
-  ): Observable<any[]> {
-    const q = query(
-      usersRef,
-      where('email', '>=', emailPrefix),
-      where('email', '<=', emailPrefix + '\uf8ff')
-    );
-    return this.getDocs(q);
-  }
-
-  isEmail(queryText: string): boolean {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]*$/;
-    return emailPattern.test(queryText);
+  searchUsers(qText: string): Observable<any[]> {
+    const uRef = collection(this.firestore, 'users');
+    const lower = qText.trim().toLowerCase();
+    if (qText.startsWith('@'))
+      return this.searchByUsername(uRef, qText.slice(1).toLowerCase());
+    if (this.isEmail(qText)) return this.searchByExactEmail(uRef, lower);
+    return this.searchByEmailPrefix(uRef, lower);
   }
 
   private searchByUsername(
-    usersRef: CollectionReference,
+    uRef: CollectionReference,
     username: string
   ): Observable<any[]> {
-    const q = query(
-      usersRef,
+    const qy = query(
+      uRef,
       where('name', '>=', username),
       where('name', '<=', username + '\uf8ff')
     );
-    return this.getDocs(q);
+    return this.getDocs(qy).pipe(
+      map((r) => r.map((res) => ({ ...res, type: 'user' })))
+    );
   }
 
-  private searchByEmail(
-    usersRef: CollectionReference,
+  private searchByExactEmail(
+    uRef: CollectionReference,
     email: string
   ): Observable<any[]> {
-    const q = query(usersRef, where('email', '==', email));
-    return this.getDocs(q);
-  }
-
-  searchChannels(queryText: string): Observable<any[]> {
-    const channelName = queryText.trim().slice(1);
-    const channelsRef = collection(this.firestore, 'channels');
-    const q = query(
-      channelsRef,
-      where('name', '>=', channelName),
-      where('name', '<=', channelName + '\uf8ff')
+    const qy = query(uRef, where('email', '==', email));
+    return this.getDocs(qy).pipe(
+      map((r) => r.map((res) => ({ ...res, type: 'user' })))
     );
-    return this.getDocs(q);
   }
 
-  search(queryText: string): Observable<any[]> {
-    if (queryText.startsWith('@')) {
-      return this.searchUsers(queryText);
-    } else if (queryText.startsWith('#')) {
-      return this.searchChannels(queryText);
-    } else {
-      return this.searchUsers(queryText);
-    }
+  private searchByEmailPrefix(
+    uRef: CollectionReference,
+    prefix: string
+  ): Observable<any[]> {
+    const qy = query(
+      uRef,
+      where('email', '>=', prefix),
+      where('email', '<=', prefix + '\uf8ff')
+    );
+    return this.getDocs(qy).pipe(
+      map((r) => r.map((res) => ({ ...res, type: 'user' })))
+    );
+  }
+
+  isEmail(qText: string): boolean {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]*$/;
+    return emailPattern.test(qText);
+  }
+
+  searchChannels(qText: string): Observable<any[]> {
+    const chRef = collection(this.firestore, 'channels');
+    const name = qText.trim().slice(1);
+    const qy = query(
+      chRef,
+      where('name', '>=', name),
+      where('name', '<=', name + '\uf8ff')
+    );
+    return this.getDocs(qy).pipe(
+      map((r) => r.map((res) => ({ ...res, type: 'channel' })))
+    );
+  }
+
+  search(qText: string): Observable<any[]> {
+    if (qText.startsWith('@')) return this.searchUsers(qText);
+    if (qText.startsWith('#')) return this.searchChannels(qText);
+    return this.searchUsers(qText);
   }
 
   searchAllChannelsAndUsers(queryText: string): Observable<any[]> {
