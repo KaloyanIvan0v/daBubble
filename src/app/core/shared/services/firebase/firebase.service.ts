@@ -13,6 +13,9 @@ import {
   orderBy,
   query,
   setDoc,
+  Query,
+  QuerySnapshot,
+  DocumentData,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, map, Observable, Observer, switchMap } from 'rxjs';
 import { where, getDoc } from 'firebase/firestore';
@@ -20,7 +23,6 @@ import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { User } from '../../models/user.class';
-import { QuerySnapshot, DocumentData } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -440,36 +442,87 @@ export class FirebaseServicesService implements OnDestroy {
     queryText: string,
     currentUserId: string | null = null
   ): Observable<any[]> {
-    const channelName = queryText.trim().slice(1);
+    const channelName = queryText.trim().slice(1).toLowerCase();
     const channelsRef = collection(this.firestore, 'channels');
+    const qy = currentUserId
+      ? this.buildMemberQuery(channelsRef, currentUserId)
+      : this.buildNameQuery(channelsRef, channelName);
+
+    return this.executeChannelQuery(qy, channelName, currentUserId);
+  }
+
+  private buildMemberQuery(
+    channelsRef: CollectionReference,
+    currentUserId: string
+  ) {
+    return query(channelsRef, where('uid', 'array-contains', currentUserId));
+  }
+
+  private buildNameQuery(
+    channelsRef: CollectionReference,
+    channelName: string
+  ) {
+    return query(
+      channelsRef,
+      where('name', '>=', channelName),
+      where('name', '<=', channelName + '\uf8ff')
+    );
+  }
+
+  private executeChannelQuery(
+    qy: Query<DocumentData>,
+    channelName: string,
+    currentUserId: string | null
+  ): Observable<any[]> {
+    return new Observable((observer) => {
+      getDocs(qy)
+        .then((snapshot: QuerySnapshot<DocumentData>) => {
+          const results = this.processChannelDocs(
+            snapshot,
+            channelName,
+            currentUserId
+          );
+          observer.next(results);
+        })
+        .catch((error) => observer.error(error));
+    });
+  }
+
+  private processChannelDocs(
+    snapshot: QuerySnapshot<DocumentData>,
+    channelName: string,
+    currentUserId: string | null
+  ): any[] {
+    const docs = snapshot.docs.map((doc) =>
+      this.mapChannelDoc(doc, channelName, currentUserId)
+    );
+    return docs.filter((res) => res !== null);
+  }
+
+  private mapChannelDoc(
+    doc: any,
+    channelName: string,
+    currentUserId: string | null
+  ): any {
+    const data = doc.data();
+    const docName = ((data['name'] as string) || '').toLowerCase();
 
     if (currentUserId) {
-      const qy = query(
-        channelsRef,
-        where('uid', 'array-contains', currentUserId)
-      );
-      return this.getDocs(qy).pipe(
-        map((results) => {
-          const filtered = results.filter((res: any) => {
-            const name = res.name?.toLowerCase() || '';
-            return (
-              name >= channelName.toLowerCase() &&
-              name <= channelName.toLowerCase() + '\uf8ff'
-            );
-          });
-          return filtered.map((res: any) => ({ ...res, type: 'channel' }));
-        })
-      );
+      return this.filterChannelForMember(data, doc.id, docName, channelName);
     } else {
-      const qy = query(
-        channelsRef,
-        where('name', '>=', channelName),
-        where('name', '<=', channelName + '\uf8ff')
-      );
-      return this.getDocs(qy).pipe(
-        map((results) => results.map((res) => ({ ...res, type: 'channel' })))
-      );
+      return { ...data, id: doc.id, type: 'channel' };
     }
+  }
+
+  private filterChannelForMember(
+    data: any,
+    docId: string,
+    docName: string,
+    channelName: string
+  ): any | null {
+    const withinRange =
+      docName >= channelName && docName <= channelName + '\uf8ff';
+    return withinRange ? { ...data, id: docId, type: 'channel' } : null;
   }
 
   search(
