@@ -68,9 +68,15 @@ export class NewChatComponent {
 
   onSearchChange(): void {
     const searchText = this.searchQuery.trim();
-
-    if (searchText) {
-      this.handleSearchQuery(searchText);
+    if (searchText && this.loggedInUserId) {
+      this.firebaseService.search(searchText, this.loggedInUserId).subscribe(
+        (results) => {
+          this.searchService.newChatSearchResults = results;
+        },
+        (error) => {
+          console.error('Error fetching search results:', error);
+        }
+      );
     } else {
       this.clearSearchState();
     }

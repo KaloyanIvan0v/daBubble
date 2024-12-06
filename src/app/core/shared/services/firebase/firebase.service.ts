@@ -436,23 +436,53 @@ export class FirebaseServicesService implements OnDestroy {
     return emailPattern.test(qText);
   }
 
-  searchChannels(qText: string): Observable<any[]> {
-    const chRef = collection(this.firestore, 'channels');
-    const name = qText.trim().slice(1);
-    const qy = query(
-      chRef,
-      where('name', '>=', name),
-      where('name', '<=', name + '\uf8ff')
-    );
-    return this.getDocs(qy).pipe(
-      map((r) => r.map((res) => ({ ...res, type: 'channel' })))
-    );
+  searchChannels(
+    queryText: string,
+    currentUserId: string | null = null
+  ): Observable<any[]> {
+    const channelName = queryText.trim().slice(1);
+    const channelsRef = collection(this.firestore, 'channels');
+
+    if (currentUserId) {
+      const qy = query(
+        channelsRef,
+        where('uid', 'array-contains', currentUserId)
+      );
+      return this.getDocs(qy).pipe(
+        map((results) => {
+          const filtered = results.filter((res: any) => {
+            const name = res.name?.toLowerCase() || '';
+            return (
+              name >= channelName.toLowerCase() &&
+              name <= channelName.toLowerCase() + '\uf8ff'
+            );
+          });
+          return filtered.map((res: any) => ({ ...res, type: 'channel' }));
+        })
+      );
+    } else {
+      const qy = query(
+        channelsRef,
+        where('name', '>=', channelName),
+        where('name', '<=', channelName + '\uf8ff')
+      );
+      return this.getDocs(qy).pipe(
+        map((results) => results.map((res) => ({ ...res, type: 'channel' })))
+      );
+    }
   }
 
-  search(qText: string): Observable<any[]> {
-    if (qText.startsWith('@')) return this.searchUsers(qText);
-    if (qText.startsWith('#')) return this.searchChannels(qText);
-    return this.searchUsers(qText);
+  search(
+    queryText: string,
+    currentUserId: string | null = null
+  ): Observable<any[]> {
+    if (queryText.startsWith('@')) {
+      return this.searchUsers(queryText);
+    } else if (queryText.startsWith('#')) {
+      return this.searchChannels(queryText, currentUserId);
+    } else {
+      return this.searchUsers(queryText);
+    }
   }
 
   searchAllChannelsAndUsers(queryText: string): Observable<any[]> {
