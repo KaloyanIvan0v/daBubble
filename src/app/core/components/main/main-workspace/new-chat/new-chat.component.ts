@@ -1,14 +1,20 @@
 import { SearchService } from './../../../../shared/services/search-service/search.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { setDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-new-chat',
@@ -17,8 +23,10 @@ import { Router } from '@angular/router';
   templateUrl: './new-chat.component.html',
   styleUrl: './new-chat.component.scss',
 })
-export class NewChatComponent {
+export class NewChatComponent implements OnInit {
   searchQuery: string = '';
+  prefillValue: string | null = null;
+
   searchText: string = '';
   isSearching: boolean = false;
   selectedUserPhotoURL: string | null = null;
@@ -37,7 +45,8 @@ export class NewChatComponent {
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     public authService: AuthService,
-    public searchService: SearchService
+    public searchService: SearchService,
+    private route: ActivatedRoute
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
     this.authService.getCurrentUserUID().then((uid) => {
@@ -50,6 +59,16 @@ export class NewChatComponent {
     } else {
       console.warn('No Channel ID available.');
     }
+  }
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const prefillValue = params.get('prefill');
+      if (prefillValue) {
+        this.searchQuery = prefillValue;
+        this.onSearchChange();
+      }
+    });
   }
 
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
@@ -71,7 +90,26 @@ export class NewChatComponent {
     if (searchText && this.loggedInUserId) {
       this.firebaseService.search(searchText, this.loggedInUserId).subscribe(
         (results) => {
-          this.searchService.newChatSearchResults = results;
+          const filteredResults =
+            this.searchService.filterOutLoggedInUser(results);
+          this.searchService.newChatSearchResults = filteredResults;
+
+          // If we have a prefill channel, automatically select it
+          if (this.prefillValue && this.prefillValue.startsWith('#')) {
+            const channelName = this.prefillValue.slice(1); // remove '#'
+            const channelResult = filteredResults.find(
+              (res) => res.type === 'channel' && res.name === channelName
+            );
+
+            if (channelResult) {
+              this.searchService.onSelectResult(channelResult).then(() => {
+                // Channel selected, set messagePath for this channel
+                this.selectedChannelName = channelResult.name;
+                this.isSelected = true;
+                this.messagePath = `channels/${channelResult.id}/messages`;
+              });
+            }
+          }
         },
         (error) => {
           console.error('Error fetching search results:', error);
@@ -80,20 +118,6 @@ export class NewChatComponent {
     } else {
       this.clearSearchState();
     }
-  }
-
-  handleSearchQuery(searchText: string): void {
-    this.searchService.newChatSearchResults = [];
-    this.firebaseService.search(searchText).subscribe(
-      (results) => {
-        this.searchService.newChatSearchResults = results.filter(
-          (result) => result.uid !== this.loggedInUserId
-        );
-      },
-      (error) => {
-        console.error('Error fetching search results:', error);
-      }
-    );
   }
 
   clearSearchState(): void {

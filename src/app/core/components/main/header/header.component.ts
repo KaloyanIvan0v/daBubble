@@ -56,7 +56,8 @@ export class HeaderComponent {
       this.firebaseService
         .searchAllChannelsAndUsers(queryText)
         .subscribe((results) => {
-          this.searchService.headerSearchResults = results;
+          this.searchService.headerSearchResults =
+            this.searchService.filterOutLoggedInUser(results);
         });
     } else {
       this.searchService.headerSearchResults = [];

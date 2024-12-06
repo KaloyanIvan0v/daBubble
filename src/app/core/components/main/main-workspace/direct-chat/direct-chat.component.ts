@@ -142,7 +142,6 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     if (messages) {
       this.messages = messages;
       setTimeout(() => {
-        // Ensure messages are rendered before scrolling
         this.checkForNewMessages();
       });
     }

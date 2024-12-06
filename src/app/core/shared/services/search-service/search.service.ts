@@ -42,9 +42,56 @@ export class SearchService {
       console.error('Sender ID is null');
       return;
     }
-    if (result.type === 'channel') await this.selectChannel(result);
-    else if (result.type === 'user') await this.selectUser(result);
-    else console.error('Unknown result type:', result);
+
+    if (result.type === 'channel') {
+      await this.handleChannelChat(result);
+    } else if (result.type === 'user') {
+      await this.selectUser(result);
+    } else {
+      console.error('Unknown result type:', result);
+    }
+  }
+
+  private async handleChannelChat(result: any): Promise<void> {
+    const channelId = result.id;
+    if (!channelId) {
+      console.error('Channel ID is undefined or invalid:', result);
+      return;
+    }
+
+    try {
+      const channelExists = await this.firebaseService.checkDocExists(
+        'channels',
+        channelId
+      );
+      if (!channelExists) {
+        this.navigateToNewChatWithPrefill(result.name);
+        return;
+      }
+
+      const channelData = await this.firebaseService.getDocOnce(
+        'channels',
+        channelId
+      );
+      const isMember =
+        channelData &&
+        Array.isArray(channelData.uid) &&
+        channelData.uid.includes(this.loggedInUserId);
+
+      if (isMember) {
+        this.navigateToChannelChat(channelId);
+      } else {
+        this.navigateToNewChatWithPrefill(result.name);
+      }
+    } catch (error) {
+      console.error('Error checking channel existence or membership:', error);
+    }
+  }
+
+  private navigateToNewChatWithPrefill(channelName: string): void {
+    this.router.navigate(['dashboard', 'new-chat'], {
+      queryParams: { prefill: `#${channelName}` },
+    });
   }
 
   private async selectUser(result: any): Promise<void> {
@@ -62,22 +109,6 @@ export class SearchService {
     this.selectedChannelName = null;
   }
 
-  private async selectChannel(result: any): Promise<void> {
-    this.setChannelSelection(result);
-    const exists = await this.firebaseService.checkDocExists(
-      'channels',
-      result.id
-    );
-    if (exists) this.navigateToChannelChat(result.id);
-  }
-
-  private setChannelSelection(result: any): void {
-    this.searchQuery = `#${result.name}`;
-    this.selectedUserPhotoURL = '';
-    this.isSelected = true;
-    this.selectedChannelName = null;
-  }
-
   private async ensureDirectChatExists(
     chatId: string,
     result: any
@@ -86,7 +117,9 @@ export class SearchService {
       'directMessages',
       chatId
     );
-    if (!exists) await this.createDirectMessageChat(chatId, result);
+    if (!exists) {
+      await this.createDirectMessageChat(chatId, result);
+    }
   }
 
   private async createDirectMessageChat(
@@ -173,5 +206,12 @@ export class SearchService {
   private setContextIndex(context: 'header' | 'newChat', index: number): void {
     if (context === 'header') this.headerSelectedIndex = index;
     else this.newChatSelectedIndex = index;
+  }
+
+  public filterOutLoggedInUser(results: any[]): any[] {
+    if (!this.loggedInUserId) return results;
+    return results.filter(
+      (res) => !(res.type === 'user' && res.uid === this.loggedInUserId)
+    );
   }
 }
