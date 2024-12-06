@@ -540,43 +540,58 @@ export class FirebaseServicesService implements OnDestroy {
 
   searchAllChannelsAndUsers(queryText: string): Observable<any[]> {
     const lowerCaseQuery = queryText.trim().toLowerCase();
+    const userQuery = this.buildUserQuery(lowerCaseQuery);
+    const channelQuery = this.buildChannelQuery(lowerCaseQuery);
+    return this.executeAllChannelsAndUsersSearch(userQuery, channelQuery);
+  }
 
-    // Search all users
+  private buildUserQuery(lowerCaseQuery: string): Query<DocumentData> {
     const usersRef = collection(this.firestore, 'users');
-    const userQuery = query(
+    return query(
       usersRef,
       where('name', '>=', lowerCaseQuery),
       where('name', '<=', lowerCaseQuery + '\uf8ff')
     );
+  }
 
-    // Search all channels
+  private buildChannelQuery(lowerCaseQuery: string): Query<DocumentData> {
     const channelsRef = collection(this.firestore, 'channels');
-    const channelQuery = query(
+    return query(
       channelsRef,
       where('name', '>=', lowerCaseQuery),
       where('name', '<=', lowerCaseQuery + '\uf8ff')
     );
+  }
 
+  private executeAllChannelsAndUsersSearch(
+    userQuery: Query<DocumentData>,
+    channelQuery: Query<DocumentData>
+  ): Observable<any[]> {
     return new Observable((observer) => {
       Promise.all([
-        getDocs(userQuery).then((snapshot) =>
-          snapshot.docs.map((doc) => ({
-            ...this.mapDocumentData(doc),
-            type: 'user',
-          }))
-        ),
-        getDocs(channelQuery).then((snapshot) =>
-          snapshot.docs.map((doc) => ({
-            ...this.mapDocumentData(doc),
-            type: 'channel',
-          }))
-        ),
+        this.fetchUsers(userQuery),
+        this.fetchChannels(channelQuery),
       ])
-        .then(([users, channels]) => {
-          const combinedResults = [...users, ...channels];
-          observer.next(combinedResults);
-        })
+        .then(([users, channels]) => observer.next([...users, ...channels]))
         .catch((error) => observer.error(error));
     });
+  }
+
+  private fetchUsers(userQuery: Query<DocumentData>): Promise<any[]> {
+    return getDocs(userQuery).then((snapshot) =>
+      snapshot.docs.map((doc) => ({
+        ...this.mapDocumentData(doc),
+        type: 'user',
+      }))
+    );
+  }
+
+  private fetchChannels(channelQuery: Query<DocumentData>): Promise<any[]> {
+    return getDocs(channelQuery).then((snapshot) =>
+      snapshot.docs.map((doc) => ({
+        ...this.mapDocumentData(doc),
+        type: 'channel',
+      }))
+    );
   }
 }
