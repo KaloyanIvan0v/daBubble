@@ -1,0 +1,12 @@
+<section *ngIf="users.length > 0">
+  <div class="member" *ngFor="let user of users" (click)="returnUser(user)">
+    <div class="img-wrapper">
+      <img src="{{ user.photoURL }}" alt="" />
+      <div ngClass="{{ user.status ? 'dot-online' : 'dot-offline' }}"></div>
+    </div>
+    <div class="name-wrapper">
+      <div class="font18-700">{{ user?.name }}</div>
+      <div *ngIf="user?.uid === currentUserUid" class="font18-400">(Du)</div>
+    </div>
+  </div>
+</section>

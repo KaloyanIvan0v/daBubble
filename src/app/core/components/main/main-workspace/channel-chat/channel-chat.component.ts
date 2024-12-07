@@ -46,6 +46,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   channelId: string = '';
   userAmount: number = 0;
   channelUsers: any[] = [];
+  usersUid: string[] = [];
   popUpStates: { [key: string]: boolean } = {};
 
   private lastMessageLength: number = 0;
@@ -146,11 +147,16 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   async loadUsers() {
     const channelUids = this.channelData.uid;
+    this.setUserUids(channelUids);
     const userPromises = channelUids.map((uid) =>
       this.firebaseService.getDocOnce('users', uid)
     );
     const users = await Promise.all(userPromises);
     this.channelUsers = users.filter((user) => user != null);
+  }
+
+  setUserUids(uids: string[]) {
+    this.usersUid = uids;
   }
 
   ngOnDestroy(): void {

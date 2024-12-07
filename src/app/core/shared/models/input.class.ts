@@ -1,5 +1,5 @@
 export class InputBoxData {
-  message: string;
+  public message: string;
   imports: string[];
   constructor(message: string, imports: string[]) {
     this.message = message;

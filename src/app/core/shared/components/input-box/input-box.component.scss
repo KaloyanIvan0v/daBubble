@@ -27,6 +27,11 @@ section {
   }
 }
 
+.textarea-container {
+  position: relative;
+  width: 100%;
+}
+
 .message-options {
   @include dFlex($fd: row, $jc: space-between, $ai: center);
   width: 100%;
@@ -56,6 +61,7 @@ section {
     );
   }
   .mention-button {
+    position: relative;
     @include iconButtonWithHoverBackground(
       "/assets/img/icons/alternate_email-grey.svg",
       "/assets/img/icons/alternate_email-blue.svg"
@@ -68,4 +74,31 @@ section {
     "/assets/img/buttons/send_icon-dark-blue.svg",
     "/assets/img/buttons/send_icon-light-blue.svg"
   );
+}
+
+.user-list {
+  position: absolute;
+  bottom: 45px;
+  left: 0px;
+  width: max-content;
+  max-height: 300px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0px 0px 5px 0px #00000033;
+  padding: 20px;
+  z-index: 3;
+}
+
+.input-editable {
+  color: black;
+  font-size: 18px;
+  width: 100%;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.mention {
+  color: $purple3;
+  font-weight: 700;
 }

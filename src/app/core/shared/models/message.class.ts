@@ -1,3 +1,4 @@
+import { Mention } from './mention.class';
 import { Reaction } from './reaction.class';
 import { Thread } from './thread.class';
 export class Message {
