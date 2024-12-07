@@ -60,7 +60,11 @@
       </div>
     </div>
     <div>
-      <div class="send-button" (click)="sendMessage()"></div>
+      <div
+        *ngIf="inputData.message.trim().length > 0"
+        class="send-button"
+        (click)="sendMessage()"
+      ></div>
     </div>
   </div>
 </section>

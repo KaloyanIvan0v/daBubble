@@ -76,6 +76,10 @@ section {
   );
 }
 
+.send-button.disabled {
+  display: none;
+}
+
 .user-list {
   position: absolute;
   bottom: 45px;

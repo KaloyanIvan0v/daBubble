@@ -21,6 +21,13 @@ $mail-blue: #1381ff;
   width: 100%;
 }
 
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+}
+
 @mixin dFlex($jc: center, $ai: center, $fd: row) {
   display: flex;
   justify-content: $jc;

@@ -61,10 +61,13 @@ export class InputBoxComponent implements OnChanges {
   }
 
   sendMessage() {
-    if (this.messageToEdit !== undefined) {
-      this.updateEditedMessage();
+    if (this.inputData.message.length !== 0) {
+      if (this.messageToEdit !== undefined) {
+        this.updateEditedMessage();
+      } else {
+        this.sendNewMessage();
+      }
     } else {
-      this.sendNewMessage();
     }
     this.resetInputData();
   }
