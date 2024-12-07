@@ -11,16 +11,18 @@ import { CommonModule } from '@angular/common';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { FormsModule } from '@angular/forms';
 import { MainService } from 'src/app/core/shared/services/main-service/main.service';
+import { FirebaseServicesService } from '../../services/firebase/firebase.service';
 import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { User } from 'src/app/core/shared/models/user.class';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-input-box',
   standalone: true,
   imports: [FormsModule, EmojiPickerComponent, CommonModule, UserListComponent],
   templateUrl: './input-box.component.html',
-  styleUrl: './input-box.component.scss',
+  styleUrls: ['./input-box.component.scss'],
 })
 export class InputBoxComponent implements OnChanges {
   @Input() messagePath: string = '';
@@ -28,12 +30,13 @@ export class InputBoxComponent implements OnChanges {
   @Input() receiverId: string | null = null;
   @Input() messageToEdit: Message | undefined = undefined;
   @Input() usersUid: string[] = [];
+  filteredUserUids: string[] = [];
 
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('mirrorElement') mirrorElement!: ElementRef<HTMLDivElement>;
 
-  userListTop = 0;
+  userListBottom = 0;
   userListLeft = 0;
 
   inputData = new InputBoxData('', []);
@@ -41,7 +44,10 @@ export class InputBoxComponent implements OnChanges {
   showUserList: boolean = false;
   showUserListTextArea: boolean = false;
 
-  constructor(private mainService: MainService) {}
+  constructor(
+    private mainService: MainService,
+    private firebaseService: FirebaseServicesService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['messageToEdit']) {
@@ -56,17 +62,11 @@ export class InputBoxComponent implements OnChanges {
 
   sendMessage() {
     if (this.messageToEdit !== undefined) {
-      this.messageToEdit.value.text = this.inputData.message;
-      this.mainService.updateMessage(this.messageToEdit);
-      this.messageToEdit = undefined;
+      this.updateEditedMessage();
     } else {
-      this.mainService.sendMessage(
-        this.messagePath,
-        this.inputData,
-        this.receiverId
-      );
+      this.sendNewMessage();
     }
-    this.inputData = new InputBoxData('', []);
+    this.resetInputData();
   }
 
   onEmojiSelected(emoji: string) {
@@ -88,7 +88,9 @@ export class InputBoxComponent implements OnChanges {
   closeUserList() {
     setTimeout(() => {
       this.showUserList = false;
+      this.showUserListTextArea = false;
     }, 25);
+    console.log('user list: ', this.showUserList);
   }
 
   onMessageChange() {
@@ -102,24 +104,16 @@ export class InputBoxComponent implements OnChanges {
   addMentionedUser(user: User) {
     const textarea = this.messageTextarea.nativeElement;
     const message = this.inputData.message;
-    const cursorPos = textarea.selectionStart; // aktuelle Cursor-Position
+    const cursorPos = textarea.selectionStart;
+    const lastAtIndex = message.lastIndexOf('@', cursorPos - 1);
 
-    // Prüfen, ob vor dem Cursor ein '@' ist und cursorPos > 0, damit wir nicht außerhalb des Strings zugreifen
-    if (cursorPos > 0 && message[cursorPos - 1] === '@') {
-      // Entferne das '@' am Cursor und ersetze es durch '@Benutzername'
-      this.inputData.message =
-        message.slice(0, cursorPos - 1) +
-        '@' +
-        user.name +
-        ' ' +
-        message.slice(cursorPos);
+    if (lastAtIndex !== -1) {
+      this.replaceMentionedUser(message, user, cursorPos, lastAtIndex);
     } else {
-      // Falls kein '@' vor dem Cursor steht, wie gewohnt einfügen
-      this.inputData.message += ` @${user.name} `;
+      this.appendMentionedUser(user);
     }
-
-    this.closeUserList();
     this.setCursorToEnd();
+    this.closeUserList();
   }
 
   setCursorToEnd() {
@@ -128,53 +122,217 @@ export class InputBoxComponent implements OnChanges {
     textarea?.setSelectionRange(textarea.value.length, textarea.value.length);
   }
 
-  checkForMentionSign() {
-    const textarea = this.messageTextarea.nativeElement; // Annahme: per ViewChild referenziert
-    const message = this.inputData.message;
+  async checkForMentionSign() {
+    const { textarea, message, cursorPos } = this.getCursorData();
+    if (this.shouldHideUserList(cursorPos, message)) return;
 
-    // Ermittele die aktuelle Cursor-Position
-    const cursorPos = textarea.selectionStart;
+    const lastAtIndex = this.getLastAtIndex(message, cursorPos);
+    if (this.invalidAtIndex(lastAtIndex)) return;
 
-    // Stelle sicher, dass es eine vorherige Position gibt
-    if (cursorPos > 0) {
-      // Prüfe, ob das Zeichen vor der Cursor-Position ein '@' ist
-      if (message[cursorPos - 1] === '@') {
-        console.log('@ found before cursor at', cursorPos - 1);
-        this.positionUserList(cursorPos - 1);
-      } else {
-        this.showUserListTextArea = false;
-      }
-    } else {
-      // Cursor ist ganz am Anfang, also gibt es kein Zeichen davor
-      this.showUserListTextArea = false;
+    if (this.hasTrailingSpace(message, lastAtIndex, cursorPos)) return;
+
+    await this.handleValidMention(message, lastAtIndex, cursorPos);
+  }
+
+  async setFilteredUsers(partialName: string) {
+    const users = await this.getUsersFromUids(this.usersUid);
+    const filteredUsers = this.filterUsers(users, partialName);
+
+    // Nur Nutzer verwenden, die nicht null sind
+    const nonNullUsers = filteredUsers.filter(
+      (user) => user !== null && user !== undefined
+    );
+    this.filteredUserUids = nonNullUsers.map((user) => user.uid);
+  }
+
+  async isMatchingUser(partialName: string): Promise<boolean> {
+    if (!partialName) return false;
+    const users = await this.getUsersFromUids(this.usersUid);
+    return users.some(
+      (user) =>
+        user?.name?.toLowerCase().startsWith(partialName.toLowerCase()) ?? false
+    );
+  }
+
+  private async getUsersFromUids(uids: string[]): Promise<User[]> {
+    const users: User[] = [];
+    for (const uid of uids) {
+      const user = (await this.firebaseService
+        .getUser(uid)
+        .pipe(first())
+        .toPromise()) as User;
+      users.push(user);
     }
+    return users;
   }
 
   positionUserList(atIndex: number) {
     const textarea = this.messageTextarea.nativeElement;
     const mirror = this.mirrorElement.nativeElement;
-
-    // Inhalt bis @ in Mirror schreiben
-    // Styles (Font, Padding, Border etc.) vorher so anpassen, dass sie exakt zur Textarea passen!
     mirror.textContent = textarea.value.substring(0, atIndex);
 
-    // Jetzt fügen wir ein Markierungselement ein, um Position des @ genau zu ermitteln
-    const marker = document.createElement('span');
-    marker.textContent = '@';
-    marker.style.backgroundColor = 'yellow'; // nur zum Testen, später entfernen
+    const marker = this.createMarker();
     mirror.appendChild(marker);
 
-    const markerRect = marker.getBoundingClientRect();
-    const mirrorRect = mirror.getBoundingClientRect();
     const containerRect = textarea.parentElement?.getBoundingClientRect();
     if (containerRect) {
-      this.userListTop = markerRect.top - containerRect.top - 300;
-      this.userListLeft = markerRect.left - containerRect.left;
+      this.calculateUserListPosition(marker, containerRect);
+      this.showUserListTextArea = true;
     } else {
-      // Handle the case where containerRect is null or undefined
       console.error('containerRect is null or undefined');
     }
+  }
 
-    this.showUserListTextArea = true;
+  //------------------ Private Helper Methods ------------------//
+
+  private updateEditedMessage() {
+    if (this.messageToEdit) {
+      this.messageToEdit.value.text = this.inputData.message;
+      this.mainService.updateMessage(this.messageToEdit);
+      this.messageToEdit = undefined;
+    }
+  }
+
+  private sendNewMessage() {
+    this.mainService.sendMessage(
+      this.messagePath,
+      this.inputData,
+      this.receiverId
+    );
+  }
+
+  private resetInputData() {
+    this.inputData = new InputBoxData('', []);
+  }
+
+  private replaceMentionedUser(
+    message: string,
+    user: User,
+    cursorPos: number,
+    lastAtIndex: number
+  ) {
+    this.inputData.message =
+      message.slice(0, lastAtIndex) +
+      '@' +
+      user.name +
+      ' ' +
+      message.slice(cursorPos);
+  }
+
+  private appendMentionedUser(user: User) {
+    this.inputData.message += ` @${user.name} `;
+  }
+
+  private getCursorData() {
+    const textarea = this.messageTextarea.nativeElement;
+    return {
+      textarea,
+      message: this.inputData.message,
+      cursorPos: textarea.selectionStart,
+    };
+  }
+
+  private getLastAtIndex(message: string, cursorPos: number): number {
+    return message.lastIndexOf('@', cursorPos - 1);
+  }
+
+  private invalidAtIndex(lastAtIndex: number): boolean {
+    if (lastAtIndex === -1) {
+      this.showUserListTextArea = false;
+      return true;
+    }
+    return false;
+  }
+
+  private hasTrailingSpace(
+    message: string,
+    lastAtIndex: number,
+    cursorPos: number
+  ): boolean {
+    if (this.containsTrailingSpace(message, lastAtIndex, cursorPos)) {
+      this.showUserListTextArea = false;
+      return true;
+    }
+    return false;
+  }
+
+  private async handleValidMention(
+    message: string,
+    lastAtIndex: number,
+    cursorPos: number
+  ) {
+    const mentionSubstring = this.getMentionSubstring(
+      message,
+      lastAtIndex,
+      cursorPos
+    );
+    if (await this.shouldShowUserListTextArea(mentionSubstring)) {
+      await this.handleUserListDisplay(mentionSubstring, lastAtIndex);
+    } else {
+      this.showUserListTextArea = false;
+    }
+  }
+
+  private async handleUserListDisplay(
+    mentionSubstring: string,
+    lastAtIndex: number
+  ) {
+    await this.setFilteredUsers(mentionSubstring);
+    this.positionUserList(lastAtIndex);
+  }
+
+  private containsTrailingSpace(
+    message: string,
+    lastAtIndex: number,
+    cursorPos: number
+  ): boolean {
+    const rawMentionSubstring = message.substring(lastAtIndex + 1, cursorPos);
+    return rawMentionSubstring.length !== rawMentionSubstring.trimEnd().length;
+  }
+
+  private getMentionSubstring(
+    message: string,
+    lastAtIndex: number,
+    cursorPos: number
+  ) {
+    return message.substring(lastAtIndex + 1, cursorPos).trim();
+  }
+
+  private async shouldShowUserListTextArea(
+    mentionSubstring: string
+  ): Promise<boolean> {
+    if (mentionSubstring === '') return true;
+    return await this.isMatchingUser(mentionSubstring);
+  }
+
+  private filterUsers(users: User[], partialName: string): User[] {
+    if (!partialName) return users;
+    return users.filter((user) =>
+      user?.name?.toLowerCase().startsWith(partialName.toLowerCase())
+    );
+  }
+
+  private createMarker(): HTMLSpanElement {
+    const marker = document.createElement('span');
+    marker.textContent = '@';
+    marker.style.backgroundColor = 'yellow'; // Testvisualisierung
+    return marker;
+  }
+
+  private calculateUserListPosition(
+    marker: HTMLSpanElement,
+    containerRect: DOMRect
+  ) {
+    const markerRect = marker.getBoundingClientRect();
+    this.userListBottom = markerRect.bottom - containerRect.bottom + 100;
+    this.userListLeft = markerRect.left - containerRect.left;
+  }
+
+  private shouldHideUserList(cursorPos: number, message: string): boolean {
+    if (cursorPos === 0 || !message) {
+      this.showUserListTextArea = false;
+      return true;
+    }
+    return false;
   }
 }

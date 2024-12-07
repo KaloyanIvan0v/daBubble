@@ -27,10 +27,10 @@
       <!-- Die User-Liste, die absolut positioniert wird -->
       <app-user-list
         *ngIf="showUserListTextArea"
-        [style.top.px]="userListTop"
+        [style.bottom.px]="userListBottom"
         [style.left.px]="userListLeft"
         class="user-list overflow-y-scroll"
-        [usersUid]="usersUid"
+        [usersUid]="filteredUserUids"
         (mouseleave)="closeUserList()"
         (selectedUser)="returnUser($event)"
       ></app-user-list>
