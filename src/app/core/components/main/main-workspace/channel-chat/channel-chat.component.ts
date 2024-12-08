@@ -20,6 +20,8 @@ import { Timestamp } from '@angular/fire/firestore';
 import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
+import { ActivatedRoute } from '@angular/router';
+
 @Component({
   selector: 'app-channel-chat',
   standalone: true,
@@ -62,20 +64,22 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService
-  ) {
-    effect(() => {
-      this.channelId = this.workspaceService.currentActiveUnitId();
-      if (this.channelId) {
-        this.workspaceService.setActiveChannelId(this.channelId);
-        this.loadChannelData(this.channelId);
-      } else {
-        console.warn('No valid channelId available.');
-      }
-    });
-  }
+    private firebaseService: FirebaseServicesService,
+    private route: ActivatedRoute
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.subscriptions.add(
+      this.route.paramMap.subscribe((params) => {
+        const cid = params.get('channelId');
+        if (cid) {
+          this.channelId = cid;
+          this.workspaceService.setActiveChannelId(this.channelId);
+          this.loadChannelData(this.channelId);
+        }
+      })
+    );
+  }
 
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
