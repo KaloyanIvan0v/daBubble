@@ -20,6 +20,8 @@ import { AuthUIService } from '../../shared/services/authUI-services/authUI.serv
 import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar/edit-avatar.component';
 import { ThreadService } from '../../shared/services/thread-service/thread.service';
 import { StatefulWindowServiceService } from '../../shared/services/stateful-window-service/stateful-window-service.service';
+import { MainService } from '../../shared/services/main-service/main.service';
+
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -58,8 +60,8 @@ export class MainComponent implements OnInit, OnDestroy {
     public workspaceService: WorkspaceService,
     private authUIService: AuthUIService,
     public uploadCareService: UploadCareService,
-    private threadService: ThreadService,
-    private statefulWindowService: StatefulWindowServiceService
+    private statefulWindowService: StatefulWindowServiceService,
+    public mainService: MainService
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
     this.chooseAvatarComponent = new ChooseAvatarComponent(
@@ -73,9 +75,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.authService,
       this.workspaceService
     );
-    // this.threadService.threadOpen.subscribe((value) => {
-    //   this.threadOpen = value;
-    // });
+    this.mainService.setUserOnline();
   }
 
   ngOnInit(): void {
@@ -86,6 +86,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.mainService.setUserOffline();
     if (this.popUpStatesSubscription) {
       this.popUpStatesSubscription.unsubscribe();
     }

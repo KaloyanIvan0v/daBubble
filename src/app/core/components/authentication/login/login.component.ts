@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
       if (user) {
         const uid = await this.authService.getCurrentUserUID();
         this.firebaseService.setUserUID(uid);
+
         this.router.navigate(['/dashboard']);
       }
     } catch (error) {

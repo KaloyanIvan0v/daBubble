@@ -3,6 +3,7 @@ import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/f
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { firstValueFrom, map } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { Thread } from 'src/app/core/shared/models/thread.class';
 
@@ -107,6 +108,36 @@ export class MainService {
       return name;
     } else {
       return '';
+    }
+  }
+
+  async setUserOnline() {
+    const uid = await this.authService.getCurrentUserUID();
+    if (uid) {
+      this.firestore
+        .getUser(uid)
+        .pipe(first())
+        .subscribe((user) => {
+          if (user) {
+            user.status = true;
+            this.firestore.updateUser(user.uid, user);
+          }
+        });
+    }
+  }
+
+  async setUserOffline() {
+    const uid = await this.authService.getCurrentUserUID();
+    if (uid) {
+      this.firestore
+        .getUser(uid)
+        .pipe(first())
+        .subscribe((user) => {
+          if (user) {
+            user.status = false;
+            this.firestore.updateUser(user.uid, user);
+          }
+        });
     }
   }
 }

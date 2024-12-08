@@ -255,6 +255,11 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getCollection('users', false);
   }
 
+  updateUser(uid: string, data: Partial<User>) {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    updateDoc(userDocRef, data);
+  }
+
   getChannels(): Observable<any> {
     return this.getCollection('channels', true);
   }
