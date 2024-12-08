@@ -5,24 +5,11 @@
       <div class="close-button" (click)="closePopUp()"></div>
     </div>
     <div class="members overflow-y-scroll">
-      <div
-        class="member"
-        *ngFor="let user of channelUsers$ | async"
-        (click)="openProfileView(user.uid)"
-      >
-        <div class="img-wrapper">
-          <img src="{{ user?.photoURL }}" alt="" />
-          <div
-            ngClass="{{ user?.online ? 'dot-online' : 'dot-offline' }}"
-          ></div>
-        </div>
-        <div class="name-wrapper">
-          <div class="font18-700">{{ user?.name }}</div>
-          <div *ngIf="user?.uid === currentUserUid" class="font18-400">
-            (Du)
-          </div>
-        </div>
-      </div>
+      <app-user-list
+        class="user-list"
+        [usersUid]="channelData.uid"
+        (selectedUser)="onUserSelected($event)"
+      ></app-user-list>
       <div class="add-member" (click)="openAddUserToChannelPopUp()">
         <div class="add-person-icon"></div>
         <div class="font18-400">Mitglieder hinzufügen</div>

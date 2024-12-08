@@ -5,17 +5,20 @@ import { CommonModule } from '@angular/common';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { Subscription, BehaviorSubject } from 'rxjs';
+import { UserListComponent } from '../../user-list/user-list.component';
+import { User } from 'src/app/core/shared/models/user.class';
 
 @Component({
   selector: 'app-channel-members-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, UserListComponent],
   templateUrl: './channel-members-view.component.html',
   styleUrls: ['./channel-members-view.component.scss'],
 })
 export class ChannelMembersViewComponent implements OnDestroy {
   channelData!: Channel;
   channelUsers$ = new BehaviorSubject<any[]>([]);
+  channelUsersUid: string[] = [];
 
   currentUserUid: string | null = null;
   private subscriptions: Subscription[] = [];
@@ -27,6 +30,10 @@ export class ChannelMembersViewComponent implements OnDestroy {
   ) {
     this.setLoggedInUserUid();
     this.initializeChannelEffect();
+  }
+
+  onUserSelected($event: User) {
+    this.openProfileView($event.uid);
   }
 
   private initializeChannelEffect() {
@@ -44,8 +51,6 @@ export class ChannelMembersViewComponent implements OnDestroy {
 
   private async channelSubscriptionCallback(channel: Channel) {
     this.channelData = channel;
-    this.channelUsers$.next(await this.getUsersOfChannel());
-    this.updateChannelUsers();
   }
 
   private unsubscribeAll() {
@@ -56,36 +61,8 @@ export class ChannelMembersViewComponent implements OnDestroy {
     this.currentUserUid = await this.AuthService.getCurrentUserUID();
   }
 
-  updateChannelUsers() {
-    const userUpdateSub = this.workspaceService.userUpdates$.subscribe(
-      async () => {
-        this.channelUsers$.next(await this.getUsersOfChannel());
-      }
-    );
-    this.subscriptions.push(userUpdateSub);
-  }
-
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
-  }
-
-  async getUsersOfChannel(): Promise<any[]> {
-    if (this.channelData) {
-      const uids = this.channelData.uid;
-      return await this.fetchUsersByUids(uids);
-    }
-    return [];
-  }
-
-  private async fetchUsersByUids(uids: string[]): Promise<any[]> {
-    const users: any[] = [];
-    for (const uid of uids) {
-      const user = await this.firebaseService.getDocOnce('users', uid);
-      if (user) {
-        users.push(user);
-      }
-    }
-    return users;
   }
 
   closePopUp() {

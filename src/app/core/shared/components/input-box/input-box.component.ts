@@ -6,6 +6,7 @@ import {
   SimpleChanges,
   ViewChild,
   ElementRef,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
@@ -24,13 +25,14 @@ import { first } from 'rxjs/operators';
   templateUrl: './input-box.component.html',
   styleUrls: ['./input-box.component.scss'],
 })
-export class InputBoxComponent implements OnChanges {
+export class InputBoxComponent implements OnChanges, OnInit {
   @Input() messagePath: string = '';
   @Input() showEmojiPicker: boolean = false;
   @Input() receiverId: string | null = null;
   @Input() messageToEdit: Message | undefined = undefined;
   @Input() usersUid: string[] = [];
   filteredUserUids: string[] = [];
+  channelName: string = '';
 
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef<HTMLTextAreaElement>;
@@ -48,6 +50,19 @@ export class InputBoxComponent implements OnChanges {
     private mainService: MainService,
     private firebaseService: FirebaseServicesService
   ) {}
+
+  ngOnInit() {
+    setTimeout(() => {
+      if (this.messagePath.split('/')[1] !== undefined) {
+        const channelId = this.messagePath.split('/')[2];
+        console.log(channelId);
+
+        this.firebaseService.getChannel(channelId).subscribe((channel) => {
+          this.channelName = channel.name;
+        });
+      }
+    }, 100);
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['messageToEdit']) {
