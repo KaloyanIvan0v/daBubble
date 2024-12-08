@@ -4,19 +4,22 @@ section {
   position: relative;
   width: 100%;
   @include dFlex();
+  padding: 30px 45px;
+
   &:hover {
     background-color: $bg-color;
+
     .msg-text {
       background-color: white;
     }
-    .reactions-menu {
-      display: block;
-    }
+
+    .reactions-menu,
     .reactions-menu-own-message {
-      display: block;
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
     }
   }
-  padding: 30px 45px;
 }
 
 .msg-wrapper {
@@ -91,14 +94,20 @@ section {
   position: absolute;
   right: 20px;
   top: -33px;
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(50px);
+  transition: opacity 0.175s ease, transform 0.175s ease, visibility 0.175s ease;
 }
 
 .reactions-menu-own-message {
   position: absolute;
   left: 45px;
   top: -23px;
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(50px);
+  transition: opacity 0.175s ease, transform 0.175s ease, visibility 0.9s;
 }
 
 .reactions-view {
