@@ -1,17 +1,11 @@
 @import "global.scss";
+@import "../authentication.component.scss";
 
 .signup-container {
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
-
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 486px;
-  }
 
   h4 {
     margin-top: 30px;

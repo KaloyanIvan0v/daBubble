@@ -1,21 +1,11 @@
 @import "global.scss";
+@import "../authentication.component.scss";
 
 .login-container {
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
-
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 486px;
-  }
-
-  h4 {
-    margin-top: 30px;
-  }
 }
 
 .line-container {
@@ -39,9 +29,9 @@
 }
 
 .google-btn {
-  min-width: 500px;
+  width: 500px;
   border-radius: 100px;
-  min-height: 60px;
+  height: 60px;
   background-color: $bg-color;
   margin-bottom: 43px;
   display: flex;
@@ -76,5 +66,22 @@
     border-radius: 50px;
     background-color: $bg-color;
     font-weight: 500;
+  }
+}
+
+@media (max-width: 1200px) {
+  .line-container {
+    margin-top: 25px;
+    margin-bottom: 30px;
+  }
+
+  .google-btn {
+    margin-bottom: 33px;
+  }
+}
+
+@media (max-width: 650px) {
+  .google-btn {
+    width: 100%;
   }
 }

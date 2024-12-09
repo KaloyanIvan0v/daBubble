@@ -64,7 +64,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.removeLoginAnimation = true;
-    }, 2600);
+    }, 2700);
   }
 
   ngAfterViewInit(): void {
@@ -72,15 +72,11 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   }
 
   private startAnimationSequence(): void {
-    this.renderer.removeClass(this.mainLogo.nativeElement, 'd-none');
+    const screenWidth = window.innerWidth;
 
     setTimeout(() => {
-      this.renderer.addClass(
-        this.logoContainer.nativeElement,
-        'move-to-target'
-      );
-      this.renderer.addClass(this.backgroundFade.nativeElement, 'opacity-fade');
-    }, 2000);
+      this.renderer.addClass(this.logoImage.nativeElement, 'move-left-target');
+    }, 500);
 
     setTimeout(() => {
       this.renderer.removeClass(this.logoText.nativeElement, 'd-none');
@@ -88,7 +84,20 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     }, 900);
 
     setTimeout(() => {
-      this.renderer.addClass(this.logoImage.nativeElement, 'move-left-target');
-    }, 500);
+      if (screenWidth <= 650) {
+        this.renderer.addClass(this.logoContainer.nativeElement, 'move-to-top');
+      } else {
+        this.renderer.addClass(
+          this.logoContainer.nativeElement,
+          'move-to-target'
+        );
+      }
+
+      this.renderer.addClass(this.backgroundFade.nativeElement, 'opacity-fade');
+    }, 2000);
+
+    setTimeout(() => {
+      this.renderer.removeClass(this.mainLogo.nativeElement, 'd-none');
+    }, 2600);
   }
 }

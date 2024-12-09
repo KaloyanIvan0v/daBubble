@@ -57,48 +57,6 @@ export class AuthUIService {
     this.isChecked = !this.isChecked;
   }
 
-  getAuthWrapperHeight() {
-    if (
-      this.showResetPassword &&
-      !this.showSignup &&
-      !this.showAvatarSelection
-    ) {
-      return '469px';
-    } else if (this.showSignup || this.showAvatarSelection) {
-      return '669px';
-    } else if (
-      this.showResetPasswordLink &&
-      !this.showResetPassword &&
-      !this.showSignup &&
-      !this.showAvatarSelection
-    ) {
-      return '423px';
-    } else {
-      return '769px';
-    }
-  }
-
-  getAuthWrapperWidth() {
-    if (
-      this.showResetPassword &&
-      !this.showSignup &&
-      !this.showAvatarSelection
-    ) {
-      return '698px';
-    } else if (this.showSignup || this.showAvatarSelection) {
-      return '606px';
-    } else if (
-      this.showResetPasswordLink &&
-      !this.showResetPassword &&
-      !this.showSignup &&
-      !this.showAvatarSelection
-    ) {
-      return '692px';
-    } else {
-      return '606px';
-    }
-  }
-
   shouldShowLogin(): boolean {
     return (
       !this.showSignup &&

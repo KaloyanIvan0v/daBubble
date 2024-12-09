@@ -31,9 +31,12 @@
 
   <div
     class="auth-wrapper"
-    [ngStyle]="{
-      height: authUIService.getAuthWrapperHeight(),
-      width: authUIService.getAuthWrapperWidth()
+    [ngClass]="{
+      'login-mode': authUIService.shouldShowLogin(),
+      'signup-mode': authUIService.shouldShowSignup(),
+      'avatar-mode': authUIService.shouldShowAvatarSelection(),
+      'reset-password-mode': authUIService.shouldShowResetPassword(),
+      'reset-link-mode': authUIService.shouldShowResetPasswordLink()
     }"
   >
     <app-login *ngIf="authUIService.shouldShowLogin()"></app-login>
