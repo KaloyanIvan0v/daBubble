@@ -82,6 +82,17 @@
 
 @media (max-width: 650px) {
   .google-btn {
-    width: 100%;
+    width: 103%;
+    margin-bottom: 20px;
+    height: 48px;
+  }
+
+  .line-container {
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+
+  .gray-line {
+    width: 170px;
   }
 }

@@ -275,3 +275,10 @@ button:hover {
 .width0px {
   width: 0px !important;
 }
+
+@media (max-width: 650px) {
+  .primary-btn,
+  .secondary-btn {
+    font-size: 16px;
+  }
+}
