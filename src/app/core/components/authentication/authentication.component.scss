@@ -195,6 +195,14 @@ form {
   }
 }
 
+.link-text {
+  font-family: "Figtree" !important;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 21.6px;
+  color: $purple1;
+}
+
 .error-message {
   color: red;
   font-size: 14px;
@@ -358,7 +366,7 @@ form {
 @media (max-width: 650px) {
   .login-mode {
     height: 530px;
-    width: 80%;
+    width: 85%;
   }
 
   .logo-container {
@@ -372,7 +380,6 @@ form {
     right: unset;
     bottom: 100px;
     width: 98%;
-
     @include dFlex($ai: center, $fd: column);
   }
 
@@ -382,7 +389,7 @@ form {
   }
 
   h4 {
-    font-size: 16px;
+    font-size: 17px;
     margin-top: 5px;
   }
 
@@ -431,9 +438,87 @@ form {
   .error-message {
     left: 5%;
     font-size: 12px;
+    line-height: 15px;
 
     p {
       top: -25px;
     }
+  }
+
+  .link {
+    border: 1px solid #444df2;
+    color: #444df2;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 7px 18px 7px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    background-color: white;
+
+    &:hover {
+      background-color: #444df2;
+      color: white;
+      filter: brightness(1.2);
+    }
+  }
+
+  .inputs-container {
+    input {
+      margin-left: 15px;
+    }
+
+    img {
+      margin-left: 20px;
+    }
+  }
+}
+
+@media (max-width: 550px) {
+  #login-logo-animated {
+    width: 70px;
+  }
+
+  .logo-text {
+    font-size: 2em;
+    margin-left: -180px;
+  }
+}
+
+@media (max-width: 450px) {
+  h2 {
+    margin-top: 25px;
+    font-size: 32px;
+  }
+
+  h4 {
+    font-size: 16px;
+    margin-top: 3px;
+  }
+
+  .link-text {
+    font-size: 16px;
+  }
+
+  .inputs-container {
+    input {
+      height: 43px;
+      margin-left: 10px;
+    }
+
+    .email-input,
+    .password-input,
+    .name-input {
+      height: 45px;
+    }
+  }
+
+  .logo-container {
+    img {
+      width: 200px;
+    }
+  }
+
+  .logo-animation-container {
+    left: 70%;
   }
 }

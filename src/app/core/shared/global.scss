@@ -144,14 +144,6 @@ button:hover {
   }
 }
 
-.link-text {
-  font-family: "Figtree" !important;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 21.6px;
-  color: $purple1;
-}
-
 .pop-up-input {
   @include dFlex($jc: start);
   width: 100%;
@@ -279,6 +271,33 @@ button:hover {
 @media (max-width: 650px) {
   .primary-btn,
   .secondary-btn {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 550px) {
+  .primary-btn,
+  .secondary-btn {
     font-size: 16px;
+  }
+}
+
+@media (max-width: 450px) {
+  .buttons-container {
+    width: 100%;
+    @include dFlex($jc: center);
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    padding: 10px 14px 10px 14px;
+  }
+}
+
+@media (max-width: 370px) {
+  .primary-btn,
+  .secondary-btn {
+    font-size: 14px;
+    padding: 8px 12px 8px 12px;
   }
 }

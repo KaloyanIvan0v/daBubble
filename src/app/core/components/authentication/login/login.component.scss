@@ -85,14 +85,26 @@
     width: 103%;
     margin-bottom: 20px;
     height: 48px;
+    font-size: 16px;
   }
 
   .line-container {
     margin-top: 10px;
     margin-bottom: 15px;
+    width: 100%;
   }
 
   .gray-line {
     width: 170px;
+  }
+
+  .buttons-container .primary-btn {
+    margin-right: 15px;
+  }
+}
+
+@media (max-width: 450px) {
+  .google-btn {
+    height: 45px;
   }
 }
