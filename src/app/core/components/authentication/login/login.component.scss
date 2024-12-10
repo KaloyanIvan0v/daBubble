@@ -108,3 +108,10 @@
     height: 45px;
   }
 }
+
+@media (max-height: 770px) {
+  .line-container {
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+}

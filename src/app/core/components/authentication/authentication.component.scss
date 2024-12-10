@@ -372,15 +372,18 @@ form {
   .logo-container {
     left: unset;
     width: 100%;
-    top: 100px;
+    top: 0;
+    height: 20vh;
+    align-items: flex-end;
   }
 
   .sign-in {
     top: unset;
     right: unset;
-    bottom: 100px;
-    width: 98%;
-    @include dFlex($ai: center, $fd: column);
+    bottom: 0;
+    width: 100%;
+    height: 20vh;
+    @include dFlex($ai: center, $fd: column, $jc: flex-start);
   }
 
   h2 {
@@ -419,7 +422,7 @@ form {
   }
 
   form {
-    width: 80%;
+    width: 82%;
   }
 
   .logo-text {
@@ -482,20 +485,36 @@ form {
     font-size: 2em;
     margin-left: -180px;
   }
+
+  .inputs-container {
+    img {
+      margin-left: 12px;
+    }
+
+    input {
+      margin-left: 5px;
+      font-size: 15px;
+    }
+  }
 }
 
 @media (max-width: 450px) {
+  .login-mode {
+    height: 500px;
+  }
+
   h2 {
-    margin-top: 25px;
+    margin-top: 20px;
     font-size: 32px;
   }
 
   h4 {
-    font-size: 16px;
     margin-top: 3px;
   }
 
-  .link-text {
+  .link-text,
+  .link,
+  .sign-in h4 {
     font-size: 16px;
   }
 
@@ -520,5 +539,50 @@ form {
 
   .logo-animation-container {
     left: 70%;
+  }
+}
+
+@media (max-height: 750px) {
+  .logo-container,
+  .sign-in {
+    height: 15vh;
+  }
+
+  .login-mode {
+    height: 485px;
+  }
+
+  h2 {
+    margin-top: 15px;
+  }
+
+  .logo-container {
+    img {
+      width: 185px;
+    }
+  }
+}
+
+@media (max-height: 670px) {
+  .logo-container,
+  .sign-in {
+    height: 13vh;
+  }
+
+  .login-mode {
+    height: 475px;
+  }
+
+  h2 {
+    margin-top: 10px;
+  }
+
+  .inputs-container {
+    margin-bottom: 0;
+  }
+
+  .line-container {
+    margin-top: 5px;
+    margin-bottom: 10px;
   }
 }
