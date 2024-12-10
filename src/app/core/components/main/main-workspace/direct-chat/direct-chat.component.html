@@ -69,7 +69,10 @@
 
   <!-- Input Box for Sending Messages -->
   <app-input-box
+    *ngIf="receiverId !== null && receiverId !== undefined"
     [messageToEdit]="messageToEdit"
     [messagePath]="messagePath"
+    [receiverId]="receiverId"
+    [space]="'directChat'"
   ></app-input-box>
 </section>

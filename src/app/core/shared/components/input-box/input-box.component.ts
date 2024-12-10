@@ -7,6 +7,7 @@ import {
   ViewChild,
   ElementRef,
   OnInit,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
@@ -31,8 +32,11 @@ export class InputBoxComponent implements OnChanges, OnInit {
   @Input() receiverId: string | null = null;
   @Input() messageToEdit: Message | undefined = undefined;
   @Input() usersUid: string[] = [];
+  @Input() space: string = '';
   filteredUserUids: string[] = [];
-  channelName: string = '';
+  channelName = signal<string>('');
+  receiverName = signal<string>('');
+  placeholder: string = '';
 
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef<HTMLTextAreaElement>;
@@ -52,16 +56,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   ) {}
 
   ngOnInit() {
-    setTimeout(() => {
-      if (this.messagePath.split('/')[1] !== undefined) {
-        const channelId = this.messagePath.split('/')[2];
-        console.log(channelId);
-
-        this.firebaseService.getChannel(channelId).subscribe((channel) => {
-          this.channelName = channel.name;
-        });
-      }
-    }, 100);
+    this.setPlaceholder();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -73,6 +68,55 @@ export class InputBoxComponent implements OnChanges, OnInit {
     if (changes['selectedUser']) {
       console.log(this.selectedUser);
     }
+
+    if (changes['messagePath']) {
+      this.setPlaceholder();
+    }
+  }
+  isChannel() {
+    if (this.messagePath !== '') {
+      return this.messagePath.split('/')[1] === 'channels';
+    } else {
+      return false;
+    }
+  }
+
+  getChannelName(channelId: string): void {
+    this.firebaseService
+      .getChannel(channelId)
+      .pipe(first())
+      .subscribe((channel) => {
+        this.configChannelPlaceholder(channel.name);
+      });
+  }
+
+  getReceiverName(receiverId: string): void {
+    this.firebaseService
+      .getUser(receiverId)
+      .pipe(first())
+      .subscribe((user) => {
+        this.configDirectChatPlaceholder(user.name);
+      });
+  }
+
+  setPlaceholder() {
+    if (this.space === 'new chat') {
+      this.placeholder = 'Starte eine neue Nachricht';
+    } else if (this.space === 'directChat') {
+      this.getReceiverName(this.receiverId!);
+    } else if (this.space === 'channel') {
+      this.getChannelName(this.messagePath.split('/')[2]);
+    } else if (this.space === 'thread') {
+      this.placeholder = 'Antworten...';
+    }
+  }
+
+  configChannelPlaceholder(channelName: string) {
+    this.placeholder = 'Nachricht an #' + channelName;
+  }
+
+  configDirectChatPlaceholder(receiverName: string) {
+    this.placeholder = 'Nachricht an ' + receiverName;
   }
 
   sendMessage() {
@@ -108,7 +152,6 @@ export class InputBoxComponent implements OnChanges, OnInit {
       this.showUserList = false;
       this.showUserListTextArea = false;
     }, 25);
-    console.log('user list: ', this.showUserList);
   }
 
   onMessageChange() {

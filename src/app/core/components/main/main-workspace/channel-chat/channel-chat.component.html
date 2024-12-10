@@ -67,9 +67,11 @@
   </div>
 
   <app-input-box
+    *ngIf="messagePath.split('/')[2] !== ''"
     [messageToEdit]="messageToEdit"
     [messagePath]="messagePath"
     [usersUid]="usersUid"
+    [space]="'channel'"
   ></app-input-box>
   <app-channel-members-view
     class="channel-members-view"
