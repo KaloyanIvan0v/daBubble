@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { inject, Injectable, signal } from '@angular/core';
 import {
   Auth,
@@ -34,7 +34,8 @@ export class AuthService {
   constructor(
     private auth: Auth,
     public authUIService: AuthUIService,
-    private router: Router
+    private router: Router,
+    public activatedRoute: ActivatedRoute
   ) {
     this.initAuthState();
 
@@ -126,7 +127,7 @@ export class AuthService {
           user.displayName || '',
           user.email
         );
-        this.authUIService.toggleAvatarSelection();
+        this.navigateToAvatarSelection();
       }
     } else {
       this.userStateChanged.next();
@@ -187,5 +188,11 @@ export class AuthService {
 
   getAuthState(): Observable<User | null> {
     return authState(this.auth);
+  }
+
+  navigateToAvatarSelection() {
+    this.router.navigate(['choose-avatar'], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }

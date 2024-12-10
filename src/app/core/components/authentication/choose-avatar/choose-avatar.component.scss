@@ -1,4 +1,5 @@
 @import "global.scss";
+@import "../authentication.component.scss";
 
 .choose-avatar-container {
   @include dFlex($fd: column, $ai: center);
