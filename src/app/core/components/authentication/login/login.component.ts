@@ -2,7 +2,7 @@ import { SharedModule } from '../../../shared/shared-module';
 import { FirebaseServicesService } from '../../../shared/services/firebase/firebase.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../shared/services/auth-services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthUIService } from 'src/app/core/shared/services/authUI-services/authUI.service';
 
 @Component({
@@ -22,7 +22,8 @@ export class LoginComponent implements OnInit {
     public authService: AuthService,
     private firebaseService: FirebaseServicesService,
     private router: Router,
-    public authUIService: AuthUIService
+    public authUIService: AuthUIService,
+    public activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -68,5 +69,11 @@ export class LoginComponent implements OnInit {
     } catch (error) {
       console.error('Login failed:', error);
     }
+  }
+
+  navigateToResetPassword() {
+    this.router.navigate(['reset-password'], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }
