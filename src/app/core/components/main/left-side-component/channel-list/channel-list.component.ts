@@ -16,15 +16,16 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
 export class ChannelListComponent {
   channelListOpen: boolean = false;
   channels: Channel[] = [];
-  currentActiveUnitId: string = '';
   private subscription: Subscription | undefined;
 
   constructor(
     private firebaseService: FirebaseServicesService,
     private workspaceService: WorkspaceService,
     private router: Router
-  ) {
-    this.currentActiveUnitId = this.workspaceService.currentActiveUnitId();
+  ) {}
+
+  get currentActiveUnitId() {
+    return this.workspaceService.currentActiveUnitId();
   }
 
   toggleChannelList() {
@@ -49,7 +50,7 @@ export class ChannelListComponent {
   navigateToChannelChat(currentActiveUnitId: string) {
     this.setChannelId(currentActiveUnitId);
     this.router.navigate(['dashboard', 'channel-chat']);
-    this.currentActiveUnitId = this.workspaceService.currentActiveUnitId();
+    //this.currentActiveUnitId = this.workspaceService.currentActiveUnitId();
   }
 
   setChannelId(currentActiveUnitId: string) {

@@ -33,6 +33,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   @Input() messageToEdit: Message | undefined = undefined;
   @Input() usersUid: string[] = [];
   @Input() space: string = '';
+  @Input() showMentionButton: boolean = true;
   filteredUserUids: string[] = [];
   channelName = signal<string>('');
   receiverName = signal<string>('');

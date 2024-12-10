@@ -1,3 +1,4 @@
+import { MainWorkspaceComponent } from './../../main-workspace/main-workspace.component';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +8,7 @@ import { Observable, switchMap, map, of, combineLatest, Subject } from 'rxjs';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { User } from 'src/app/core/shared/models/user.class';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 @Component({
   selector: 'app-chat-list',
   standalone: true,
@@ -25,7 +27,8 @@ export class ChatListComponent implements OnInit {
   constructor(
     private router: Router,
     public firebaseService: FirebaseServicesService,
-    public authService: AuthService
+    public authService: AuthService,
+    public workspaceService: WorkspaceService
   ) {}
 
   ngOnInit(): void {
@@ -60,11 +63,19 @@ export class ChatListComponent implements OnInit {
 
   navigateToDirectChat(chatId: string): void {
     this.selectedChatId = chatId;
-
+    this.setCurrentActiveUnitId(chatId);
     this.router.navigate(['dashboard', 'direct-chat', chatId]);
+  }
+
+  setCurrentActiveUnitId(chatId: string): void {
+    this.workspaceService.currentActiveUnitId.set(chatId);
   }
 
   toggleChatList(): void {
     this.chatListOpen = !this.chatListOpen;
+  }
+
+  get currentActiveUnitId() {
+    return this.workspaceService.currentActiveUnitId();
   }
 }

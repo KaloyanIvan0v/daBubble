@@ -49,7 +49,11 @@
         >
         </app-emoji-picker>
       </div>
-      <div class="mention-button" (click)="showAvailableUsers()">
+      <div
+        *ngIf="showMentionButton"
+        class="mention-button"
+        (click)="showAvailableUsers()"
+      >
         <app-user-list
           (mouseleave)="closeUserList()"
           class="user-list overflow-y-scroll"
