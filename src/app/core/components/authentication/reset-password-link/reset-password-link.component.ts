@@ -80,7 +80,7 @@ export class ResetPasswordLinkComponent {
         this.errorMessage = ''; // Reset any error message
 
         // Redirect to login page after successful password reset
-        this.authUIService.toggleLogin();
+        this.navigateToLogin();
       } catch (error) {
         console.error('Error resetting password:', error);
         this.errorMessage = 'Error resetting password. Please try again.';
@@ -95,5 +95,9 @@ export class ResetPasswordLinkComponent {
     this.router.navigate(['reset-password'], {
       relativeTo: this.activatedRoute,
     });
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['login'], { relativeTo: this.activatedRoute });
   }
 }
