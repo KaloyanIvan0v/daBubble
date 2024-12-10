@@ -4,7 +4,7 @@ import {
   getAuth,
   verifyPasswordResetCode,
 } from '@angular/fire/auth';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { AuthUIService } from 'src/app/core/shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
@@ -19,7 +19,8 @@ export class ResetPasswordLinkComponent {
   constructor(
     public authUIService: AuthUIService,
     public authService: AuthService,
-    private route: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    public router: Router
   ) {}
   user = {
     password: '',
@@ -35,7 +36,7 @@ export class ResetPasswordLinkComponent {
 
   ngOnInit() {
     // Get the 'oobCode' from the URL query parameters
-    this.route.queryParams.subscribe((params) => {
+    this.activatedRoute.queryParams.subscribe((params) => {
       this.oobCode = params['oobCode'];
       if (this.oobCode) {
         this.verifyResetCode(this.oobCode); // Verify the reset code
@@ -88,5 +89,11 @@ export class ResetPasswordLinkComponent {
     } else {
       this.errorMessage = 'Please ensure passwords match and are valid.';
     }
+  }
+
+  navigateToResetPassword() {
+    this.router.navigate(['reset-password'], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }

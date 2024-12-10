@@ -21,6 +21,7 @@ import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar
 import { ThreadService } from '../../shared/services/thread-service/thread.service';
 import { StatefulWindowServiceService } from '../../shared/services/stateful-window-service/stateful-window-service.service';
 import { MainService } from '../../shared/services/main-service/main.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -61,19 +62,25 @@ export class MainComponent implements OnInit, OnDestroy {
     private authUIService: AuthUIService,
     public uploadCareService: UploadCareService,
     private statefulWindowService: StatefulWindowServiceService,
-    public mainService: MainService
+    public mainService: MainService,
+    public router: Router,
+    public activatedRoute: ActivatedRoute
   ) {
     this.popUpShadowVisible = this.workspaceService.popUpShadowVisible();
     this.chooseAvatarComponent = new ChooseAvatarComponent(
       this.workspaceService,
       this.uploadCareService,
-      this.authUIService
+      this.authUIService,
+      this.router,
+      this.activatedRoute
     );
 
     this.signupComponent = new SignupComponent(
       this.authUIService,
       this.authService,
-      this.workspaceService
+      this.workspaceService,
+      this.router,
+      this.activatedRoute
     );
     this.mainService.setUserOnline();
   }

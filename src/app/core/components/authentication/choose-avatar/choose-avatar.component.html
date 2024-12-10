@@ -1,6 +1,6 @@
 <!-- choose-avatar.component.html -->
 <div class="choose-avatar-container">
-  <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
+  <div class="back-arrow-img" (click)="navigateToSignup()"></div>
   <form #chooseAvatarForm="ngForm" (ngSubmit)="uploadCareService.saveAvatar()">
     <h2>Wähle deinen Avatar</h2>
     <div class="spinner-container" *ngIf="uploadCareService.isUploading">

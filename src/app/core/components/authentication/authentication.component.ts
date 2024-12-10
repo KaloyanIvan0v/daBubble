@@ -8,27 +8,18 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
-import { Observable } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 import { JsonPipe } from '@angular/common';
-import { LoginComponent } from './login/login.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
-import { ChooseAvatarComponent } from './choose-avatar/choose-avatar.component';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SignupComponent } from './signup/signup.component';
 import { WorkspaceService } from '../../shared/services/workspace-service/workspace.service';
-import { ResetPasswordLinkComponent } from './reset-password-link/reset-password-link.component';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-authentication',
   standalone: true,
-  imports: [
-    CommonModule,
-    LoginComponent,
-    SignupComponent,
-    ChooseAvatarComponent,
-    ResetPasswordComponent,
-    ResetPasswordLinkComponent,
-  ],
+  imports: [CommonModule, RouterModule],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.scss',
   providers: [JsonPipe],
@@ -37,15 +28,17 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   @ViewChild(SignupComponent, { static: true })
   signupComponent!: SignupComponent;
   users: Observable<any[]>;
-
   removeLoginAnimation = false;
   removeAnimationText = false;
-
+  isSignupRoute: boolean = false;
+  currentModeClass: string = 'login-mode';
   constructor(
     private firebaseService: FirebaseServicesService,
     public authUIService: AuthUIService,
     private renderer: Renderer2,
-    public workspaceService: WorkspaceService
+    public workspaceService: WorkspaceService,
+    public router: Router,
+    public activatedRoute: ActivatedRoute
   ) {
     this.users = this.firebaseService.getUsers();
   }
@@ -65,6 +58,23 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.removeLoginAnimation = true;
     }, 2700);
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        let childRoute = this.activatedRoute.firstChild;
+        while (childRoute?.firstChild) {
+          childRoute = childRoute.firstChild;
+        }
+        if (childRoute && childRoute.snapshot.data['modeClass']) {
+          this.currentModeClass = childRoute.snapshot.data['modeClass'];
+        } else {
+          this.currentModeClass = 'login-mode'; // Fallback
+        }
+
+        // Update isSignupRoute based on the current class
+        this.isSignupRoute = this.currentModeClass === 'signup-mode';
+      });
   }
 
   ngAfterViewInit(): void {
@@ -99,5 +109,25 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.renderer.removeClass(this.mainLogo.nativeElement, 'd-none');
     }, 2600);
+  }
+
+  navigateToSignup() {
+    this.router.navigate(['signup'], { relativeTo: this.activatedRoute });
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['login'], { relativeTo: this.activatedRoute });
+  }
+
+  navigateToAvatarSelection() {
+    this.router.navigate(['choose-avatar'], {
+      relativeTo: this.activatedRoute,
+    });
+  }
+
+  navigateToResetPassword() {
+    this.router.navigate(['reset-password'], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }

@@ -10,12 +10,46 @@ import { ResetPasswordLinkComponent } from './core/components/authentication/res
 import { DirectChatComponent } from './core/components/main/main-workspace/direct-chat/direct-chat.component';
 import { ChannelChatComponent } from './core/components/main/main-workspace/channel-chat/channel-chat.component';
 import { NewChatComponent } from './core/components/main/main-workspace/new-chat/new-chat.component';
+import { ChooseAvatarComponent } from './core/components/authentication/choose-avatar/choose-avatar.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: AuthenticationComponent,
+    redirectTo: 'authentication/login',
     pathMatch: 'full',
+  },
+  {
+    path: 'authentication',
+    component: AuthenticationComponent,
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent,
+        data: { modeClass: 'login-mode' },
+      },
+      {
+        path: 'signup',
+        component: SignupComponent,
+        data: { modeClass: 'signup-mode' },
+      },
+      {
+        path: 'choose-avatar',
+        component: ChooseAvatarComponent,
+        data: { modeClass: 'avatar-mode' },
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        data: { modeClass: 'reset-password-mode' },
+      },
+      {
+        path: 'reset-password-link',
+        component: ResetPasswordLinkComponent,
+        data: { modeClass: 'reset-link-mode' },
+      },
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: '**', redirectTo: 'login' },
+    ],
   },
   {
     path: 'dashboard',
@@ -32,27 +66,6 @@ export const routes: Routes = [
         component: ChannelChatComponent,
       },
     ],
-  },
-  {
-    path: 'app-authentication',
-    component: AuthenticationComponent,
-  },
-  {
-    path: 'app-login',
-    component: LoginComponent,
-  },
-  {
-    path: 'app-signup',
-    component: SignupComponent,
-  },
-  {
-    path: 'app-reset-password',
-    component: ResetPasswordComponent,
-  },
-
-  {
-    path: 'app-reset-password-link',
-    component: ResetPasswordLinkComponent,
   },
 
   { path: '**', redirectTo: '' },

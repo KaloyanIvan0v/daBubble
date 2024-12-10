@@ -1,6 +1,6 @@
 <!-- signup.component.html -->
 <div class="signup-container">
-  <div class="back-arrow-img" (click)="authUIService.toggleSignup()"></div>
+  <div class="back-arrow-img" (click)="navigateToLogin()"></div>
   <form #signupForm="ngForm" (ngSubmit)="onSubmit()">
     <h2>Konto erstellen</h2>
     <h4>

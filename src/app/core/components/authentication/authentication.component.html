@@ -21,35 +21,15 @@
   </div>
   <div class="sign-in">
     <div>
-      <h4>{{ authUIService.showSignup ? "" : "Neu bei DaBubble?" }}</h4>
+      <h4>{{ isSignupRoute ? "" : "Neu bei DaBubble?" }}</h4>
     </div>
 
-    <div (click)="authUIService.toggleSignup()" class="link">
-      <span>{{ authUIService.showSignup ? "" : "Konto erstellen" }}</span>
+    <div (click)="navigateToSignup()" class="link">
+      <span>{{ isSignupRoute ? "" : "Konto erstellen" }}</span>
     </div>
   </div>
 
-  <div
-    class="auth-wrapper"
-    [ngClass]="{
-      'login-mode': authUIService.shouldShowLogin(),
-      'signup-mode': authUIService.shouldShowSignup(),
-      'avatar-mode': authUIService.shouldShowAvatarSelection(),
-      'reset-password-mode': authUIService.shouldShowResetPassword(),
-      'reset-link-mode': authUIService.shouldShowResetPasswordLink()
-    }"
-  >
-    <app-login *ngIf="authUIService.shouldShowLogin()"></app-login>
-    <app-signup *ngIf="authUIService.shouldShowSignup()"></app-signup>
-    <app-choose-avatar
-      [signUpComponent]="signupComponent"
-      *ngIf="authUIService.shouldShowAvatarSelection()"
-    ></app-choose-avatar>
-    <app-reset-password
-      *ngIf="authUIService.shouldShowResetPassword()"
-    ></app-reset-password>
-    <app-reset-password-link
-      *ngIf="authUIService.shouldShowResetPasswordLink()"
-    ></app-reset-password-link>
+  <div class="auth-wrapper" [ngClass]="currentModeClass">
+    <router-outlet></router-outlet>
   </div>
 </section>

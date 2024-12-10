@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { AuthUIService } from 'src/app/core/shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
@@ -12,7 +13,9 @@ import { SharedModule } from 'src/app/core/shared/shared-module';
 export class ResetPasswordComponent {
   constructor(
     public authUIService: AuthUIService,
-    private authService: AuthService
+    private authService: AuthService,
+    public router: Router,
+    public activatedRoute: ActivatedRoute
   ) {}
 
   user = {
@@ -30,5 +33,9 @@ export class ResetPasswordComponent {
     } catch (error) {
       console.error('Reset Password Error:', error);
     }
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['login'], { relativeTo: this.activatedRoute });
   }
 }

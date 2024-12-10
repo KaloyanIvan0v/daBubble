@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -27,7 +28,9 @@ export class SignupComponent implements OnInit {
   constructor(
     public authUIService: AuthUIService,
     private authService: AuthService,
-    public workspaceService: WorkspaceService
+    public workspaceService: WorkspaceService,
+    public router: Router,
+    public activatedRoute: ActivatedRoute
   ) {
     // Assign the Observable from the service
     this.userData$ = this.workspaceService.loggedInUserData;
@@ -53,7 +56,9 @@ export class SignupComponent implements OnInit {
 
           this.workspaceService.updateLoggedInUserData(registeredUser);
 
-          this.authUIService.toggleAvatarSelection();
+          this.router.navigate(['choose-avatar'], {
+            relativeTo: this.activatedRoute.parent,
+          });
         },
         error: (err) => {
           if (err.code === 'auth/email-already-in-use') {
@@ -67,5 +72,9 @@ export class SignupComponent implements OnInit {
     if (email) {
       this.isEmailAlreadyUsed = false;
     }
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['login'], { relativeTo: this.activatedRoute });
   }
 }

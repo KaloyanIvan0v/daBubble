@@ -3,11 +3,9 @@ import { Component, Input, signal } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
 import { SignupComponent } from '../signup/signup.component';
-import { RouterLink } from '@angular/router';
-import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
-import { authState, User } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-choose-avatar',
@@ -32,7 +30,9 @@ export class ChooseAvatarComponent {
   constructor(
     public workspaceService: WorkspaceService,
     public uploadCareService: UploadCareService,
-    public authUIService: AuthUIService
+    public authUIService: AuthUIService,
+    public router: Router,
+    public activatedRoute: ActivatedRoute
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
@@ -43,5 +43,9 @@ export class ChooseAvatarComponent {
       this.uploadCareService.uploadComplete &&
       !this.uploadCareService.isUploading
     );
+  }
+
+  navigateToSignup() {
+    this.router.navigate(['signup'], { relativeTo: this.activatedRoute });
   }
 }
