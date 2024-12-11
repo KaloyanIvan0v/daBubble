@@ -374,6 +374,11 @@ form {
     width: 85%;
   }
 
+  .signup-mode {
+    height: 495px;
+    width: 85%;
+  }
+
   .logo-container {
     left: unset;
     width: 100%;
@@ -478,6 +483,11 @@ form {
     img {
       margin-left: 20px;
     }
+  }
+
+  .back-arrow-img {
+    left: 25px;
+    top: 35px;
   }
 }
 

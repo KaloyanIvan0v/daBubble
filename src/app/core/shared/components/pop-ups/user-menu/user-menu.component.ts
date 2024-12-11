@@ -23,7 +23,7 @@ export class UserMenuComponent {
   logOut() {
     this.workspaceService.currentActiveUnitId.set('12345678');
     this.mainService.setUserOffline();
-    this.router.navigate(['app-authentication']);
+    this.router.navigate(['authentication', 'login']);
     this.closePopUp();
     this.authService.logoutUser();
   }
