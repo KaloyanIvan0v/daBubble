@@ -40,7 +40,7 @@
         </div>
         <div
           class="item-name"
-          [ngClass]="{ active: item.chat.id === selectedChatId }"
+          [ngClass]="{ active: item.chat.id === currentActiveUnitId }"
         >
           {{ item.user?.name || "Unknown User" }}
         </div>

@@ -66,19 +66,29 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     private workspaceService: WorkspaceService,
     private firebaseService: FirebaseServicesService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    effect(() => {
+      this.channelId = this.workspaceService.currentActiveUnitId();
+      if (this.channelId) {
+        this.workspaceService.setActiveChannelId(this.channelId);
+        this.loadChannelData(this.channelId);
+      } else {
+        console.warn('No valid channelId available.');
+      }
+    });
+  }
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.route.paramMap.subscribe((params) => {
-        const cid = params.get('channelId');
-        if (cid) {
-          this.channelId = cid;
-          this.workspaceService.setActiveChannelId(this.channelId);
-          this.loadChannelData(this.channelId);
-        }
-      })
-    );
+    // this.subscriptions.add(
+    //   this.route.paramMap.subscribe((params) => {
+    //     const cid = params.get('channelId');
+    //     if (cid) {
+    //       this.channelId = cid;
+    //       this.workspaceService.setActiveChannelId(this.channelId);
+    //       this.loadChannelData(this.channelId);
+    //     }
+    //   })
+    // );
   }
 
   @ViewChild('messageContainer') private messageContainer!: ElementRef;

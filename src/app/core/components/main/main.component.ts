@@ -18,7 +18,6 @@ import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-vi
 import { ChooseAvatarComponent } from '../authentication/choose-avatar/choose-avatar.component';
 import { AuthUIService } from '../../shared/services/authUI-services/authUI.service';
 import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar/edit-avatar.component';
-import { ThreadService } from '../../shared/services/thread-service/thread.service';
 import { StatefulWindowServiceService } from '../../shared/services/stateful-window-service/stateful-window-service.service';
 import { MainService } from '../../shared/services/main-service/main.service';
 import { ActivatedRoute, Router } from '@angular/router';

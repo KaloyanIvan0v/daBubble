@@ -2,7 +2,7 @@
   <div class="input-wrapper">
     <div class="textarea-container" style="position: relative">
       <textarea
-        placeholder="Nachricht an #{{ channelName }}"
+        placeholder="{{ placeholder }}"
         [(ngModel)]="inputData.message"
         (input)="onMessageChange()"
         (keyup)="checkForMentionSign()"
@@ -49,7 +49,11 @@
         >
         </app-emoji-picker>
       </div>
-      <div class="mention-button" (click)="showAvailableUsers()">
+      <div
+        *ngIf="showMentionButton"
+        class="mention-button"
+        (click)="showAvailableUsers()"
+      >
         <app-user-list
           (mouseleave)="closeUserList()"
           class="user-list overflow-y-scroll"
