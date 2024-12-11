@@ -57,7 +57,7 @@
         <app-user-list
           (mouseleave)="closeUserList()"
           class="user-list overflow-y-scroll"
-          *ngIf="showUserList"
+          *ngIf="showUserList && usersUid.length > 0"
           [usersUid]="usersUid"
           (selectedUser)="returnUser($event)"
         ></app-user-list>

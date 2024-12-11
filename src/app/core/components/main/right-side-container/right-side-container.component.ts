@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { Thread } from 'src/app/core/shared/models/thread.class';
 import { ThreadService } from 'src/app/core/shared/services/thread-service/thread.service';
 import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
+import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
 @Component({
   selector: 'app-right-side-container',
   standalone: true,
@@ -20,6 +21,7 @@ import { StatefulWindowServiceService } from 'src/app/core/shared/services/state
     FormsModule,
     CommonModule,
     MessageComponent,
+    ChatComponent,
   ],
   templateUrl: './right-side-container.component.html',
   styleUrl: './right-side-container.component.scss',
@@ -27,7 +29,6 @@ import { StatefulWindowServiceService } from 'src/app/core/shared/services/state
 export class RightSideContainerComponent {
   private subscriptions = new Subscription();
   private messagesSubscription?: Subscription;
-  private lastMessageLength: number = 0;
   messages$!: Observable<Message[]>;
   messages: Message[] = [];
   messageToEdit: Message | undefined = undefined;
@@ -36,6 +37,7 @@ export class RightSideContainerComponent {
   messagePath: string = '';
   originMessage!: Message | null;
   threadData: Thread = new Thread('', '');
+  channelUsersUid: string[] = [];
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -55,22 +57,11 @@ export class RightSideContainerComponent {
     this.threadService.originMessage.subscribe((message) => {
       this.originMessage = message;
     });
+    this.setChannelUsersUid();
   }
 
-  @ViewChild('messageContainer') private messageContainer!: ElementRef;
-
-  private scrollToBottom(): void {
-    if (this.messageContainer) {
-      this.messageContainer.nativeElement.scrollTop =
-        this.messageContainer.nativeElement.scrollHeight;
-    }
-  }
-
-  private checkForNewMessages(): void {
-    if (this.lastMessageLength !== this.messages.length) {
-      this.scrollToBottom();
-      this.lastMessageLength = this.messages.length;
-    }
+  messageToEditHandler($event: Message): void {
+    this.messageToEdit = $event;
   }
 
   loadThread(): void {
@@ -79,9 +70,6 @@ export class RightSideContainerComponent {
     this.messagesSubscription = this.messages$.subscribe((messages) => {
       if (messages) {
         this.messages = messages;
-        setTimeout(() => {
-          this.checkForNewMessages();
-        });
       }
     });
   }
@@ -109,5 +97,11 @@ export class RightSideContainerComponent {
 
   get rightSideComponentOpen() {
     return this.statefulWindowService.rightSideComponentState();
+  }
+
+  setChannelUsersUid() {
+    this.threadService.channelUsersUid.subscribe((uids) => {
+      this.channelUsersUid = uids;
+    });
   }
 }

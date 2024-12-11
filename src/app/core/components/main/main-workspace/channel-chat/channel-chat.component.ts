@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  ViewChild,
-  OnInit,
-  OnDestroy,
-  effect,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
@@ -14,13 +7,11 @@ import { Observable, Subscription } from 'rxjs';
 import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
 import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
 import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edit-channel/edit-channel.component';
-import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
-import { Timestamp } from '@angular/fire/firestore';
-import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { ActivatedRoute } from '@angular/router';
+import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
 
 @Component({
   selector: 'app-channel-chat',
@@ -32,8 +23,7 @@ import { ActivatedRoute } from '@angular/router';
     EditChannelComponent,
     FormsModule,
     CommonModule,
-    MessageComponent,
-    FirebaseDatePipe,
+    ChatComponent,
   ],
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
@@ -51,7 +41,6 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
   usersUid: string[] = [];
   popUpStates: { [key: string]: boolean } = {};
 
-  private lastMessageLength: number = 0;
   private popUpStatesSubscription?: Subscription;
   messages$!: Observable<Message[]>;
   messages: Message[] = [];
@@ -78,33 +67,19 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    // this.subscriptions.add(
-    //   this.route.paramMap.subscribe((params) => {
-    //     const cid = params.get('channelId');
-    //     if (cid) {
-    //       this.channelId = cid;
-    //       this.workspaceService.setActiveChannelId(this.channelId);
-    //       this.loadChannelData(this.channelId);
-    //     }
-    //   })
-    // );
+  ngOnInit(): void {}
+
+  //@ViewChild('messageContainer') private messageContainer!: ElementRef;
+
+  messageToEditHandler($event: Message): void {
+    this.messageToEdit = $event;
   }
 
-  @ViewChild('messageContainer') private messageContainer!: ElementRef;
-
-  private scrollToBottom(): void {
-    if (this.messageContainer) {
-      this.messageContainer.nativeElement.scrollTop =
-        this.messageContainer.nativeElement.scrollHeight;
-    }
-  }
-
-  private checkForNewMessages(): void {
-    if (this.lastMessageLength !== this.messages.length) {
-      this.scrollToBottom();
-      this.lastMessageLength = this.messages.length;
-    }
+  private subscribeToMessages(channelId: string): void {
+    this.messages$ = this.firebaseService.getMessages('channels', channelId);
+    this.messagesSubscription = this.messages$.subscribe((messages) => {
+      this.messages = messages;
+    });
   }
 
   loadChannelData(channelId: string): void {
@@ -142,23 +117,6 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  private subscribeToMessages(channelId: string): void {
-    this.messages$ = this.firebaseService.getMessages('channels', channelId);
-    this.messagesSubscription = this.messages$.subscribe((messages) =>
-      this.handleMessages(messages)
-    );
-  }
-
-  private handleMessages(messages: Message[]): void {
-    if (messages) {
-      this.messages = messages;
-      setTimeout(() => {
-        // to ensure messages are rendered before scrolling
-        this.checkForNewMessages();
-      });
-    }
-  }
-
   async loadUsers() {
     const channelUids = this.channelData.uid;
     this.setUserUids(channelUids);
@@ -190,29 +148,5 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   openChannelUsersViewPopUp() {
     this.workspaceService.channelMembersPopUp.set(true);
-  }
-
-  isNewDay(prevTimestamp?: number, currentTimestamp?: number): boolean {
-    if (!prevTimestamp || !currentTimestamp) return false;
-    const prevDate = new Date(prevTimestamp);
-    const currentDate = new Date(currentTimestamp);
-    return !this.isSameDay(prevDate, currentDate);
-  }
-
-  private isSameDay(date1: Date, date2: Date): boolean {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  }
-
-  getTimestamp(time: Timestamp | Date | number): number | undefined {
-    if (time instanceof Timestamp) {
-      time = time.toDate();
-    } else if (typeof time === 'number') {
-      time = new Date(time);
-    }
-    return time instanceof Date ? time.getTime() : undefined;
   }
 }

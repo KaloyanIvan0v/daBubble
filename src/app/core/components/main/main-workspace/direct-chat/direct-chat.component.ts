@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
-  ElementRef,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, Observable, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
@@ -17,8 +11,8 @@ import { InputBoxComponent } from 'src/app/core/shared/components/input-box/inpu
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
-import { Timestamp } from '@angular/fire/firestore';
 import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
+import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
 
 @Component({
   selector: 'app-direct-chat',
@@ -30,6 +24,7 @@ import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
     CommonModule,
     MessageComponent,
     FirebaseDatePipe,
+    ChatComponent,
   ],
 })
 export class DirectChatComponent implements OnInit, OnDestroy {
@@ -44,7 +39,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   messages$!: Observable<Message[]>;
   messages: Message[] = [];
   messageToEdit: Message | undefined = undefined;
-  private lastMessageLength: number = 0;
+  usersUid: string[] = [];
 
   private subscriptions: Subscription = new Subscription();
 
@@ -55,14 +50,21 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     private workspaceService: WorkspaceService
   ) {}
 
-  @ViewChild('messageContainer') private messageContainer!: ElementRef;
-
   ngOnInit(): void {
     this.initializeComponent();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  messageToEditHandler($event: Message): void {
+    this.messageToEdit = $event;
+  }
+
+  setUsersUid(usersUid: string): void {
+    this.usersUid = [];
+    this.usersUid.push(usersUid);
   }
 
   private initializeComponent(): void {
@@ -106,6 +108,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     if (chatData && chatData.uid) {
       this.receiverId = chatData.uid.find((uid) => uid !== this.currentUserUid);
       if (this.receiverId) {
+        this.setUsersUid(this.receiverId);
         return this.firebaseService
           .getUser(this.receiverId)
           .pipe(map((user) => user || this.getDefaultUser()));
@@ -131,61 +134,15 @@ export class DirectChatComponent implements OnInit, OnDestroy {
       this.subscriptions.unsubscribe();
       this.subscriptions = new Subscription();
     }
-
-    this.messages$ = this.firebaseService.getMessages('directMessages', chatId);
-    this.subscriptions.add(
-      this.messages$.subscribe((messages) => this.handleMessages(messages))
-    );
-  }
-
-  private handleMessages(messages: Message[]): void {
-    if (messages) {
-      this.messages = messages;
-      setTimeout(() => {
-        this.checkForNewMessages();
+    this.firebaseService
+      .getMessages('directMessages', chatId)
+      .subscribe((messages) => {
+        this.messages = messages;
+        this.messages$ = of(messages);
       });
-    }
-  }
-
-  private checkForNewMessages(): void {
-    if (this.lastMessageLength !== this.messages.length) {
-      this.scrollToBottom();
-      this.lastMessageLength = this.messages.length;
-    }
-  }
-
-  private scrollToBottom(): void {
-    if (this.messageContainer) {
-      this.messageContainer.nativeElement.scrollTop =
-        this.messageContainer.nativeElement.scrollHeight;
-    }
   }
 
   get messagePath(): string {
     return `/directMessages/${this.chatId}/messages`;
-  }
-
-  isNewDay(prevTimestamp?: number, currentTimestamp?: number): boolean {
-    if (!prevTimestamp || !currentTimestamp) return false;
-    const prevDate = new Date(prevTimestamp);
-    const currentDate = new Date(currentTimestamp);
-    return !this.isSameDay(prevDate, currentDate);
-  }
-
-  private isSameDay(date1: Date, date2: Date): boolean {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  }
-
-  getTimestamp(time: Timestamp | Date | number): number | undefined {
-    if (time instanceof Timestamp) {
-      time = time.toDate();
-    } else if (typeof time === 'number') {
-      time = new Date(time);
-    }
-    return time instanceof Date ? time.getTime() : undefined;
   }
 }

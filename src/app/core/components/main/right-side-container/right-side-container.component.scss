@@ -1,6 +1,5 @@
 @import "global.scss";
 section {
-  box-sizing: border-box;
   @include dFlex($fd: column);
   width: 100%;
   height: calc(100vh - 140px);
@@ -44,6 +43,7 @@ section {
   @include dFlex();
   width: 100%;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 app-input-box {
@@ -54,12 +54,9 @@ app-input-box {
 
 .message-container {
   @include dFlex($fd: column, $jc: start);
-  gap: 65px;
   max-height: 100%;
   width: 100%;
   flex-grow: 1;
-  padding-top: 24px;
-  padding-bottom: 24px;
 }
 
 .message {
@@ -202,6 +199,7 @@ app-input-box {
 }
 
 .origin-message {
+  padding-top: 32px;
   width: 100%;
 }
 

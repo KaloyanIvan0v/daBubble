@@ -30,6 +30,7 @@ export class ReactionsMenuComponent implements OnInit {
   @Input() lastTwoReactions: string[] = [];
   @Input() ownMessage: boolean = false;
   @Input() showThread: boolean = true;
+  @Input() channelUsersUid: string[] = [];
   @Output() messageToEdit = new EventEmitter<Message>();
   currentUserId: string = '';
 
@@ -89,6 +90,7 @@ export class ReactionsMenuComponent implements OnInit {
   }
 
   openThread() {
+    this.threadService.channelUsersUid.next(this.channelUsersUid);
     this.threadService.openThread(this.message);
     this.statefulWindowService.openRightSideComponentState();
   }

@@ -7,14 +7,14 @@ import { Message } from '../../models/message.class';
 })
 export class ThreadService {
   currentThreadPath: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  //threadOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   originMessage: BehaviorSubject<Message | null> =
     new BehaviorSubject<Message | null>(null);
+  channelUsersUid: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(
+    []
+  );
   constructor() {}
 
-  OnChanges(changes: SimpleChanges) {
-    console.log(changes);
-  }
+  OnChanges(changes: SimpleChanges) {}
 
   openThread(message: Message) {
     this.currentThreadPath.next(

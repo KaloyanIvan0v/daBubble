@@ -21,6 +21,7 @@ import { EmojiPickerService } from '../../services/emoji-picker/emoji-picker.ser
 import { AuthService } from '../../services/auth-services/auth.service';
 import { ThreadService } from '../../services/thread-service/thread.service';
 import { StatefulWindowServiceService } from '../../services/stateful-window-service/stateful-window-service.service';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-message',
@@ -47,6 +48,7 @@ export class MessageComponent implements OnInit, OnDestroy {
   @Output() messageToEdit = new EventEmitter<Message>();
   lastThreadMessage: Message | null = null;
   private destroy$ = new Subject<void>();
+  usersUid: string[] = [];
 
   constructor(
     private firebaseService: FirebaseServicesService,
@@ -64,6 +66,7 @@ export class MessageComponent implements OnInit, OnDestroy {
     });
     this.setAuthor();
     this.setThreadMessagesLength();
+    this.configSpaceUids();
   }
 
   ngOnDestroy() {
@@ -74,6 +77,38 @@ export class MessageComponent implements OnInit, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['message']) {
       this.setAuthor();
+    }
+  }
+
+  configSpaceUids() {
+    if (this.isChannel()) {
+      this.getChannelUsers();
+    } else {
+      this.getDirectChatUserUid();
+    }
+  }
+
+  isChannel() {
+    if (this.message.location !== '') {
+      return this.message.location.split('/')[1] === 'channels';
+    } else {
+      return false;
+    }
+  }
+
+  getChannelUsers() {
+    const channelId = this.message.location.split('/')[2];
+    this.firebaseService
+      .getChannel(channelId)
+      .pipe(first())
+      .subscribe((channel) => {
+        this.usersUid = channel.uid;
+      });
+  }
+
+  getDirectChatUserUid() {
+    if (this.message.receiverId) {
+      this.usersUid.push(this.message.receiverId);
     }
   }
 
@@ -105,7 +140,7 @@ export class MessageComponent implements OnInit, OnDestroy {
       });
   }
 
-  setMessageToEdit($event: Message) {
+  setEditMessage($event: Message) {
     this.messageToEdit.emit($event);
     this.setEditActive();
   }
@@ -122,7 +157,6 @@ export class MessageComponent implements OnInit, OnDestroy {
   }
 
   toggleEmojiPicker() {
-    //this.calculatePopupDirection();
     this.showEmojiPicker = !this.showEmojiPicker;
   }
 
@@ -144,6 +178,7 @@ export class MessageComponent implements OnInit, OnDestroy {
   openThread() {
     this.threadService.openThread(this.message);
     this.statefulWindowService.openRightSideComponentState();
+    this.threadService.channelUsersUid.next(this.usersUid);
   }
 
   cancelEdit() {

@@ -17,37 +17,13 @@
       <div class="add-user" (click)="openAddUserToChannelPopUp()"></div>
     </div>
   </div>
-  <div
-    #messageContainer
-    *ngIf="channelData"
-    class="message-container overflow-y-scroll"
-  >
-    <div *ngIf="messages$ | async as messages" class="message">
-      <div *ngFor="let message of messages; let i = index" class="message">
-        <div
-          class="daily-divider"
-          *ngIf="
-            isNewDay(
-              i > 0 ? getTimestamp(messages[i - 1].time) : undefined,
-              getTimestamp(message.time)
-            )
-          "
-        >
-          <div class="daily-divider-line">
-            <div class="daily-divider-date">
-              {{ message.time | firebaseDate }}
-            </div>
-          </div>
 
-          <!-- {{ message.time | firebaseTime }} -->
-        </div>
-        <app-message
-          (messageToEdit)="messageToEdit = $event"
-          [message]="message"
-        ></app-message>
-      </div>
-    </div>
-  </div>
+  <app-chat
+    *ngIf="messages$ | async as messages"
+    class="chat-container"
+    [messages]="messages"
+    (messageToEdit)="messageToEditHandler($event)"
+  ></app-chat>
 
   <div class="receiver-info-container" *ngIf="messages.length === 0">
     <div

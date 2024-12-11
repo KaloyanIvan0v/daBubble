@@ -94,7 +94,9 @@
     </div>
   </div>
   <app-reactions-menu
-    (messageToEdit)="setMessageToEdit($event)"
+    *ngIf="usersUid !== []"
+    [channelUsersUid]="usersUid"
+    (messageToEdit)="setEditMessage($event)"
     [showThread]="showThread"
     [lastTwoReactions]="lastTwoReactions"
     [message]="message"
