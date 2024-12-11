@@ -6,10 +6,6 @@
   height: 100%;
   display: flex;
   justify-content: center;
-
-  h4 {
-    margin-top: 30px;
-  }
 }
 
 .check-box {
@@ -66,4 +62,42 @@
   position: absolute;
   right: 53px;
   bottom: 40px;
+}
+
+@media (max-width: 650px) {
+  .button-container {
+    right: 25px;
+    bottom: 25px;
+  }
+}
+
+@media (max-width: 500px) {
+  .privacy-policy {
+    margin-top: 10px;
+
+    img {
+      width: 30px;
+      height: 30px;
+    }
+
+    h2 {
+      margin-top: 23px;
+    }
+  }
+
+  .check-box {
+    span {
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  h2 {
+    font-size: 26px;
+  }
+
+  h4 {
+    font-size: 14px;
+  }
 }

@@ -152,7 +152,7 @@ export class AuthService {
     this.currentUser$.next(null); // Reset current user to null
 
     await this.auth.signOut();
-    this.router.navigate(['/login']);
+    this.router.navigate(['authentication', 'login']);
   }
 
   async resetPassword(email: string): Promise<void> {
