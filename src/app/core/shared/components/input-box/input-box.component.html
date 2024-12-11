@@ -2,7 +2,7 @@
   <div class="input-wrapper">
     <div class="textarea-container" style="position: relative">
       <textarea
-        placeholder="{{ placeholder }}"
+        placeholder="{{ placeholder() }}"
         [(ngModel)]="inputData.message"
         (input)="onMessageChange()"
         (keyup)="checkForMentionSign()"

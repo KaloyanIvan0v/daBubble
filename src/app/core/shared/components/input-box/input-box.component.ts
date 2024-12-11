@@ -37,7 +37,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   filteredUserUids: string[] = [];
   channelName = signal<string>('');
   receiverName = signal<string>('');
-  placeholder: string = '';
+  public placeholder = signal<string>('Default Placeholder');
 
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef<HTMLTextAreaElement>;
@@ -74,6 +74,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
       this.setPlaceholder();
     }
   }
+
   isChannel() {
     if (this.messagePath !== '') {
       return this.messagePath.split('/')[1] === 'channels';
@@ -85,7 +86,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   getChannelName(channelId: string): void {
     this.firebaseService
       .getChannel(channelId)
-      .pipe(first())
+      .pipe(first((channel) => channel !== null))
       .subscribe((channel) => {
         this.configChannelPlaceholder(channel.name);
       });
@@ -94,7 +95,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   getReceiverName(receiverId: string): void {
     this.firebaseService
       .getUser(receiverId)
-      .pipe(first())
+      .pipe(first((user) => user !== null))
       .subscribe((user) => {
         this.configDirectChatPlaceholder(user.name);
       });
@@ -102,22 +103,23 @@ export class InputBoxComponent implements OnChanges, OnInit {
 
   setPlaceholder() {
     if (this.space === 'new chat') {
-      this.placeholder = 'Starte eine neue Nachricht';
+      this.placeholder.set('Starte eine neue Nachricht');
     } else if (this.space === 'directChat') {
       this.getReceiverName(this.receiverId!);
     } else if (this.space === 'channel') {
-      this.getChannelName(this.messagePath.split('/')[2]);
+      const channelId = this.messagePath.split('/')[2];
+      this.getChannelName(channelId);
     } else if (this.space === 'thread') {
-      this.placeholder = 'Antworten...';
+      this.placeholder.set('Antworten...');
     }
   }
 
   configChannelPlaceholder(channelName: string) {
-    this.placeholder = 'Nachricht an #' + channelName;
+    this.placeholder.set('Nachricht an #' + channelName);
   }
 
   configDirectChatPlaceholder(receiverName: string) {
-    this.placeholder = 'Nachricht an ' + receiverName;
+    this.placeholder.set('Nachricht an ' + receiverName);
   }
 
   sendMessage() {

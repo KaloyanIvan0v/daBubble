@@ -8,7 +8,7 @@ import { Observable, Subject } from 'rxjs';
 import { User } from 'src/app/core/shared/models/user.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Router } from '@angular/router';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-edit-channel',
@@ -49,7 +49,10 @@ export class EditChannelComponent implements OnDestroy {
 
   private subscribeToChannelData() {
     this.channelData$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        first((channelData) => channelData !== null),
+        takeUntil(this.destroy$)
+      )
       .subscribe((channelData: Channel) => {
         this.setChannelCreator(channelData.creator);
       });

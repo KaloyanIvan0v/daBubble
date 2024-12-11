@@ -15,6 +15,7 @@ import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { BehaviorSubject, Subscription, Observable, from, Subject } from 'rxjs';
 import { AuthUIService } from '../authUI-services/authUI.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -171,6 +172,10 @@ export class AuthService {
         resolve(!!user);
       });
     });
+  }
+
+  get isAuthenticated$(): Observable<boolean> {
+    return authState(this.auth).pipe(map((user) => !!user));
   }
 
   getCurrentUser(): Observable<User | null> {

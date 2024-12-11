@@ -6,11 +6,20 @@
   <div class="header">
     <div class="header-left">
       <div class="header-tittle">Thread</div>
-      <div class="thread-source-tag">
+      <div *ngIf="originMessage?.thread?.space" class="thread-source-tag">
         <img src="assets/img/icons/tag-thin.svg" alt="" />
       </div>
-      <div class="thread-source-title">
+      <div *ngIf="!originMessage?.thread?.space" class="thread-source-tag">
+        <img src="assets/img/icons/alternate_email-blue.svg" alt="" />
+      </div>
+      <div *ngIf="originMessage?.thread?.space" class="thread-source-title">
         {{ originMessage?.thread?.space }}
+      </div>
+      <div
+        *ngIf="originMessage?.thread?.space === ''"
+        class="thread-source-title"
+      >
+        {{ userName }}
       </div>
     </div>
     <div class="close-button" (click)="closeThread()"></div>

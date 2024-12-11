@@ -5,6 +5,7 @@ import { InputBoxComponent } from 'src/app/core/shared/components/input-box/inpu
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { Observable, Subscription } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { MessageComponent } from 'src/app/core/shared/components/message/message.component';
 import { RouterModule } from '@angular/router';
@@ -38,6 +39,7 @@ export class RightSideContainerComponent {
   originMessage!: Message | null;
   threadData: Thread = new Thread('', '');
   channelUsersUid: string[] = [];
+  userName: string = 'user';
 
   constructor(
     private workspaceService: WorkspaceService,
@@ -62,6 +64,26 @@ export class RightSideContainerComponent {
 
   messageToEditHandler($event: Message): void {
     this.messageToEdit = $event;
+  }
+
+  getUserName(userUid: string | null | undefined): void {
+    if (userUid) {
+      this.firebaseService.getUser(userUid);
+    }
+  }
+
+  isCannel() {
+    return this.originMessage?.location.split('/')[1] === 'channels';
+  }
+
+  getReceiverUid(message: Message): void {
+    if (message) {
+      console.log('message', message);
+
+      const uids: string[] = [];
+      uids.push(message.thread.originMessagePath.split('/')[2]);
+      console.log(uids);
+    }
   }
 
   loadThread(): void {
@@ -103,5 +125,12 @@ export class RightSideContainerComponent {
     this.threadService.channelUsersUid.subscribe((uids) => {
       this.channelUsersUid = uids;
     });
+  }
+
+  getName(userUid: string): Observable<string> {
+    return this.firebaseService.getUser(userUid).pipe(
+      first(),
+      map((user) => user.name)
+    );
   }
 }

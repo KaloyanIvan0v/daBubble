@@ -111,20 +111,6 @@ section {
   }
 }
 
-.message-container {
-  @include dFlex($fd: column, $jc: start);
-  gap: 65px;
-  max-height: 100%;
-  width: 100%;
-  flex-grow: 1;
-  padding-top: 24px;
-  padding-bottom: 24px;
-}
-
-.message {
-  width: 100%;
-}
-
 app-input-box {
   @include dFlex();
   width: 100%;

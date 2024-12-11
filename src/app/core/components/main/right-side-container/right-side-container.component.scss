@@ -31,6 +31,10 @@ section {
   @include dFlex();
   height: auto;
   padding: 0 5px;
+  img {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .thread-source-title {
@@ -57,6 +61,7 @@ app-input-box {
   max-height: 100%;
   width: 100%;
   flex-grow: 1;
+  padding-top: 24px;
 }
 
 .message {
@@ -69,126 +74,9 @@ app-input-box {
   height: 145px;
 }
 
-.header-left {
-  @include dFlex();
-  gap: 10px;
-  &:hover {
-    cursor: pointer;
-    background-color: $bg-color;
-    border-radius: 20px;
-    color: $purple3;
-    .drop-down-icon {
-      @include iconButton(
-        "/assets/img/buttons/arrow-down-blue.svg",
-        "/assets/img/buttons/arrow-down-blue.svg"
-      );
-    }
-    .header-tag {
-      @include iconButton(
-        "/assets/img/icons/tag-blue.svg",
-        "/assets/img/icons/tag-blue.svg"
-      );
-    }
-  }
-}
-
-.drop-down-icon {
-  @include iconButton(
-    "/assets/img/buttons/arrow-down-black.svg",
-    "/assets/img/buttons/arrow-down-blue.svg"
-  );
-}
-
-.header-tag {
-  @include iconButton(
-    "/assets/img/icons/tag-black.svg",
-    "/assets/img/icons/tag-blue.svg"
-  );
-}
-
-.add-user {
-  @include iconButton(
-    "/assets/img/buttons/add-person-black.svg",
-    "/assets/img/buttons/add-person-blue.svg"
-  );
-  background-color: $bg-color;
-  border-radius: 50%;
-}
-
 .header-right {
   @include dFlex();
   gap: 10px;
-}
-
-.channel-users {
-  @include dFlex();
-  gap: 10px;
-  padding: 3px 10px;
-  &:hover {
-    cursor: pointer;
-    background-color: $bg-color;
-    border-radius: 30px;
-    color: $purple3;
-  }
-}
-
-.user-imgs {
-  @include dFlex();
-}
-
-.user-img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid white;
-  position: relative;
-  margin-left: -10px;
-  img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-  }
-}
-
-.user-amount {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.pop-up-wrapper {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100vh;
-  max-width: 1980px;
-  pointer-events: none;
-  z-index: auto;
-  * {
-    pointer-events: all;
-  }
-}
-
-.add-user-to-channel {
-  position: absolute;
-  right: 40px;
-  top: 80px;
-  max-width: 100%;
-}
-
-.channel-members-view {
-  position: absolute;
-  right: 90px;
-  top: 80px;
-  max-width: 100%;
-}
-
-.edit-channel {
-  position: absolute;
-  left: 40px;
-  top: 80px;
-  max-width: 100%;
 }
 
 .close-button {
@@ -199,7 +87,6 @@ app-input-box {
 }
 
 .origin-message {
-  padding-top: 32px;
   width: 100%;
 }
 

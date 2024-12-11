@@ -348,14 +348,18 @@ export class FirebaseServicesService implements OnDestroy {
     };
   }
 
-  getUser(uid: string): Observable<any> {
+  getUser(uid: string): Observable<User> {
     return this.getDoc('users', uid);
   }
 
   getChannel(channelId: string): Observable<Channel> {
-    const channelDocRef = doc(this.firestore, 'channels', channelId);
-    return docData<Channel>(channelDocRef);
+    return this.getDoc('channels', channelId);
   }
+
+  // getChannel(channelId: string): Observable<Channel> {
+  //   const channelDocRef = doc(this.firestore, 'channels', channelId);
+  //   return docData<Channel>(channelDocRef);
+  // }
 
   getChat(id: string): Observable<any> {
     return this.getDoc('chats', id);
