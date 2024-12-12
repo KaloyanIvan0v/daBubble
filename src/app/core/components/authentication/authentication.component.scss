@@ -366,6 +366,11 @@ form {
     width: 85%;
   }
 
+  .avatar-mode {
+    height: 530px;
+    width: 85%;
+  }
+
   .logo-container {
     left: unset;
     width: 100%;
@@ -504,6 +509,10 @@ form {
   .login-mode,
   .signup-mode {
     height: 500px;
+  }
+
+  .avatar-mode {
+    height: 480px;
   }
 
   h2 {

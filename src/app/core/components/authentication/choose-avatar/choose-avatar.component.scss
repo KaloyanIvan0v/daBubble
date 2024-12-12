@@ -13,7 +13,7 @@
 
   h2 {
     margin-left: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 40px;
     margin-top: 40px;
   }
 
@@ -41,6 +41,10 @@
     height: 64px;
     border-radius: 50px;
     margin-right: 12px;
+
+    &:last-child {
+      margin-right: 0;
+    }
   }
 }
 
@@ -52,8 +56,7 @@
 
 .upload-button {
   @include dFlex($ai: center);
-
-  margin-top: 32px;
+  margin-top: 20px;
   width: 100%;
 
   .secondary-btn {
@@ -133,5 +136,82 @@
 @keyframes loading {
   100% {
     background-size: 100%;
+  }
+}
+
+@media (max-width: 650px) {
+  .choose-avatar-container {
+    width: 100%;
+
+    h2 {
+      margin-left: 0;
+      margin-bottom: 25px;
+      margin-top: 25px;
+      font-size: 32px;
+      width: 90%;
+    }
+
+    .button-container {
+      right: 30px;
+      bottom: 25px;
+    }
+  }
+
+  .photos-container {
+    img {
+      width: 90%;
+      height: auto;
+    }
+  }
+
+  .upload-button {
+    align-items: center;
+    flex-direction: column;
+
+    .secondary-btn {
+      margin-left: 0;
+      padding: 8px 12px 8px 12px;
+    }
+  }
+
+  .profile-img-preview {
+    width: 35%;
+    height: auto;
+  }
+}
+
+@media (max-width: 550px) {
+  .photos-container {
+    img {
+      margin-right: 3%;
+    }
+  }
+
+  .choose-avatar-container {
+    .list-text {
+      margin-bottom: 8px;
+      text-align: center;
+    }
+  }
+
+  .choose-avatar-container {
+    h2 {
+      font-size: 28px;
+      text-align: center;
+      line-height: 35px;
+    }
+  }
+}
+
+@media (max-width: 450px) {
+  .choose-avatar-container {
+    .button-container {
+      right: 17px;
+      bottom: 15px;
+    }
+  }
+
+  .upload-button {
+    margin-top: 5px;
   }
 }
