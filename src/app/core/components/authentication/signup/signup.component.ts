@@ -75,6 +75,6 @@ export class SignupComponent implements OnInit {
   }
 
   navigateToLogin() {
-    this.router.navigate(['login'], { relativeTo: this.activatedRoute });
+    this.router.navigate(['/authentication/login']);
   }
 }

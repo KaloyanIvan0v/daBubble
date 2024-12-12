@@ -9,7 +9,6 @@ import { AuthGuard } from './auth.guard';
 import { ResetPasswordLinkComponent } from './core/components/authentication/reset-password-link/reset-password-link.component';
 import { DirectChatComponent } from './core/components/main/main-workspace/direct-chat/direct-chat.component';
 import { ChannelChatComponent } from './core/components/main/main-workspace/channel-chat/channel-chat.component';
-import { NewChatComponent } from './core/components/main/main-workspace/new-chat/new-chat.component';
 import { ChooseAvatarComponent } from './core/components/authentication/choose-avatar/choose-avatar.component';
 
 export const routes: Routes = [

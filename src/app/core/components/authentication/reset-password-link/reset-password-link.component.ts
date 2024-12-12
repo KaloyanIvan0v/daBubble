@@ -92,12 +92,10 @@ export class ResetPasswordLinkComponent {
   }
 
   navigateToResetPassword() {
-    this.router.navigate(['reset-password'], {
-      relativeTo: this.activatedRoute,
-    });
+    this.router.navigate(['/authentication/reset-password']);
   }
 
   navigateToLogin() {
-    this.router.navigate(['login'], { relativeTo: this.activatedRoute });
+    this.router.navigate(['/authentication/login']);
   }
 }

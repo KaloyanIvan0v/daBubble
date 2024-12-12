@@ -46,6 +46,6 @@ export class ChooseAvatarComponent {
   }
 
   navigateToSignup() {
-    this.router.navigate(['signup'], { relativeTo: this.activatedRoute });
+    this.router.navigate(['/authentication/signup']);
   }
 }
