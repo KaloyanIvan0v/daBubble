@@ -13,6 +13,7 @@ import { Thread } from 'src/app/core/shared/models/thread.class';
 import { ThreadService } from 'src/app/core/shared/services/thread-service/thread.service';
 import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 @Component({
   selector: 'app-right-side-container',
   standalone: true,
@@ -45,12 +46,14 @@ export class RightSideContainerComponent {
     private workspaceService: WorkspaceService,
     private firebaseService: FirebaseServicesService,
     private threadService: ThreadService,
-    private statefulWindowService: StatefulWindowServiceService
+    private statefulWindowService: StatefulWindowServiceService,
+    private authService: AuthService
   ) {
     this.threadService.currentThreadPath.subscribe((path) => {
       this.threadPath = path;
       if (this.threadPath !== '') {
         this.loadThread();
+        this.getName();
       }
     });
   }
@@ -62,28 +65,41 @@ export class RightSideContainerComponent {
     this.setChannelUsersUid();
   }
 
+  async getChatUserUid() {
+    if (this.threadPath !== '') {
+      let uids: string = this.threadPath.split('/')[2];
+      const currentLoginUserUid = await this.authService.getCurrentUserUID();
+      if (uids.split('_')[0] === currentLoginUserUid) {
+        return uids.split('_')[1];
+      } else {
+        return uids.split('_')[0];
+      }
+    }
+    return '';
+  }
+
+  getName() {
+    if (!this.isCannel()) {
+      this.getChatUserUid().then((uid) => {
+        if (uid === '') {
+          return;
+        }
+        this.firebaseService
+          .getUserByUid(uid)
+          .pipe(first((user) => user !== null))
+          .subscribe((user) => {
+            this.userName = user.name;
+          });
+      });
+    }
+  }
+
   messageToEditHandler($event: Message): void {
     this.messageToEdit = $event;
   }
 
-  getUserName(userUid: string | null | undefined): void {
-    if (userUid) {
-      this.firebaseService.getUser(userUid);
-    }
-  }
-
   isCannel() {
-    return this.originMessage?.location.split('/')[1] === 'channels';
-  }
-
-  getReceiverUid(message: Message): void {
-    if (message) {
-      console.log('message', message);
-
-      const uids: string[] = [];
-      uids.push(message.thread.originMessagePath.split('/')[2]);
-      console.log(uids);
-    }
+    return this.threadPath.split('/')[1] === 'channels';
   }
 
   loadThread(): void {
@@ -125,12 +141,5 @@ export class RightSideContainerComponent {
     this.threadService.channelUsersUid.subscribe((uids) => {
       this.channelUsersUid = uids;
     });
-  }
-
-  getName(userUid: string): Observable<string> {
-    return this.firebaseService.getUser(userUid).pipe(
-      first(),
-      map((user) => user.name)
-    );
   }
 }

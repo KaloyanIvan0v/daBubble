@@ -1,5 +1,5 @@
 <section>
-  <!-- Header  -->
+  <!-- Header -->
   <div class="header">
     <div
       class="header-user-info"
@@ -13,40 +13,42 @@
       <div class="drop-down-icon"></div>
     </div>
   </div>
-  <app-chat
-    *ngIf="messages$ | async as messages"
-    class="chat-container"
-    [messages]="messages"
-    (messageToEdit)="messageToEditHandler($event)"
-  ></app-chat>
-  <!-- Receiver content goes here -->
 
-  <div class="receiver-info-container" *ngIf="messages.length === 0">
-    <div
-      class="receiver-info"
-      (click)="receiverId && openProfileView(receiverId)"
-    >
-      <div class="user-img">
-        <img [src]="receiverPhotoURL$ | async" alt="user-img" />
-      </div>
-      <div class="user-name">
-        {{ receiverName$ | async }}
-      </div>
-    </div>
-    <div class="user-text">
-      Diese Unterhaltung findet nur zwischen
-      <span
-        class="user-text-name"
+  <!-- Chat Container -->
+  <ng-container *ngIf="messages$ | async as messages">
+    <app-chat
+      class="chat-container"
+      [messages]="messages"
+      (messageToEdit)="messageToEditHandler($event)"
+    ></app-chat>
+
+    <!-- Receiver Info When No Messages -->
+    <div class="receiver-info-container" *ngIf="messages.length === 0">
+      <div
+        class="receiver-info"
         (click)="receiverId && openProfileView(receiverId)"
-        >&#64;{{ receiverName$ | async }}</span
       >
-      und dir statt.
+        <div class="user-img">
+          <img [src]="receiverPhotoURL$ | async" alt="user-img" />
+        </div>
+        <div class="user-name">{{ receiverName$ | async }}</div>
+      </div>
+      <div class="user-text">
+        Diese Unterhaltung findet nur zwischen
+        <span
+          class="user-text-name"
+          (click)="receiverId && openProfileView(receiverId)"
+        >
+          &#64;{{ receiverName$ | async }}
+        </span>
+        und dir statt.
+      </div>
     </div>
-  </div>
+  </ng-container>
 
   <!-- Input Box for Sending Messages -->
   <app-input-box
-    *ngIf="receiverId !== null && receiverId !== undefined"
+    *ngIf="receiverId"
     [messageToEdit]="messageToEdit"
     [messagePath]="messagePath"
     [receiverId]="receiverId"

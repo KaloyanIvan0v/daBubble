@@ -66,11 +66,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
         ? this.messageToEdit.value.text
         : '';
     }
-    if (changes['selectedUser']) {
-      console.log(this.selectedUser);
-    }
-
-    if (changes['messagePath']) {
+    if (changes['messagePath'] || changes['receiverId']) {
       this.setPlaceholder();
     }
   }

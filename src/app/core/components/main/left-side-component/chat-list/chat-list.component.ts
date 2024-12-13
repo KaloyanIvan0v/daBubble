@@ -1,7 +1,6 @@
-import { MainWorkspaceComponent } from './../../main-workspace/main-workspace.component';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { DirectMessage } from 'src/app/core/shared/models/direct-message.class';
 import { Observable, switchMap, map, of, combineLatest, Subject } from 'rxjs';
