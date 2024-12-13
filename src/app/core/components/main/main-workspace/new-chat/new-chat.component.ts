@@ -12,14 +12,25 @@ import { FormsModule } from '@angular/forms';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { setDoc } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Observable, takeUntil, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { ActivatedRoute } from '@angular/router';
+import { User } from 'src/app/core/shared/models/user.class';
+import { Channel } from 'src/app/core/shared/models/channel.class';
+import { UserListComponent } from 'src/app/core/shared/components/user-list/user-list.component';
+import { ChannelsListComponent } from 'src/app/core/shared/components/channels-list/channels-list.component';
 
 @Component({
   selector: 'app-new-chat',
   standalone: true,
-  imports: [InputBoxComponent, FormsModule, CommonModule],
+  imports: [
+    InputBoxComponent,
+    FormsModule,
+    CommonModule,
+    UserListComponent,
+    ChannelsListComponent,
+  ],
   templateUrl: './new-chat.component.html',
   styleUrl: './new-chat.component.scss',
 })
@@ -37,7 +48,16 @@ export class NewChatComponent implements OnInit {
   selectedUserPhotoURL: string | null = null;
   selectedUserName: string | null = null;
 
+  users: User[] = [];
+  channels: Channel[] = [];
+  inputValue: string = '';
+  filteredUsers: string[] = [];
+  filteredChannels: Channel[] = [];
+  showResults: boolean = false;
+
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     public firebaseService: FirebaseServicesService,
@@ -47,18 +67,102 @@ export class NewChatComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
-    this.initializeUser();
     this.logActiveChannel();
   }
 
   ngOnInit(): void {
     this.subscribeToQueryParams();
+    this.loadUsers();
+    this.loadChannels();
   }
 
-  private initializeUser(): void {
-    this.authService.getCurrentUserUID().then((uid) => {
-      this.loggedInUserId = uid;
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadUsers(): void {
+    this.firebaseService
+      .getUsers()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((users) => {
+        this.users = users;
+        console.log('Users:', this.users);
+      });
+  }
+
+  loadChannels(): void {
+    this.firebaseService
+      .getChannels()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((channels) => {
+        this.channels = channels;
+        console.log('Channels:', this.channels);
+      });
+  }
+
+  search(): void {
+    if (this.inputValue !== '') {
+      this.showResults = true;
+      if (this.firstLetterIs(this.inputValue, '@')) {
+        this.filteredUsers = this.searchUsers(this.inputValue);
+        console.log('Filtered Users:', this.filteredUsers);
+      } else if (this.firstLetterIs(this.inputValue, '#')) {
+        this.filteredChannels = this.searchChannels(this.inputValue);
+        console.log('Filtered Channels:', this.filteredChannels);
+      } else {
+        this.filteredUsers = this.searchEmail(this.inputValue);
+        console.log('Filtered Users:', this.filteredUsers);
+      }
+    } else {
+      this.showResults = false;
+      this.filteredUsers = [];
+      this.filteredChannels = [];
+    }
+  }
+
+  firstLetterIs(input: string, letter: string): boolean {
+    if (input.length > 0) {
+      return input[0] === letter;
+    }
+    return false;
+  }
+
+  removeFirstLetter(input: string): string {
+    if (input.length > 0) {
+      return input.slice(1);
+    }
+    return input;
+  }
+
+  searchChannels(input: string): Channel[] {
+    const channelName: string = this.removeFirstLetter(input).toLowerCase();
+    return this.channels.filter((channel: Channel) =>
+      channel.name.toLowerCase().startsWith(channelName)
+    );
+  }
+
+  searchUsers(input: string): string[] {
+    const userName: string = this.removeFirstLetter(input).toLowerCase();
+    return this.users
+      .filter((user: User) => user.name.toLowerCase().startsWith(userName))
+      .map((user: User) => user.uid);
+  }
+
+  searchEmail(input: string): string[] {
+    const inputToLowerCase: string = input.toLowerCase();
+    return this.users
+      .filter((user: User) =>
+        user.email.toLowerCase().startsWith(inputToLowerCase)
+      )
+      .map((user: User) => user.uid);
+  }
+
+  onFocusOut(): void {
+    this.showResults = false;
+    this.inputValue = '';
+    this.filteredUsers = [];
+    this.filteredChannels = [];
   }
 
   private logActiveChannel(): void {

@@ -2,66 +2,29 @@
   <div class="header">
     <div class="font24-700">Neue Nachricht</div>
     <div class="input-wrapper">
-      <div class="search-input-wrapper">
-        <div *ngIf="selectedUserPhotoURL" class="selected-photo-container">
-          <img
-            [src]="selectedUserPhotoURL"
-            alt="User Avatar"
-            class="selected-photo"
-          />
-        </div>
-        <input
-          #searchInput
-          [(ngModel)]="searchQuery"
-          (input)="onSearchChange()"
-          (keydown)="searchService.onKeyDown($event, 'newChat')"
-          placeholder="An: #channel, @jemand, oder E-Mail Adresse"
-          type="text"
-          [disabled]="isSelected"
-        />
-        <button
-          *ngIf="isSelected"
-          class="clear-button"
-          (click)="(null)"
-          aria-label="Clear Selection"
-        >
-          ✕
-        </button>
-      </div>
-      <div
-        *ngIf="searchService.newChatSearchResults.length > 0"
-        class="search-results-container"
-      >
-        <div
-          *ngFor="
-            let result of searchService.newChatSearchResults;
-            let i = index
-          "
-          class="search-result-item"
-          [class.active]="i === searchService.newChatSelectedIndex"
-          role="option"
-          (click)="searchService.onSelectResult(result)"
-          (keydown.enter)="searchService.onSelectResult(result)"
-          tabindex="0"
-        >
-          <div
-            *ngIf="result.name && result.email"
-            class="results-info-container"
-          >
-            <img
-              *ngIf="result.photoURL"
-              [src]="result.photoURL"
-              alt="{{ result.name }}"
-              class="user-profile-image"
-            />
-            <span>{{ result.name }}</span>
-          </div>
-
-          <p *ngIf="result.name && !result.email">{{ result.name }}</p>
-
-          <p *ngIf="result.email">{{ result.email }}</p>
-        </div>
-      </div>
+      <input
+        [(ngModel)]="inputValue"
+        (input)="search()"
+        (blur)="onFocusOut()"
+        placeholder="An: #channel, @jemand, oder E-Mail Adresse"
+        type="text"
+        class="search-input"
+      />
+      <app-user-list
+        *ngIf="filteredUsers.length > 0 && showResults"
+        (mouseleave)="showResults = false"
+        class="search-result-list overflow-y-scroll"
+        [usersUid]="filteredUsers"
+        (selectedUser)="(null)"
+        [showEmail]="true"
+      ></app-user-list>
+      <app-channels-list
+        *ngIf="filteredChannels.length > 0 && showResults"
+        (mouseleave)="showResults = false"
+        class="search-result-list overflow-y-scroll"
+        [channelsInput]="filteredChannels"
+        (selectedChannel)="(null)"
+      ></app-channels-list>
     </div>
   </div>
 

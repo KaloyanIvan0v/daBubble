@@ -5,12 +5,6 @@ section {
   gap: 13px;
 }
 
-// .members {
-//   @include dFlex($fd: column, $jc: start);
-//   width: 100%;
-//   gap: 13px;
-// }
-
 .member {
   @include dFlex($jc: start);
   width: 100%;
@@ -52,7 +46,18 @@ section {
   right: 0px;
 }
 
+.user-name-mail {
+  @include dFlex($fd: column, $ai: start);
+  gap: 5px;
+}
+
 .name-wrapper {
   @include dFlex();
   gap: 10px;
+}
+
+.email {
+  font-size: 14px;
+  font-weight: 400;
+  color: $purple2;
 }

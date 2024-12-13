@@ -1,0 +1,20 @@
+<section *ngIf="channelsInput.length > 0" class="channels-list">
+  <div
+    class="channel"
+    *ngFor="let channel of channelsInput"
+    (click)="returnChannelId(channel.id)"
+  >
+    <div class="left-wrapper">
+      <div class="channel-name">
+        <div class="tag-symbol"></div>
+        <div>{{ channel.name }}</div>
+      </div>
+    </div>
+    <div class="right-wrapper">
+      <div class="amount-chip">
+        <div class="user-symbol"></div>
+        <div class="channel-members">{{ channel.uid.length }}</div>
+      </div>
+    </div>
+  </div>
+</section>

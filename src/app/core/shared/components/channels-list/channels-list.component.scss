@@ -1,0 +1,74 @@
+@import "global.scss";
+section {
+  width: 100%;
+  @include dFlex($fd: column, $jc: start);
+  gap: 13px;
+}
+
+.channel-list {
+  @include dFlex($fd: column, $jc: start);
+  width: 100%;
+  gap: 15px;
+}
+
+.channel {
+  @include dFlex($jc: start);
+  width: 100%;
+  font-size: 18px;
+  padding: 12px 12px;
+  cursor: pointer;
+  gap: 15px;
+  &:hover {
+    background-color: $bg-color;
+    border-radius: 35px;
+    color: $purple3;
+    font-weight: 700;
+    .tag-symbol {
+      @include iconButton(
+        "/assets/img/icons/tag-blue.svg",
+        "/assets/img/icons/tag-blue.svg"
+      );
+    }
+    .user-symbol {
+      @include iconButton(
+        "/assets/img/icons/account_circle-blue.svg",
+        "/assets/img/icons/account_circle-blue.svg"
+      );
+    }
+    .amount-chip {
+      background-color: white;
+    }
+  }
+}
+
+.tag-symbol {
+  @include iconButton(
+    "/assets/img/icons/tag-black.svg",
+    "/assets/img/icons/tag-blue.svg"
+  );
+}
+
+.user-symbol {
+  @include iconButton(
+    "/assets/img/icons/account_circle-black.svg",
+    "/assets/img/icons/account_circle-blue.svg"
+  );
+}
+
+.top-wrapper {
+}
+
+.amount-chip {
+  @include dFlex();
+  padding: 0px 12px 0px 0px;
+  background-color: $bg-color;
+  border-radius: 35px;
+  gap: 3px;
+  &:hover {
+    background-color: white;
+  }
+}
+
+.channel-name {
+  @include dFlex($jc: start);
+}

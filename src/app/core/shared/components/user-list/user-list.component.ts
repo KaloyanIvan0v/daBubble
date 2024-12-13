@@ -23,6 +23,7 @@ import { User } from 'src/app/core/shared/models/user.class';
 export class UserListComponent implements OnChanges {
   currentUserUid: string | null = null;
   @Input() usersUid: string[] = [];
+  @Input() showEmail: boolean = false;
   @Output() selectedUser = new EventEmitter<User>();
   private subscriptions: Subscription[] = [];
   users: User[] = [];
