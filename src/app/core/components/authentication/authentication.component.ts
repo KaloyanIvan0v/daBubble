@@ -30,7 +30,6 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   users: Observable<any[]>;
   removeLoginAnimation = false;
   removeAnimationText = false;
-  isSignupRoute: boolean = false;
   currentModeClass: string = 'login-mode';
   constructor(
     private firebaseService: FirebaseServicesService,
@@ -67,7 +66,6 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     const childRoute = this.getDeepestChildRoute(this.activatedRoute);
     const modeClass = childRoute?.snapshot.data['modeClass'];
     this.currentModeClass = modeClass || 'login-mode';
-    this.isSignupRoute = this.currentModeClass === 'signup-mode';
   }
 
   private subscribeToRouteChanges(): void {
@@ -77,7 +75,6 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
         const nestedChildRoute = this.getDeepestChildRoute(this.activatedRoute);
         const newModeClass = nestedChildRoute?.snapshot.data['modeClass'];
         this.currentModeClass = newModeClass || 'login-mode';
-        this.isSignupRoute = this.currentModeClass === 'signup-mode';
       });
   }
 
