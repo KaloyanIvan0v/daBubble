@@ -12,18 +12,18 @@
       />
       <app-user-list
         *ngIf="filteredUsers.length > 0 && showResults"
-        (mouseleave)="showResults = false"
+        (mouseleave)="closeSearchResults()"
         class="search-result-list overflow-y-scroll"
         [usersUid]="filteredUsers"
-        (selectedUser)="(null)"
+        (selectedUser)="onUserSelected($event)"
         [showEmail]="true"
       ></app-user-list>
       <app-channels-list
         *ngIf="filteredChannels.length > 0 && showResults"
-        (mouseleave)="showResults = false"
+        (mouseleave)="closeSearchResults()"
         class="search-result-list overflow-y-scroll"
         [channelsInput]="filteredChannels"
-        (selectedChannel)="(null)"
+        (selectedChannel)="onChannelSelected($event)"
       ></app-channels-list>
     </div>
   </div>

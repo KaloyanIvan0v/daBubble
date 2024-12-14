@@ -26,6 +26,8 @@ export class ChannelsListComponent {
   ) {}
 
   returnChannelId(channelId: string) {
+    console.log('Channel ID:', channelId);
+
     this.selectedChannel.emit(channelId);
   }
 

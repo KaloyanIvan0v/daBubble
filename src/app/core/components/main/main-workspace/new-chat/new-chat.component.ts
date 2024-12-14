@@ -1,21 +1,14 @@
 import { SearchService } from './../../../../shared/services/search-service/search.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { setDoc } from '@angular/fire/firestore';
 import { Observable, takeUntil, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { User } from 'src/app/core/shared/models/user.class';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { UserListComponent } from 'src/app/core/shared/components/user-list/user-list.component';
@@ -50,6 +43,7 @@ export class NewChatComponent implements OnInit {
 
   users: User[] = [];
   channels: Channel[] = [];
+  chats: any = [];
   inputValue: string = '';
   filteredUsers: string[] = [];
   filteredChannels: Channel[] = [];
@@ -64,16 +58,16 @@ export class NewChatComponent implements OnInit {
     public workspaceService: WorkspaceService,
     public authService: AuthService,
     public searchService: SearchService,
-    private route: ActivatedRoute
+    private router: Router
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
     this.logActiveChannel();
   }
 
   ngOnInit(): void {
-    this.subscribeToQueryParams();
     this.loadUsers();
     this.loadChannels();
+    this.loadChats();
   }
 
   ngOnDestroy(): void {
@@ -87,7 +81,6 @@ export class NewChatComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((users) => {
         this.users = users;
-        console.log('Users:', this.users);
       });
   }
 
@@ -97,22 +90,27 @@ export class NewChatComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((channels) => {
         this.channels = channels;
-        console.log('Channels:', this.channels);
+      });
+  }
+
+  loadChats(): void {
+    this.firebaseService
+      .getChats()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((chats) => {
+        this.chats = chats;
       });
   }
 
   search(): void {
     if (this.inputValue !== '') {
-      this.showResults = true;
+      this.openSearchResults();
       if (this.firstLetterIs(this.inputValue, '@')) {
         this.filteredUsers = this.searchUsers(this.inputValue);
-        console.log('Filtered Users:', this.filteredUsers);
       } else if (this.firstLetterIs(this.inputValue, '#')) {
         this.filteredChannels = this.searchChannels(this.inputValue);
-        console.log('Filtered Channels:', this.filteredChannels);
       } else {
         this.filteredUsers = this.searchEmail(this.inputValue);
-        console.log('Filtered Users:', this.filteredUsers);
       }
     } else {
       this.showResults = false;
@@ -159,10 +157,63 @@ export class NewChatComponent implements OnInit {
   }
 
   onFocusOut(): void {
-    this.showResults = false;
-    this.inputValue = '';
+    setTimeout(() => {
+      this.closeSearchResults();
+      this.clearInput();
+      this.resetFilteredValues();
+    }, 175);
+  }
+
+  resetFilteredValues(): void {
     this.filteredUsers = [];
     this.filteredChannels = [];
+  }
+
+  clearInput(): void {
+    this.inputValue = '';
+  }
+
+  openSearchResults(): void {
+    this.showResults = true;
+  }
+
+  closeSearchResults(): void {
+    this.showResults = false;
+  }
+
+  onChannelSelected($event: string): void {
+    this.openChannel($event);
+  }
+
+  openChannel(channelId: string) {
+    this.navigateTo('channel-chat');
+    this.workspaceService.currentActiveUnitId.set(channelId);
+  }
+
+  async openChat(userUid: any) {
+    const chat = await this.getChatIdByUserId(userUid);
+    this.router.navigate(['dashboard', 'direct-chat', chat.id]);
+    this.workspaceService.currentActiveUnitId.set(chat.id);
+  }
+
+  onUserSelected($event: User): void {
+    if (this.chatExists($event.uid)) {
+      this.openChat($event.uid);
+    } else {
+      console.log('Chat does not exist');
+    }
+  }
+
+  navigateTo(space: string): void {
+    this.router.navigate(['dashboard', space]);
+  }
+
+  chatExists(userUid: string): boolean {
+    return this.chats.find((chat: any) => chat.receiver.uid.includes(userUid));
+  }
+
+  getChatIdByUserId(userUid: string): any {
+    return this.chats.find((chat: any) => chat.receiver.uid.includes(userUid));
   }
 
   private logActiveChannel(): void {
@@ -174,113 +225,26 @@ export class NewChatComponent implements OnInit {
     }
   }
 
-  private subscribeToQueryParams(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      const prefill = params.get('prefill');
-      if (prefill) {
-        this.prefillValue = prefill;
-        this.searchQuery = prefill;
-        this.onSearchChange();
-      }
-    });
-  }
-
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent): void {
-    const clickedElement = event.target as HTMLElement;
-    if (
-      this.searchContainer &&
-      !this.searchContainer.nativeElement.contains(clickedElement) &&
-      !clickedElement.classList.contains('clear-button')
-    ) {
-      this.searchService.newChatSearchResults = [];
-    }
-  }
-
-  onSearchChange(): void {
-    const trimmedQuery = this.searchQuery.trim();
-    if (trimmedQuery && this.loggedInUserId) {
-      this.fetchSearchResults(trimmedQuery);
-    } else {
-      this.clearSearchState();
-    }
-  }
-
-  private fetchSearchResults(query: string): void {
-    this.isSearching = true;
-    this.firebaseService.search(query, this.loggedInUserId!).subscribe(
-      (results) => this.processSearchResults(results),
-      (error) => {
-        console.error('Error fetching search results:', error);
-        this.isSearching = false;
-      }
-    );
-  }
-
-  private processSearchResults(results: any[]): void {
-    const filtered = this.searchService.filterOutLoggedInUser(results);
-    this.searchService.newChatSearchResults = filtered;
-    this.isSearching = false;
-    this.autoSelectPrefillChannel(filtered);
-  }
-
-  private autoSelectPrefillChannel(results: any[]): void {
-    if (this.prefillValue && this.prefillValue.startsWith('#')) {
-      const channelName = this.prefillValue.slice(1);
-      const channel = results.find(
-        (res) => res.type === 'channel' && res.name === channelName
-      );
-      if (channel) {
-        this.selectChannel(channel);
-      }
-    }
-  }
-
-  private selectChannel(channel: any): void {
-    this.searchService.onSelectResult(channel).then(() => {
-      this.selectedChannelName = channel.name;
-      this.isSelected = true;
-      this.messagePath = `channels/${channel.id}/messages`;
-    });
-  }
-
-  private clearSearchState(): void {
-    this.clearSearchResults();
-    this.resetSelection();
-  }
-
-  private clearSearchResults(): void {
-    this.searchService.newChatSearchResults = [];
-  }
-
-  private resetSelection(): void {
-    this.selectedUserPhotoURL = null;
-    this.selectedUserName = null;
-    this.isSelected = false;
-    this.selectedChannelName = null;
-  }
-
-  async handleChatCreation(
-    senderId: string,
-    receiverId: string,
-    result: any
-  ): Promise<void> {
-    const chatId = this.generateChatId(senderId, receiverId);
-    try {
-      const exists = await this.checkChatExists(chatId);
-      exists
-        ? this.navigateToChat(chatId)
-        : await this.createAndNavigateChat(
-            chatId,
-            senderId,
-            receiverId,
-            result
-          );
-      this.clearSearchResults();
-    } catch (error) {
-      console.error('Error during chat creation:', error);
-    }
-  }
+  // async handleChatCreation(
+  //   senderId: string,
+  //   receiverId: string,
+  //   result: any
+  // ): Promise<void> {
+  //   const chatId = this.generateChatId(senderId, receiverId);
+  //   try {
+  //     const exists = await this.checkChatExists(chatId);
+  //     exists
+  //       ? this.navigateToChat(chatId)
+  //       : await this.createAndNavigateChat(
+  //           chatId,
+  //           senderId,
+  //           receiverId,
+  //           result
+  //         );
+  //   } catch (error) {
+  //     console.error('Error during chat creation:', error);
+  //   }
+  // }
 
   private generateChatId(senderId: string, receiverId: string): string {
     return senderId < receiverId
@@ -300,19 +264,19 @@ export class NewChatComponent implements OnInit {
     }
   }
 
-  private navigateToChat(chatId: string): void {
-    this.searchService.navigateToDirectChat(chatId);
-  }
+  // private navigateToChat(chatId: string): void {
+  //   this.searchService.navigateToDirectChat(chatId);
+  // }
 
-  private async createAndNavigateChat(
-    chatId: string,
-    senderId: string,
-    receiverId: string,
-    result: any
-  ): Promise<void> {
-    await this.createDirectMessageChat(chatId, senderId, receiverId, result);
-    this.navigateToChat(chatId);
-  }
+  // private async createAndNavigateChat(
+  //   chatId: string,
+  //   senderId: string,
+  //   receiverId: string,
+  //   result: any
+  // ): Promise<void> {
+  //   await this.createDirectMessageChat(chatId, senderId, receiverId, result);
+  //   this.navigateToChat(chatId);
+  // }
 
   private async createDirectMessageChat(
     chatId: string,

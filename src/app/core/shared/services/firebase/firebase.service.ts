@@ -265,7 +265,7 @@ export class FirebaseServicesService implements OnDestroy {
   }
 
   getChats(): Observable<any> {
-    return this.getCollection('chats', true);
+    return this.getCollection('directMessages', true);
   }
 
   getDirectChats(): Observable<any[]> {
