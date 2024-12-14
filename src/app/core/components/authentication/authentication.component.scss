@@ -559,6 +559,10 @@ form {
 }
 
 @media (max-height: 750px) {
+  .signup-mode {
+    height: 470px;
+  }
+
   .logo-container,
   .sign-in {
     height: 15vh;

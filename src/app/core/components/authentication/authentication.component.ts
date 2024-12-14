@@ -49,32 +49,44 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   @ViewChild('mainLogo') mainLogo!: ElementRef;
   @ViewChild('backgroundFade') backgroundFade!: ElementRef;
 
-  // ngOnInit(): void {
-  //   console.log('daten:', this.users);
-  //   console.log('test');
-  // }
-
   ngOnInit(): void {
+    this.removeLoginAnimationAfterDelay();
+
+    this.setInitialModeClass();
+
+    this.subscribeToRouteChanges();
+  }
+
+  private removeLoginAnimationAfterDelay(): void {
     setTimeout(() => {
       this.removeLoginAnimation = true;
     }, 2700);
+  }
 
+  private setInitialModeClass(): void {
+    const childRoute = this.getDeepestChildRoute(this.activatedRoute);
+    const modeClass = childRoute?.snapshot.data['modeClass'];
+    this.currentModeClass = modeClass || 'login-mode';
+    this.isSignupRoute = this.currentModeClass === 'signup-mode';
+  }
+
+  private subscribeToRouteChanges(): void {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        let childRoute = this.activatedRoute.firstChild;
-        while (childRoute?.firstChild) {
-          childRoute = childRoute.firstChild;
-        }
-        if (childRoute && childRoute.snapshot.data['modeClass']) {
-          this.currentModeClass = childRoute.snapshot.data['modeClass'];
-        } else {
-          this.currentModeClass = 'login-mode'; // Fallback
-        }
-
-        // Update isSignupRoute based on the current class
+      .subscribe(() => {
+        const nestedChildRoute = this.getDeepestChildRoute(this.activatedRoute);
+        const newModeClass = nestedChildRoute?.snapshot.data['modeClass'];
+        this.currentModeClass = newModeClass || 'login-mode';
         this.isSignupRoute = this.currentModeClass === 'signup-mode';
       });
+  }
+
+  private getDeepestChildRoute(route: ActivatedRoute): ActivatedRoute | null {
+    let childRoute = route.firstChild;
+    while (childRoute?.firstChild) {
+      childRoute = childRoute.firstChild;
+    }
+    return childRoute;
   }
 
   ngAfterViewInit(): void {
