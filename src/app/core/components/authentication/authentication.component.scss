@@ -8,6 +8,7 @@ h2 {
   line-height: 55.2px;
   color: $purple1;
   margin-top: 50px;
+  text-align: center;
 }
 
 h3 {
@@ -43,6 +44,27 @@ section {
   img {
     width: 243px;
     height: auto;
+  }
+}
+
+.reset-password-container {
+  width: 512px;
+  margin: 0 auto;
+
+  span {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: center;
+    color: $text-grey;
+    width: 100%;
+    display: block;
+  }
+
+  .button-container {
+    position: absolute;
+    right: 105px;
+    bottom: 40px;
   }
 }
 
@@ -359,6 +381,38 @@ form {
   }
 }
 
+@media (max-width: 800px) {
+  .reset-link-mode {
+    height: 40%;
+    width: 85%;
+  }
+
+  .reset-password-container {
+    @include dFlex($fd: column, $jc: center);
+    width: 100%;
+
+    h2 {
+      margin-top: 30px !important;
+      margin-bottom: 0 !important;
+      font-size: 40px !important;
+    }
+
+    .inputs-container {
+      margin-top: 40px;
+    }
+
+    .back-arrow-img {
+      left: 18px;
+      top: 37px;
+    }
+
+    .button-container {
+      right: 25px;
+      bottom: 25px;
+    }
+  }
+}
+
 @media (max-width: 650px) {
   .login-mode,
   .signup-mode {
@@ -369,6 +423,14 @@ form {
   .avatar-mode {
     height: 530px;
     width: 85%;
+  }
+
+  .reset-password-container {
+    h2 {
+      font-size: 30px !important;
+      line-height: 32px;
+      width: 70%;
+    }
   }
 
   .logo-container {
@@ -556,6 +618,17 @@ form {
   .logo-animation-container {
     left: 70%;
   }
+
+  .reset-password-container {
+    .back-arrow-img {
+      left: 10px;
+      top: 15px;
+    }
+
+    h2 {
+      font-size: 26px !important;
+    }
+  }
 }
 
 @media (max-height: 750px) {
@@ -570,6 +643,10 @@ form {
 
   .login-mode {
     height: 485px;
+  }
+
+  .reset-link-mode {
+    height: 50%;
   }
 
   h2 {
