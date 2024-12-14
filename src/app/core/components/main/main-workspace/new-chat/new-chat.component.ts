@@ -48,6 +48,7 @@ export class NewChatComponent implements OnInit {
   filteredUsers: string[] = [];
   filteredChannels: Channel[] = [];
   showResults: boolean = false;
+  currentLoggedInUser: User | null = null;
 
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
 
@@ -68,11 +69,19 @@ export class NewChatComponent implements OnInit {
     this.loadUsers();
     this.loadChannels();
     this.loadChats();
+    this.setCurrentLoggedInUser();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  async setCurrentLoggedInUser() {
+    let loggedInUserId = await this.authService.getCurrentUserUID();
+    this.firebaseService.getUser(loggedInUserId as string).subscribe((user) => {
+      this.currentLoggedInUser = user;
+    });
   }
 
   loadUsers(): void {
@@ -200,7 +209,22 @@ export class NewChatComponent implements OnInit {
     if (this.chatExists($event.uid)) {
       this.openChat($event.uid);
     } else {
-      console.log('Chat does not exist');
+      const senderId = this.currentLoggedInUser!.uid;
+      const receiverId = $event.uid;
+
+      const senderData = {
+        uid: this.currentLoggedInUser!.uid,
+        name: this.currentLoggedInUser!.name || 'Sender Name',
+        photoURL: this.currentLoggedInUser!.photoURL || '',
+      };
+
+      const receiverData = {
+        uid: $event.uid,
+        name: $event.name,
+        photoURL: $event.photoURL,
+      };
+
+      this.handleChatCreation(senderId, receiverId, senderData, receiverData);
     }
   }
 
@@ -225,26 +249,35 @@ export class NewChatComponent implements OnInit {
     }
   }
 
-  // async handleChatCreation(
-  //   senderId: string,
-  //   receiverId: string,
-  //   result: any
-  // ): Promise<void> {
-  //   const chatId = this.generateChatId(senderId, receiverId);
-  //   try {
-  //     const exists = await this.checkChatExists(chatId);
-  //     exists
-  //       ? this.navigateToChat(chatId)
-  //       : await this.createAndNavigateChat(
-  //           chatId,
-  //           senderId,
-  //           receiverId,
-  //           result
-  //         );
-  //   } catch (error) {
-  //     console.error('Error during chat creation:', error);
-  //   }
-  // }
+  async handleChatCreation(
+    senderId: string,
+    receiverId: string,
+    senderData: { uid: string; name: string; photoURL: string },
+    receiverData: { uid: string; name: string; photoURL: string }
+  ): Promise<void> {
+    const chatId = this.generateChatId(senderId, receiverId);
+    try {
+      const exists = await this.checkChatExists(chatId);
+      if (exists) {
+        this.navigateToChat(chatId);
+      } else {
+        await this.createAndNavigateChat(
+          chatId,
+          senderId,
+          receiverId,
+          senderData,
+          receiverData
+        );
+      }
+    } catch (error) {
+      console.error('Error during chat creation:', error);
+    }
+  }
+
+  private navigateToChat(chatId: string): void {
+    this.router.navigate(['dashboard', 'direct-chat', chatId]);
+    this.workspaceService.currentActiveUnitId.set(chatId);
+  }
 
   private generateChatId(senderId: string, receiverId: string): string {
     return senderId < receiverId
@@ -264,32 +297,26 @@ export class NewChatComponent implements OnInit {
     }
   }
 
-  // private navigateToChat(chatId: string): void {
-  //   this.searchService.navigateToDirectChat(chatId);
-  // }
-
-  // private async createAndNavigateChat(
-  //   chatId: string,
-  //   senderId: string,
-  //   receiverId: string,
-  //   result: any
-  // ): Promise<void> {
-  //   await this.createDirectMessageChat(chatId, senderId, receiverId, result);
-  //   this.navigateToChat(chatId);
-  // }
-
-  private async createDirectMessageChat(
+  private async createAndNavigateChat(
     chatId: string,
     senderId: string,
     receiverId: string,
-    result: any
+    senderData: { uid: string; name: string; photoURL: string },
+    receiverData: { uid: string; name: string; photoURL: string }
   ): Promise<void> {
-    const chatData = this.buildChatData(chatId, senderId, receiverId, result);
+    const chatData = this.buildChatData(
+      chatId,
+      senderId,
+      receiverId,
+      senderData,
+      receiverData
+    );
     try {
       await setDoc(
         this.firebaseService.getDocRef('directMessages', chatId),
         chatData
       );
+      this.navigateToChat(chatId);
     } catch (error) {
       console.error('Error creating chat:', error);
     }
@@ -299,32 +326,23 @@ export class NewChatComponent implements OnInit {
     chatId: string,
     senderId: string,
     receiverId: string,
-    result: any
+    senderData: { uid: string; name: string; photoURL: string },
+    receiverData: { uid: string; name: string; photoURL: string }
   ): any {
     return {
       uid: [senderId, receiverId],
       id: chatId,
       timestamp: new Date(),
       sender: {
-        uid: senderId,
-        name: result.name,
-        photoURL: result.photoURL,
+        uid: senderData.uid,
+        name: senderData.name,
+        photoURL: senderData.photoURL,
       },
       receiver: {
-        uid: receiverId,
-        name: result.name,
-        photoURL: result.photoURL,
+        uid: receiverData.uid,
+        name: receiverData.name,
+        photoURL: receiverData.photoURL,
       },
     };
-  }
-
-  onMessageSent(): void {
-    if (this.selectedUserId && this.loggedInUserId) {
-      const chatId = this.generateChatId(
-        this.loggedInUserId,
-        this.selectedUserId
-      );
-      this.searchService.navigateToDirectChat(chatId);
-    }
   }
 }
