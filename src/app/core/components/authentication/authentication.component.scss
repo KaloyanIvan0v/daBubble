@@ -288,7 +288,7 @@ form {
 
   to {
     top: 100px;
-    transform: translate(0, 0) scale(0.7);
+    transform: translate(-50%, -50%) scale(0.7);
   }
 }
 
@@ -553,6 +553,10 @@ form {
 @media (max-width: 550px) {
   #login-logo-animated {
     width: 70px;
+  }
+
+  .logo-animation-container {
+    left: 65%;
   }
 
   .logo-text {
