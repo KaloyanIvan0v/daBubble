@@ -387,6 +387,11 @@ form {
     width: 85%;
   }
 
+  .reset-password-mode {
+    height: 40%;
+    width: 85%;
+  }
+
   .reset-password-container {
     @include dFlex($fd: column, $jc: center);
     width: 100%;

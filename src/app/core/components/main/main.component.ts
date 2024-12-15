@@ -21,6 +21,7 @@ import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar
 import { StatefulWindowServiceService } from '../../shared/services/stateful-window-service/stateful-window-service.service';
 import { MainService } from '../../shared/services/main-service/main.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Routes } from '@angular/router';
 
 @Component({
   selector: 'app-main',

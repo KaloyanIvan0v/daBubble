@@ -14,7 +14,7 @@ import { ChooseAvatarComponent } from './core/components/authentication/choose-a
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'authentication/reset-password-link',
+    redirectTo: 'authentication/login',
     pathMatch: 'full',
   },
   {
@@ -46,8 +46,8 @@ export const routes: Routes = [
         component: ResetPasswordLinkComponent,
         data: { modeClass: 'reset-link-mode' },
       },
-      { path: '', redirectTo: 'reset-password-link', pathMatch: 'full' },
-      { path: '**', redirectTo: 'reset-password-link' },
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: '**', redirectTo: 'login' },
     ],
   },
   {
