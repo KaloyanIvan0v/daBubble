@@ -9,7 +9,14 @@
       <div class="channel-users" (click)="openChannelUsersViewPopUp()">
         <div class="user-imgs">
           <div *ngFor="let user of channelUsers" class="user-img">
-            <img src="{{ user?.photoURL }}" alt="" />
+            <img
+              [src]="
+                user?.photoURL && user.photoURL.trim() !== ''
+                  ? user.photoURL
+                  : 'assets/img/profile-img/profile-img-placeholder.svg'
+              "
+              alt="User Image"
+            />
           </div>
         </div>
         <div class="user-amount">{{ userAmount }}</div>

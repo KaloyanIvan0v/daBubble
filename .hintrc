@@ -15,6 +15,12 @@
       {
         "aria-required-parent": "off"
       }
+    ],
+    "axe/text-alternatives": [
+      "default",
+      {
+        "image-alt": "off"
+      }
     ]
   }
 }

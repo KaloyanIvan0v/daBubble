@@ -1,8 +1,21 @@
 <section *ngIf="users.length > 0">
   <div class="member" *ngFor="let user of users" (click)="returnUser(user)">
     <div class="img-wrapper">
-      <img src="{{ user.photoURL }}" alt="" />
-      <div ngClass="{{ user.status ? 'dot-online' : 'dot-offline' }}"></div>
+      <img
+        *ngIf="user?.photoURL !== ''; else placeholder"
+        [src]="user.photoURL"
+        [alt]="'Photo of ' + user?.name"
+        referrerpolicy="no-referrer"
+      />
+      <ng-template #placeholder>
+        <img
+          src="assets/img/profile-img/profile-img-placeholder.svg"
+          alt="Profile image placeholder"
+        />
+      </ng-template>
+      <div
+        [ngClass]="{ 'dot-online': user?.status, 'dot-offline': !user?.status }"
+      ></div>
     </div>
     <div class="user-name-mail">
       <div class="name-wrapper">

@@ -35,7 +35,14 @@
         (click)="navigateToDirectChat(item.chat.id)"
       >
         <div class="item-img">
-          <img [src]="item.user?.photoURL" alt="User Avatar" />
+          <img
+            [src]="
+              item.user?.photoURL && item.user?.photoURL !== ''
+                ? item.user?.photoURL
+                : 'assets/img/profile-img/profile-img-placeholder.svg'
+            "
+            alt="User Avatar"
+          />
           <div class="status"></div>
         </div>
         <div

@@ -5,7 +5,15 @@
       <div class="close-button" (click)="closePopUp()"></div>
     </div>
     <div class="user-img">
-      <img src="{{ (userData$ | async)?.photoURL }}" alt="" />
+      <img
+        [src]="
+          (userData$ | async)?.photoURL &&
+          (userData$ | async)?.photoURL.trim() !== ''
+            ? (userData$ | async)?.photoURL
+            : 'assets/img/profile-img/profile-img-placeholder.svg'
+        "
+        alt="User Avatar"
+      />
     </div>
     <div class="user-name-wrapper">
       <div class="user-name">{{ (userData$ | async)?.name }}</div>
@@ -17,14 +25,14 @@
 
     <div class="user-email-wrapper">
       <div class="email-wrapper-tittle">
-        <img src="/assets/img/icons/mail-black.svg" alt="" />
+        <img src="/assets/img/icons/mail-black.svg" alt="Mail Icon" />
         <div class="user-email-tittle">E-Mail-Adresse</div>
       </div>
       <div class="user-email">{{ (userData$ | async)?.email }}</div>
     </div>
     <div class="dfc">
       <div class="send-message-btn primary-btn">
-        <img src="/assets/img/icons/mode_comment.svg" alt="" />
+        <img src="/assets/img/icons/mode_comment.svg" alt="Message Icon" />
         <div>Nachricht</div>
       </div>
     </div>
