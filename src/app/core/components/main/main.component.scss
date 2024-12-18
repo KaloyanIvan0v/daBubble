@@ -212,10 +212,14 @@ p {
       border-radius: 0px;
       width: 100vw;
       height: 100vh;
+      max-height: calc(100vh - 80px);
     }
+
     .right-side-component {
       margin: 0px;
       border-radius: 0px;
+      max-height: calc(100vh - 80px);
+      width: 100vw;
     }
   }
   .workspace-menu-btn {
