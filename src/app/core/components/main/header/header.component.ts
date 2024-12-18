@@ -11,11 +11,12 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Observable } from 'rxjs';
 import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
+import { SearchInputComponent } from '../../../shared/search-input/search-input.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SearchInputComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -34,12 +35,13 @@ export class HeaderComponent {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
 
-  @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
+  @ViewChild('searchArea', { static: false, read: ElementRef })
+  searchArea!: ElementRef;
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
     if (
-      this.searchContainer &&
-      !this.searchContainer.nativeElement.contains(event.target)
+      this.searchArea &&
+      !this.searchArea.nativeElement.contains(event.target)
     ) {
       this.searchService.headerSearchResults = [];
     }
@@ -47,20 +49,5 @@ export class HeaderComponent {
 
   openPopUp() {
     this.workspaceService.userMenuPopUp.set(true);
-  }
-
-  onSearch(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const queryText = input.value;
-    if (queryText.trim()) {
-      this.firebaseService
-        .searchAllChannelsAndUsers(queryText)
-        .subscribe((results) => {
-          this.searchService.headerSearchResults =
-            this.searchService.filterOutLoggedInUser(results);
-        });
-    } else {
-      this.searchService.headerSearchResults = [];
-    }
   }
 }

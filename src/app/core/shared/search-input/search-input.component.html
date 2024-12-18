@@ -1,0 +1,41 @@
+<section>
+  <div class="search-wrapper">
+    <input
+      #searchInput
+      type="text"
+      name="search-all"
+      id="search-all"
+      placeholder="Devspace durchsuchen"
+      (input)="onSearch($event)"
+      (keydown)="searchService.onKeyDown($event, 'header')"
+    />
+    <img src="assets/img/icons/search-grey.svg" alt="search-icon" />
+    <div
+      *ngIf="searchService.headerSearchResults.length > 0"
+      class="search-results-container"
+    >
+      <div
+        *ngFor="let result of searchService.headerSearchResults; let i = index"
+        class="search-result-item"
+        [class.active]="i === searchService.headerSelectedIndex"
+        role="option"
+        (click)="searchService.onSelectResult(result)"
+        (keydown.enter)="searchService.onSelectResult(result)"
+        tabindex="0"
+      >
+        <div class="results-info-container">
+          <img
+            *ngIf="result.photoURL"
+            [src]="result.photoURL"
+            alt="{{ result.name }}"
+            class="user-profile-image"
+          />
+          <span *ngIf="result.type === 'user'"
+            >&#64;{{ result.name || result.email }}</span
+          >
+          <span *ngIf="result.type === 'channel'">#{{ result.name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

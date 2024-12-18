@@ -1,0 +1,79 @@
+@import "global.scss";
+
+.search-wrapper {
+  @include dFlex($fd: row);
+  position: relative;
+  width: 95%;
+  height: 70px;
+  max-width: 989px;
+  min-width: 100px;
+  background-color: white;
+  border-radius: 42px;
+  margin: 0px 20px;
+
+  input {
+    width: 100%;
+    margin: 0px 0px 0px 28px;
+    font-size: 24px;
+  }
+
+  img {
+    width: auto;
+    height: 35px;
+    flex-shrink: 0;
+    margin-right: 15px;
+  }
+}
+
+.search-results-container {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 20px;
+  z-index: 3;
+}
+
+.results-info-container {
+  @include dFlex($ai: center, $jc: flex-start);
+}
+
+.search-result-item {
+  padding: 10px;
+  cursor: pointer;
+
+  &:hover,
+  &.active {
+    background-color: #f1f1f1;
+  }
+}
+
+.user-profile-image {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+@media (max-width: 960px) {
+  .search-wrapper {
+    display: none;
+  }
+}
+
+@media (max-width: 550px) {
+  .user-img {
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  .user-status {
+    display: none;
+  }
+}

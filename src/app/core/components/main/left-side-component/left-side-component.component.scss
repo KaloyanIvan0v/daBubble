@@ -46,3 +46,9 @@ app-chat-list {
   flex-grow: 1;
   height: 50%;
 }
+
+@media (max-width: 960px) {
+  .header {
+    display: none;
+  }
+}
