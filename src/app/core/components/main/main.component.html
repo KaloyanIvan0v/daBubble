@@ -16,16 +16,15 @@
       </button>
       <app-left-side-component
         class="left-side-component"
-        [ngClass]="{
-          'width-0': !leftSideComponentOpen,
-        }"
+        *ngIf="showLeftSide()"
       ></app-left-side-component>
-      <app-main-workspace class="main-workspace"></app-main-workspace>
+      <app-main-workspace
+        class="main-workspace"
+        *ngIf="showChat()"
+      ></app-main-workspace>
       <app-right-side-container
         class="right-side-component"
-        [ngClass]="{
-          'width-0': !rightSideComponentOpen,
-        }"
+        *ngIf="showThread()"
       ></app-right-side-container>
     </div>
     <app-user-menu class="pop-up-user-menu"></app-user-menu>

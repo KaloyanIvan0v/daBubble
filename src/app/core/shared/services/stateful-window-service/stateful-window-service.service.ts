@@ -8,7 +8,7 @@ export class StatefulWindowServiceService {
 
   leftSideComponentState = signal<boolean>(true);
   rightSideComponentState = signal<boolean>(false);
-  currentActiveComponentMobile = signal<string>('');
+  currentActiveComponentMobile = signal<'left' | 'chat' | 'thread'>('left');
   startWidth = 1400;
   endWidth = 960;
 
@@ -55,10 +55,6 @@ export class StatefulWindowServiceService {
     this.rightSideComponentState.set(false);
   }
 
-  setActiveComponent(componentName: string) {
-    this.currentActiveComponentMobile.set(componentName);
-  }
-
   openRightSideCloseLeftSide() {
     this.rightSideComponentState.set(true);
     this.leftSideComponentState.set(false);
@@ -67,5 +63,21 @@ export class StatefulWindowServiceService {
   openLeftSideCloseRightSide() {
     this.rightSideComponentState.set(false);
     this.leftSideComponentState.set(true);
+  }
+
+  setMobileViewMode(mode: 'left' | 'chat' | 'thread') {
+    this.currentActiveComponentMobile.set(mode);
+  }
+
+  openChatOnMobile() {
+    this.setMobileViewMode('chat');
+  }
+
+  openThreadOnMobile() {
+    this.setMobileViewMode('thread');
+  }
+
+  backToListOnMobile() {
+    this.setMobileViewMode('left');
   }
 }

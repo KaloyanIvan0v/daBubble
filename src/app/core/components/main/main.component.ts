@@ -113,16 +113,40 @@ export class MainComponent implements OnInit, OnDestroy {
         this.statefulWindowService.closeLeftSideComponentState();
       }
     } else if (window.innerWidth < 960) {
+      this.statefulWindowService.setMobileViewMode('left');
     }
+  }
+
+  isMobile(): boolean {
+    return window.innerWidth < 960;
+  }
+
+  showLeftSide(): boolean {
+    return (
+      !this.isMobile() ||
+      this.statefulWindowService.currentActiveComponentMobile() === 'left'
+    );
+  }
+
+  showChat(): boolean {
+    return (
+      !this.isMobile() ||
+      this.statefulWindowService.currentActiveComponentMobile() === 'chat'
+    );
+  }
+
+  showThread(): boolean {
+    return (
+      !this.isMobile() ||
+      this.statefulWindowService.currentActiveComponentMobile() === 'thread'
+    );
   }
 
   checkIfMobile() {
     if (window.innerWidth < 960) {
-      this.setMobile();
+      this.statefulWindowService.setMobileViewMode('left');
     }
   }
-
-  setMobile() {}
 
   get leftSideComponentOpen() {
     return this.statefulWindowService.leftSideComponentState();
@@ -141,5 +165,33 @@ export class MainComponent implements OnInit, OnDestroy {
     this.workspaceButtonText = this.leftSideComponentOpen
       ? 'Workspace-Menu schließen'
       : 'Workspace-Menu öffnen';
+  }
+
+  openThread() {
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openThreadOnMobile();
+    } else {
+      // On large screens, right side can be opened by service logic
+      this.statefulWindowService.openRightSideComponentState();
+    }
+  }
+
+  backToList() {
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.backToListOnMobile();
+    } else {
+      // On larger screens, 'backToList' might not do much.
+      // You could choose to close the right side panel if you want:
+      this.statefulWindowService.closeRightSideComponentState();
+    }
+  }
+
+  backToChat() {
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openChatOnMobile();
+    } else {
+      // On larger screens, this might mean just closing the thread panel:
+      this.statefulWindowService.closeRightSideComponentState();
+    }
   }
 }
