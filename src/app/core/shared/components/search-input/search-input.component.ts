@@ -28,11 +28,22 @@ export class SearchInputComponent implements OnInit {
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     const inputText = input.value.toLowerCase();
+
     if (inputText !== '') {
-      this.filteredMessages = this.allMessages.filter((message) => {
-        const messageText = message.value.text.toLowerCase();
-        return messageText.includes(inputText);
-      });
+      this.filteredMessages = this.allMessages
+        .filter((message) => {
+          const messageText = message.value.text.toLowerCase();
+          return messageText.includes(inputText);
+        })
+        .sort((a, b) => {
+          const aText = a.value.text.toLowerCase();
+          const bText = b.value.text.toLowerCase();
+          const aStarts = aText.startsWith(inputText) ? 0 : 1;
+          const bStarts = bText.startsWith(inputText) ? 0 : 1;
+
+          // Nachrichten, die mit dem Suchtext beginnen, sollen zuerst kommen
+          return aStarts - bStarts;
+        });
     } else {
       this.filteredMessages = [];
     }

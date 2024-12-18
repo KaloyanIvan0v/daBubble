@@ -127,7 +127,6 @@
 
 .message-space {
   @include dFlex();
-  padding: 1px 12px;
   font-size: 12px;
   border-radius: 13px;
   color: $text-grey;
