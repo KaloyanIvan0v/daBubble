@@ -312,3 +312,9 @@ button:hover {
     padding: 8px 12px 8px 12px;
   }
 }
+
+.pipe-user-details {
+  @include dFlex($fd: row);
+  gap: 8px;
+  align-items: center;
+}

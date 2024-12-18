@@ -10,6 +10,7 @@
         <div class="user-imgs">
           <div *ngFor="let user of channelUsers" class="user-img">
             <img
+              referrerpolicy="no-referrer"
               [src]="
                 user?.photoURL && user.photoURL.trim() !== ''
                   ? user.photoURL

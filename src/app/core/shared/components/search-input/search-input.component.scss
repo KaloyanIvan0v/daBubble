@@ -1,0 +1,121 @@
+@import "global.scss";
+
+.search-wrapper {
+  position: relative;
+  @include dFlex($fd: row);
+  position: relative;
+  width: 95%;
+  height: 70px;
+  max-width: 989px;
+  min-width: 100px;
+  background-color: white;
+  border-radius: 42px;
+  margin: 0px 20px;
+
+  input {
+    width: 100%;
+    margin: 0px 0px 0px 28px;
+    font-size: 24px;
+    &:focus {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+  }
+
+  img {
+    width: auto;
+    height: 35px;
+    flex-shrink: 0;
+    margin-right: 15px;
+  }
+}
+
+.search-results {
+  position: absolute;
+  top: 75px;
+  left: 0;
+  width: 100%;
+  padding: 25px;
+  z-index: 5;
+  max-height: 420px;
+  background-color: white;
+  border: $light-purple 1px solid;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+.bottom-no-border-radius {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.search-result-item {
+  @include dFlex($jc: start);
+  width: 100%;
+  gap: 15px;
+  padding: 20px 20px;
+  cursor: pointer;
+  div {
+    transition: transform 0.175s ease;
+  }
+  &:hover {
+    div {
+      transform: scale(1.005);
+    }
+    background-color: $bg-color;
+    border-radius: 30px;
+    .tag-symbol {
+      @include iconButton(
+        "/assets/img/icons/tag-blue.svg",
+        "/assets/img/icons/tag-blue.svg"
+      );
+    }
+    .add-symbol {
+      @include iconButton(
+        "/assets/img/icons/alternate_email-blue.svg",
+        "/assets/img/icons/alternate_email-blue.svg"
+      );
+    }
+  }
+}
+
+.results-space-wrapper {
+  @include dFlex($ai: start);
+}
+
+.tag-symbol {
+  @include iconButton(
+    "/assets/img/icons/tag-black.svg",
+    "/assets/img/icons/tag-blue.svg"
+  );
+}
+
+.add-symbol {
+  @include iconButton(
+    "/assets/img/icons/alternate_email-black.svg",
+    "/assets/img/icons/alternate_email-blue.svg"
+  );
+}
+
+.search-result-divider {
+  width: 100%;
+  height: 1px;
+  background-color: $light-purple;
+}
+
+.item-value {
+  @include dFlex($ai: start, $fd: column);
+  width: 100%;
+  gap: 15px;
+}
+
+.message {
+  @include dFlex($ai: start, $fd: column);
+  width: max-content;
+  gap: 15px;
+  padding: 10px 10px;
+  color: white;
+  background-color: $purple2;
+  border-radius: 30px;
+  border-bottom-left-radius: 0px;
+}

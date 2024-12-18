@@ -4,7 +4,7 @@ import { ChannelListComponent } from './channel-list/channel-list.component';
 import { Router } from '@angular/router';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
-import { SearchInputComponent } from '../../../shared/search-input/search-input.component';
+import { SearchInputComponent } from 'src/app/core/shared/components/search-input/search-input.component';
 @Component({
   selector: 'app-left-side-component',
   standalone: true,

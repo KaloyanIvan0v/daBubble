@@ -1,0 +1,40 @@
+<section>
+  <div
+    [ngClass]="filteredMessages.length > 0 ? 'bottom-no-border-radius' : ''"
+    class="search-wrapper"
+  >
+    <input
+      type="text"
+      [placeholder]="isMobile() ? 'Gehe zu...' : 'Devspace durchsuchen'"
+      (input)="onSearch($event)"
+    />
+    <img src="assets/img/icons/search-grey.svg" alt="search-icon" />
+
+    <div
+      class="search-results overflow-y-scroll"
+      *ngIf="filteredMessages.length > 0"
+    >
+      <div
+        *ngFor="let message of filteredMessages; let i = index"
+        (click)="openMessage(filteredMessages[i])"
+        class="search-result-item"
+      >
+        <div class="results-space-wrapper">
+          <div *ngIf="message.location.split('/')[1] === 'channels'">
+            <div class="tag-symbol"></div>
+          </div>
+          <div *ngIf="message.location.split('/')[1] === 'directMessages'">
+            <div class="add-symbol"></div>
+          </div>
+        </div>
+
+        <div class="item-value">
+          <div class="author">
+            <div [innerHTML]="message.author | showUser | async"></div>
+          </div>
+          <div class="message">{{ message.value.text }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

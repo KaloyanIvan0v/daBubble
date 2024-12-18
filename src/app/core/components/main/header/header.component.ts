@@ -11,7 +11,7 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Observable } from 'rxjs';
 import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
-import { SearchInputComponent } from '../../../shared/search-input/search-input.component';
+import { SearchInputComponent } from 'src/app/core/shared/components/search-input/search-input.component';
 
 @Component({
   selector: 'app-header',

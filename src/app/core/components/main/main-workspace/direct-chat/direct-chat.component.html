@@ -6,7 +6,11 @@
       (click)="receiverId && openProfileView(receiverId)"
     >
       <div class="header-user-img">
-        <img [src]="receiverPhotoURL$ | async" alt="user-img" />
+        <img
+          referrerpolicy="no-referrer"
+          [src]="receiverPhotoURL$ | async"
+          alt="user-img"
+        />
         <div class="status"></div>
       </div>
       <div class="font24-700">{{ receiverName$ | async }}</div>

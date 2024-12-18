@@ -23,6 +23,7 @@ import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { User } from '../../models/user.class';
+import { Chat } from '../../models/chat.class';
 
 @Injectable({
   providedIn: 'root',
@@ -260,11 +261,11 @@ export class FirebaseServicesService implements OnDestroy {
     updateDoc(userDocRef, data);
   }
 
-  getChannels(): Observable<any> {
-    return this.getCollection('channels', true);
+  getChannels(): Observable<Channel[]> {
+    return this.getCollection<Channel>('channels', true);
   }
 
-  getChats(): Observable<any> {
+  getChats(): Observable<Chat[]> {
     return this.getCollection('directMessages', true);
   }
 
