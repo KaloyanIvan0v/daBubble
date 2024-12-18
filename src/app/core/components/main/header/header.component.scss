@@ -133,3 +133,27 @@ section {
     display: none;
   }
 }
+
+@media (max-width: 550px) {
+  section {
+    height: 80px;
+  }
+
+  .logo-container {
+    img {
+      width: 70%;
+      height: auto;
+    }
+  }
+
+  .user-img {
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  .user-status {
+    display: none;
+  }
+}
