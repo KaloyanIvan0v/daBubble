@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 import { User } from 'src/app/core/shared/models/user.class';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 @Component({
   selector: 'app-chat-list',
   standalone: true,
@@ -27,7 +28,8 @@ export class ChatListComponent implements OnInit {
     private router: Router,
     public firebaseService: FirebaseServicesService,
     public authService: AuthService,
-    public workspaceService: WorkspaceService
+    public workspaceService: WorkspaceService,
+    private statefulWindowService: StatefulWindowServiceService
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +66,10 @@ export class ChatListComponent implements OnInit {
     this.selectedChatId = chatId;
     this.setCurrentActiveUnitId(chatId);
     this.router.navigate(['dashboard', 'direct-chat', chatId]);
+
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openChatOnMobile();
+    }
   }
 
   setCurrentActiveUnitId(chatId: string): void {

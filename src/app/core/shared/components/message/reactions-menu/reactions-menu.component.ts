@@ -92,6 +92,9 @@ export class ReactionsMenuComponent implements OnInit {
   openThread() {
     this.threadService.channelUsersUid.next(this.channelUsersUid);
     this.threadService.openThread(this.message);
-    this.statefulWindowService.openRightSideComponentState();
+
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openThreadOnMobile();
+    }
   }
 }

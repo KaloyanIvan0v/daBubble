@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { Channel } from '../../../../shared/models/channel.class';
 import { Router } from '@angular/router';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -21,7 +22,8 @@ export class ChannelListComponent {
   constructor(
     private firebaseService: FirebaseServicesService,
     private workspaceService: WorkspaceService,
-    private router: Router
+    private router: Router,
+    private statefulWindowService: StatefulWindowServiceService
   ) {}
 
   get currentActiveUnitId() {
@@ -51,6 +53,10 @@ export class ChannelListComponent {
     this.setChannelId(currentActiveUnitId);
     this.router.navigate(['dashboard', 'channel-chat']);
     //this.currentActiveUnitId = this.workspaceService.currentActiveUnitId();
+
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openChatOnMobile();
+    }
   }
 
   setChannelId(currentActiveUnitId: string) {
