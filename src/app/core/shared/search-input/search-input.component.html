@@ -5,7 +5,7 @@
       type="text"
       name="search-all"
       id="search-all"
-      placeholder="Devspace durchsuchen"
+      [placeholder]="isMobile() ? 'Gehe zu...' : 'Devspace durchsuchen'"
       (input)="onSearch($event)"
       (keydown)="searchService.onKeyDown($event, 'header')"
     />

@@ -47,8 +47,16 @@ app-chat-list {
   height: 50%;
 }
 
+app-search-input {
+  display: none;
+}
+
 @media (max-width: 960px) {
   .header {
     display: none;
+  }
+
+  app-search-input {
+    display: block;
   }
 }

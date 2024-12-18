@@ -29,4 +29,8 @@ export class SearchInputComponent {
       this.searchService.headerSearchResults = [];
     }
   }
+
+  isMobile(): boolean {
+    return window.innerWidth < 960;
+  }
 }

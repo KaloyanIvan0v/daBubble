@@ -61,7 +61,15 @@
 
 @media (max-width: 960px) {
   .search-wrapper {
-    display: none;
+    height: 48px;
+    min-width: unset;
+    margin: 0;
+    width: 100%;
+    border: 1px $light-purple solid;
+
+    input {
+      font-size: 17px;
+    }
   }
 }
 

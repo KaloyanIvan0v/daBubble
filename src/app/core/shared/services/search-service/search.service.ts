@@ -5,6 +5,7 @@ import { WorkspaceService } from '../workspace-service/workspace.service';
 import { FirebaseServicesService } from '../firebase/firebase.service';
 import { Router } from '@angular/router';
 import { setDoc } from 'firebase/firestore';
+import { StatefulWindowServiceService } from '../stateful-window-service/stateful-window-service.service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +30,8 @@ export class SearchService {
     public workspaceService: WorkspaceService,
     public authService: AuthService,
     public firebaseService: FirebaseServicesService,
-    public router: Router
+    public router: Router,
+    public statefulWindowService: StatefulWindowServiceService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
     this.authService
@@ -165,10 +167,16 @@ export class SearchService {
 
   navigateToDirectChat(chatId: string): void {
     this.router.navigate(['dashboard', 'direct-chat', chatId]);
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openChatOnMobile();
+    }
   }
 
   navigateToChannelChat(channelId: string): void {
     this.router.navigate(['dashboard', 'channel-chat', channelId]);
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openChatOnMobile();
+    }
   }
 
   onKeyDown(event: KeyboardEvent, context: 'header' | 'newChat'): void {

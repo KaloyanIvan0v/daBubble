@@ -71,6 +71,10 @@ app-search-input {
 }
 
 @media (max-width: 960px) {
+  app-search-input {
+    display: none;
+  }
+
   .user-name {
     display: none;
   }
