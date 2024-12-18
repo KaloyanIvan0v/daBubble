@@ -119,3 +119,16 @@
   border-radius: 30px;
   border-bottom-left-radius: 0px;
 }
+
+.message-meta {
+  @include dFlex();
+  gap: 15px;
+}
+
+.message-space {
+  @include dFlex();
+  padding: 1px 12px;
+  font-size: 12px;
+  border-radius: 13px;
+  color: $text-grey;
+}

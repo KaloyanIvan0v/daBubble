@@ -1,8 +1,6 @@
-import { filter } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
 import { CommonModule } from '@angular/common';
-import { User } from 'src/app/core/shared/models/user.class';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Chat } from 'src/app/core/shared/models/chat.class';
 import { Message } from 'src/app/core/shared/models/message.class';

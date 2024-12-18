@@ -29,8 +29,11 @@
         </div>
 
         <div class="item-value">
-          <div class="author">
+          <div class="message-meta">
             <div [innerHTML]="message.author | showUser | async"></div>
+            <div *ngIf="message.space !== ''" class="message-space">
+              #{{ message.space }}
+            </div>
           </div>
           <div class="message">{{ message.value.text }}</div>
         </div>
