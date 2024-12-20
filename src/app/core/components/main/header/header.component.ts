@@ -1,9 +1,11 @@
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 import {
   ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
   ViewChild,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
@@ -13,7 +15,6 @@ import { Observable } from 'rxjs';
 import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
 import { SearchInputComponent } from 'src/app/core/shared/components/search-input/search-input.component';
 import { NavigationEnd, Router } from '@angular/router';
-
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -36,19 +37,19 @@ export class HeaderComponent {
     public authService: AuthService,
     public cdRef: ChangeDetectorRef,
     public searchService: SearchService,
-    private router: Router
+    private router: Router,
+    public statefulService: StatefulWindowServiceService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
+
+    effect(() => {
+      const mode = this.statefulService.currentActiveComponentMobile();
+      this.updateLogoBasedOnMobileMode(mode);
+    });
   }
 
   ngOnInit(): void {
     this.updateView(window.innerWidth);
-
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.updateLogoBasedOnRouteAndScreenSize(event.url);
-      }
-    });
   }
 
   @ViewChild('searchArea', { static: false, read: ElementRef })
@@ -70,23 +71,27 @@ export class HeaderComponent {
 
   updateView(screenWidth: number): void {
     this.isBelow960 = screenWidth <= 960;
-    this.updateLogoBasedOnRouteAndScreenSize(this.router.url);
   }
 
-  updateLogoBasedOnRouteAndScreenSize(url: string): void {
+  updateLogoBasedOnMobileMode(mode: 'left' | 'chat' | 'thread'): void {
     if (this.isBelow960) {
-      if (url.includes('/channel-chat')) {
-        this.logoSrc = 'assets/img/workspace-logo.svg';
-        this.showDevSpaceOnMobile = true;
-      } else if (url.includes('/direct-chat')) {
-        this.logoSrc = 'assets/img/workspace-logo.svg';
-        this.showDevSpaceOnMobile = true;
-      } else if (url.includes('/new-chat')) {
-        this.logoSrc = 'assets/img/workspace-logo.svg';
-        this.showDevSpaceOnMobile = true;
-      } else {
-        this.logoSrc = 'assets/img/logo-long.svg';
-        this.showDevSpaceOnMobile = false;
+      console.log(mode, 'sdfgfdg');
+      switch (mode) {
+        case 'left':
+          this.logoSrc = 'assets/img/logo-logo.svg';
+          this.showDevSpaceOnMobile = true;
+          break;
+        case 'chat':
+          this.logoSrc = 'assets/img/workspace-long.svg';
+          this.showDevSpaceOnMobile = true;
+          break;
+        case 'thread':
+          this.logoSrc = 'assets/img/workspace-long.svg';
+          this.showDevSpaceOnMobile = true;
+          break;
+        default:
+          this.logoSrc = 'assets/img/workspace-long.svg';
+          this.showDevSpaceOnMobile = false;
       }
     } else {
       this.logoSrc = 'assets/img/logo-long.svg';
