@@ -38,6 +38,10 @@ section {
   );
 }
 
+.new-message-mobile {
+  display: none;
+}
+
 app-channel-list {
   flex-grow: 1;
 }
@@ -58,5 +62,13 @@ app-search-input {
 
   app-search-input {
     display: block;
+  }
+
+  .new-message-mobile {
+    display: block;
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    cursor: pointer;
   }
 }

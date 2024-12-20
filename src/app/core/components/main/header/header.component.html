@@ -1,6 +1,11 @@
 <section>
   <div class="logo-container">
-    <img src="assets/img/logo-long.svg" alt="logo" />
+    <img
+      [src]="logoSrc"
+      alt="logo"
+      [ngClass]="{ 'width-height-50': showDevSpaceOnMobile }"
+    />
+    <div *ngIf="showDevSpaceOnMobile" class="logo-name">Devspace</div>
   </div>
   <app-search-input #searchArea></app-search-input>
   <!-- Use *ngIf to assign the async value to a template variable -->

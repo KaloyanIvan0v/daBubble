@@ -70,6 +70,11 @@ app-search-input {
   margin-right: 8px;
 }
 
+.width-height-50 {
+  width: 50px !important;
+  height: 50px !important;
+}
+
 @media (max-width: 960px) {
   app-search-input {
     display: none;
@@ -90,6 +95,13 @@ app-search-input {
 
   .logo-container {
     margin-top: 10px;
+    margin-left: 10px;
+    @include dFlex($ai: center);
+  }
+
+  .logo-name {
+    font-size: 25px;
+    font-weight: 700;
     margin-left: 10px;
   }
 }
@@ -115,5 +127,11 @@ app-search-input {
 
   .user-status {
     display: none;
+  }
+
+  .logo-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-left: 10px;
   }
 }
