@@ -21,7 +21,6 @@ import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar
 import { StatefulWindowServiceService } from '../../shared/services/stateful-window-service/stateful-window-service.service';
 import { MainService } from '../../shared/services/main-service/main.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Routes } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -135,11 +134,17 @@ export class MainComponent implements OnInit, OnDestroy {
     );
   }
 
-  showThread(): boolean {
-    return (
-      !this.isMobile() ||
-      this.statefulWindowService.currentActiveComponentMobile() === 'thread'
-    );
+  showThread() {
+    if (this.isMobile()) {
+      return (
+        this.isMobile() ||
+        this.statefulWindowService.currentActiveComponentMobile() === 'thread'
+      );
+    } else {
+      return this.statefulWindowService.rightSideComponentState()
+        ? true
+        : false;
+    }
   }
 
   checkIfMobile() {
@@ -167,13 +172,13 @@ export class MainComponent implements OnInit, OnDestroy {
       : 'Workspace-Menu öffnen';
   }
 
-  openThread() {
-    if (this.isMobile()) {
-      this.statefulWindowService.openThreadOnMobile();
-    } else {
-      this.statefulWindowService.openRightSideComponentState();
-    }
-  }
+  // openThread() {
+  //   if (this.isMobile()) {
+  //     this.statefulWindowService.rightSideComponentState.set(true);
+  //   } else {
+  //     this.statefulWindowService.rightSideComponentState.set(false);
+  //   }
+  // }
 
   backToList() {
     if (this.isMobile()) {
