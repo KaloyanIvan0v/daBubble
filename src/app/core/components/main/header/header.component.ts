@@ -75,26 +75,17 @@ export class HeaderComponent {
 
   updateLogoBasedOnMobileMode(mode: 'left' | 'chat' | 'thread'): void {
     if (this.isBelow960) {
-      console.log(mode, 'sdfgfdg');
       switch (mode) {
         case 'left':
-          this.logoSrc = 'assets/img/logo-logo.svg';
-          this.showDevSpaceOnMobile = true;
-          break;
-        case 'chat':
-          this.logoSrc = 'assets/img/workspace-long.svg';
-          this.showDevSpaceOnMobile = true;
-          break;
-        case 'thread':
-          this.logoSrc = 'assets/img/workspace-long.svg';
+          this.logoSrc = 'assets/img/logo-short.svg';
           this.showDevSpaceOnMobile = true;
           break;
         default:
-          this.logoSrc = 'assets/img/workspace-long.svg';
-          this.showDevSpaceOnMobile = false;
+          this.logoSrc = 'assets/img/workspace-logo.svg';
+          this.showDevSpaceOnMobile = true;
       }
     } else {
-      this.logoSrc = 'assets/img/logo-long.svg';
+      this.logoSrc = 'assets/img/logo-short.svg';
       this.showDevSpaceOnMobile = false;
     }
   }
