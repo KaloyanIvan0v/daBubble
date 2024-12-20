@@ -112,7 +112,7 @@ export class MainComponent implements OnInit, OnDestroy {
       if (this.leftSideComponentOpen && this.rightSideComponentOpen) {
         this.statefulWindowService.closeLeftSideComponentState();
       }
-    } else if (window.innerWidth < 960) {
+    } else if (this.isMobile()) {
       this.statefulWindowService.setMobileViewMode('left');
     }
   }
@@ -136,15 +136,14 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   showThread(): boolean {
-    if (this.isMobile()) {
-      return this.statefulWindowService.currentActiveComponentMobile() === 'thread';
-    } else {
-      return this.rightSideComponentOpen;
-    }
+    return (
+      !this.isMobile() ||
+      this.statefulWindowService.currentActiveComponentMobile() === 'thread'
+    );
   }
 
   checkIfMobile() {
-    if (window.innerWidth < 960) {
+    if (this.isMobile()) {
       this.statefulWindowService.setMobileViewMode('left');
     }
   }
@@ -169,30 +168,22 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   openThread() {
-    if (window.innerWidth < 960) {
+    if (this.isMobile()) {
       this.statefulWindowService.openThreadOnMobile();
     } else {
-      // On large screens, right side can be opened by service logic
       this.statefulWindowService.openRightSideComponentState();
     }
   }
 
   backToList() {
-    if (window.innerWidth < 960) {
+    if (this.isMobile()) {
       this.statefulWindowService.backToListOnMobile();
-    } else {
-      // On larger screens, 'backToList' might not do much.
-      // You could choose to close the right side panel if you want:
-      this.statefulWindowService.closeRightSideComponentState();
     }
   }
 
   backToChat() {
-    if (window.innerWidth < 960) {
+    if (this.isMobile()) {
       this.statefulWindowService.openChatOnMobile();
-    } else {
-      // On larger screens, this might mean just closing the thread panel:
-      this.statefulWindowService.closeRightSideComponentState();
     }
   }
 }

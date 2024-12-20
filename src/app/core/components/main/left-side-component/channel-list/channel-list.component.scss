@@ -154,3 +154,35 @@ header {
   }
   font-weight: 600;
 }
+
+@media (max-width: 960px) {
+  .header-add-channel {
+    background-image: url(/assets/img/buttons/add-blue.svg);
+  }
+
+  .add-channel {
+    color: $purple3;
+
+    .add-img {
+      @include iconButton(
+        "/assets/img/buttons/add_circle-blue.svg",
+        "/assets/img/buttons/add_circle-blue.svg"
+      );
+    }
+  }
+}
+
+@media (max-width: 550px) {
+  .channel {
+    font-size: 17px;
+    margin-bottom: 15px;
+  }
+
+  .channel-list {
+    padding-left: 20px;
+  }
+
+  .add-channel {
+    padding-left: 40px;
+  }
+}

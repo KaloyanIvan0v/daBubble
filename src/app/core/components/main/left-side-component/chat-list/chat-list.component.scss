@@ -128,3 +128,13 @@ header {
   @include statusDot("online", 12px);
   z-index: 4;
 }
+
+@media (max-width: 550px) {
+  .item-name {
+    font-size: 17px;
+  }
+
+  .chat-items {
+    padding-left: 30px;
+  }
+}

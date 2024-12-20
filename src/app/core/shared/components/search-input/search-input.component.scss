@@ -131,3 +131,23 @@
   border-radius: 13px;
   color: $text-grey;
 }
+
+@media (max-width: 960px) {
+  .search-wrapper {
+    height: 48px;
+    min-width: unset;
+    margin: 0;
+    width: 100%;
+    border: 1px $light-purple solid;
+
+    input {
+      font-size: 17px;
+      height: 32px;
+      margin-left: 16px;
+    }
+
+    img {
+      object-fit: contain;
+    }
+  }
+}
