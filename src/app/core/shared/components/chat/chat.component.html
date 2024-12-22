@@ -3,7 +3,11 @@
   *ngIf="messages.length > 0"
   class="message-container overflow-y-scroll"
 >
-  <div *ngFor="let message of messages; let i = index" class="message">
+  <div
+    *ngFor="let message of messages; let i = index"
+    [attr.id]="'message-' + message.id"
+    class="message"
+  >
     <div
       class="daily-divider"
       *ngIf="

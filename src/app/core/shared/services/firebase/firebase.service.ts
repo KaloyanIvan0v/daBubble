@@ -18,7 +18,7 @@ import {
   DocumentData,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, map, Observable, Observer, switchMap } from 'rxjs';
-import { where, getDoc } from 'firebase/firestore';
+import { where, getDoc, collectionGroup } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
@@ -47,6 +47,16 @@ export class FirebaseServicesService implements OnDestroy {
     this.unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
     this.unsubscribeFunctions.clear();
     this.dataSubjects.clear();
+  }
+
+  async getFilteredMessages(
+    searchText: string
+  ): Promise<QuerySnapshot<DocumentData>> {
+    const messagesQuery = query(
+      collectionGroup(this.firestore, 'messages'),
+      where('value.text', '==', searchText)
+    );
+    return await getDocs(messagesQuery);
   }
 
   public setUserUID(uid: string | null): void {

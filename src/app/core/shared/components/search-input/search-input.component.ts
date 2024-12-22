@@ -6,6 +6,8 @@ import { Chat } from 'src/app/core/shared/models/chat.class';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { ShowUserPipe } from 'src/app/shared/pipes/show-user.pipe';
+import { Router } from '@angular/router';
+import { WorkspaceService } from '../../services/workspace-service/workspace.service';
 @Component({
   selector: 'app-search-input',
   standalone: true,
@@ -18,7 +20,9 @@ export class SearchInputComponent implements OnInit {
   filteredMessages: Message[] = [];
   constructor(
     public firebaseService: FirebaseServicesService,
-    public searchService: SearchService
+    public searchService: SearchService,
+    private router: Router,
+    public workspaceService: WorkspaceService
   ) {}
 
   ngOnInit() {
@@ -50,7 +54,33 @@ export class SearchInputComponent implements OnInit {
   }
 
   openMessage(message: Message) {
-    console.log(message);
+    this.navigateToMessage(message);
+  }
+
+  navigateToMessage(message: Message) {
+    const spaceId = message.location.split('/')[2];
+    const messageId = message.id; // Die eindeutige Nachricht-ID
+
+    if (this.isChannel(message.location)) {
+      // Navigiere zum Channel-Chat und übergebe die messageId als Query-Parameter
+      this.router.navigate(['dashboard', 'channel-chat', spaceId], {
+        queryParams: { messageId },
+      });
+    } else {
+      // Navigiere zum Direkt-Chat
+      this.router.navigate(['dashboard', 'direct-chat', spaceId], {
+        queryParams: { messageId },
+      });
+    }
+    this.workspaceService.currentActiveUnitId.set(spaceId);
+  }
+
+  isChannel(messagePath: string) {
+    if (messagePath !== '') {
+      return messagePath.split('/')[1] === 'channels';
+    } else {
+      return false;
+    }
   }
 
   isMobile(): boolean {

@@ -7,6 +7,7 @@ import {
   ElementRef,
   SimpleChanges,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Timestamp } from '@angular/fire/firestore';
 import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
@@ -23,16 +24,34 @@ import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/f
 })
 export class ChatComponent {
   @Input() messages: Message[] = [];
+  messageToScrollTo?: string; // hier landet die messageId
   @Output() messageToEdit: EventEmitter<Message> = new EventEmitter();
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
   private lastMessageLength: number = 0;
-  constructor(private firebaseService: FirebaseServicesService) {}
+  constructor(
+    private firebaseService: FirebaseServicesService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.route.queryParamMap.subscribe((params) => {
+      this.messageToScrollTo = params.get('messageId') || undefined;
+    });
+    this.scrollToMessageIfNeeded();
     if (changes['messages']) {
       this.checkForNewMessages();
     }
+  }
+
+  scrollToMessageIfNeeded() {
+    if (!this.messageToScrollTo) return;
+    setTimeout(() => {
+      const elem = document.getElementById('message-' + this.messageToScrollTo);
+      if (elem) {
+        elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 0);
   }
 
   private checkForNewMessages(): void {
