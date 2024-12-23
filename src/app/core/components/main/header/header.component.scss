@@ -77,6 +77,8 @@ app-search-input {
 
 .arrow-left {
   margin-right: 5px;
+  width: 25px !important;
+  height: 25px !important;
 
   @include iconButton(
     "/assets/img/buttons/arrow-left-black.svg",
@@ -103,9 +105,8 @@ app-search-input {
   }
 
   .logo-container {
-    margin-top: 10px;
-    margin-left: 10px;
     @include dFlex($ai: center);
+    justify-content: flex-start;
   }
 
   .logo-name {
