@@ -1,0 +1,76 @@
+@import "global.scss";
+
+section {
+  @include dFlex($fd: column, $jc: space-around, $ai: start);
+}
+
+.pop-up-wrapper {
+  @include dFlex($fd: column, $jc: space-around, $ai: start);
+  width: 100%;
+  height: 206px;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: white;
+  border-top-right-radius: 30px;
+  border-top-left-radius: 30px;
+
+  gap: 15px;
+  box-shadow: 0px 6px 10px 0px #00000033;
+  z-index: 4;
+}
+
+.profile-info {
+  @include dFlex($jc: flex-start);
+  width: 154px;
+  padding: 10px 30px 10px 30px;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+
+  .profile-icon {
+    background-image: url("/assets/img/icons/account_circle-black.svg");
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  &:hover {
+    color: $purple3;
+    background-color: $bg-color;
+    border-radius: 100px;
+
+    .profile-icon {
+      background-image: url("/assets/img/icons/account_circle-blue.svg");
+    }
+  }
+}
+
+.logout {
+  @include dFlex($jc: flex-start);
+  width: 175px;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 10px 30px 10px 30px;
+  cursor: pointer;
+
+  .logout-icon {
+    background-image: url("/assets/img/buttons/logout-black.svg");
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  &:hover {
+    background-color: $bg-color;
+    border-radius: 100px;
+    color: $purple3;
+
+    .logout-icon {
+      background-image: url("/assets/img/buttons/logout-blue.svg");
+    }
+  }
+}

@@ -91,6 +91,21 @@ export class HeaderComponent {
   }
 
   openPopUp() {
-    this.workspaceService.userMenuPopUp.set(true);
+    if (window.innerWidth > 960) {
+      this.workspaceService.userMenuPopUp.set(true);
+      this.workspaceService.mobileUserMenuPopUp.set(false);
+    } else {
+      this.workspaceService.mobileUserMenuPopUp.set(true);
+      this.workspaceService.userMenuPopUp.set(false);
+    }
+
+    // Trigger Angular's change detection
+    this.cdRef.detectChanges();
+
+    // Log the state after ensuring the value is updated
+    console.log(
+      'MobileUserMenu visibility:',
+      this.workspaceService.mobileUserMenuPopUp()
+    );
   }
 }

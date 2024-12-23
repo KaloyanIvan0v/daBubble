@@ -11,6 +11,7 @@ import { AuthService } from '../../shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from '../../shared/services/firebase/firebase.service';
 import { WorkspaceService } from '../../shared/services/workspace-service/workspace.service';
 import { UserMenuComponent } from '../../shared/components/pop-ups/user-menu/user-menu.component';
+import { MobileUserMenuComponent } from '../../shared/components/pop-ups/mobile-user-menu/mobile-user-menu.component';
 import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-profile-view/own-profile-view.component';
 import { OwnProfileEditComponent } from '../../shared/components/pop-ups/own-profile-edit/own-profile-edit.component';
 import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel/add-channel.component';
@@ -21,7 +22,6 @@ import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar
 import { StatefulWindowServiceService } from '../../shared/services/stateful-window-service/stateful-window-service.service';
 import { MainService } from '../../shared/services/main-service/main.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -32,6 +32,8 @@ import { ActivatedRoute, Router } from '@angular/router';
     HeaderComponent,
     CommonModule,
     UserMenuComponent,
+    MobileUserMenuComponent,
+
     OwnProfileEditComponent,
     OwnProfileViewComponent,
     AddChannelComponent,

@@ -32,6 +32,7 @@ export class WorkspaceService {
   ownProfileViewPopUp = signal(false);
   profileViewPopUp = signal(false);
   userMenuPopUp = signal(false);
+  mobileUserMenuPopUp = signal(false);
   editAvatarPopUp = signal(false);
 
   private userUpdates = new BehaviorSubject<any>(null);
@@ -118,5 +119,4 @@ export class WorkspaceService {
       this.loggedInUserData.next({ ...data, avatar: data.avatar });
     }
   }
-
 }

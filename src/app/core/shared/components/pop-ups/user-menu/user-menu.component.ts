@@ -31,6 +31,7 @@ export class UserMenuComponent {
   get popUpVisible() {
     return this.workspaceService.userMenuPopUp();
   }
+
   closePopUp() {
     this.workspaceService.userMenuPopUp.set(false);
   }
