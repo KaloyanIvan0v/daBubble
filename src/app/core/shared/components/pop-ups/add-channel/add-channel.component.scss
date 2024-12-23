@@ -33,3 +33,27 @@ section {
     "/assets/img/buttons/close-blue.svg"
   );
 }
+
+@media (max-width: 960px) {
+  section,
+  .pop-up-wrapper {
+    height: 100vh;
+    width: 100vw;
+    border-radius: 0;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .pop-up-wrapper {
+    padding: 20px;
+  }
+
+  .font18-400 {
+    font-size: 17px;
+  }
+
+  .pop-up-input {
+    padding: 16px 10px;
+  }
+}
