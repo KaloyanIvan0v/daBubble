@@ -1,5 +1,11 @@
 <section>
   <div class="logo-container">
+    <div
+      *ngIf="showDevSpaceOnMobile"
+      (click)="statefulService.backToListOnMobile()"
+      class="arrow-left"
+      alt="arrow-left"
+    ></div>
     <img
       [src]="logoSrc"
       alt="logo"

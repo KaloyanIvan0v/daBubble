@@ -75,6 +75,15 @@ app-search-input {
   height: 50px !important;
 }
 
+.arrow-left {
+  margin-right: 5px;
+
+  @include iconButton(
+    "/assets/img/buttons/arrow-left-black.svg",
+    "/assets/img/buttons/arrow-left-blue.svg"
+  );
+}
+
 @media (max-width: 960px) {
   app-search-input {
     display: none;

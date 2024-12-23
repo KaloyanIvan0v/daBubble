@@ -77,15 +77,15 @@ export class HeaderComponent {
     if (this.isBelow960) {
       switch (mode) {
         case 'left':
-          this.logoSrc = 'assets/img/logo-short.svg';
-          this.showDevSpaceOnMobile = true;
+          this.logoSrc = 'assets/img/logo-long.svg';
+          this.showDevSpaceOnMobile = false;
           break;
         default:
           this.logoSrc = 'assets/img/workspace-logo.svg';
           this.showDevSpaceOnMobile = true;
       }
     } else {
-      this.logoSrc = 'assets/img/logo-short.svg';
+      this.logoSrc = 'assets/img/logo-long.svg';
       this.showDevSpaceOnMobile = false;
     }
   }
