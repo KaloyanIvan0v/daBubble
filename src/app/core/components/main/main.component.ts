@@ -139,8 +139,10 @@ export class MainComponent implements OnInit, OnDestroy {
   showThread() {
     if (this.isMobile()) {
       return (
-        this.isMobile() ||
-        this.statefulWindowService.currentActiveComponentMobile() === 'thread'
+        this.isMobile() &&
+        this.statefulWindowService.currentActiveComponentMobile() ===
+          'thread' &&
+        this.statefulWindowService.rightSideComponentState()
       );
     } else {
       return this.statefulWindowService.rightSideComponentState()

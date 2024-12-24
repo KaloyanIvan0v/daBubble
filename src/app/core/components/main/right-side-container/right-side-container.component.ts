@@ -121,6 +121,7 @@ export class RightSideContainerComponent {
 
   closeThread() {
     this.statefulWindowService.closeRightSideComponentState();
+    this.statefulWindowService.setMobileViewMode('left');
   }
 
   get rightSideComponentOpen() {
