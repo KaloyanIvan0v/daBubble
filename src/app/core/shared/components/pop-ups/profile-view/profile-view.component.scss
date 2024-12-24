@@ -92,3 +92,44 @@ section {
   @include dFlex($jc: center, $ai: center);
   gap: 10px;
 }
+
+@media (max-width: 960px) {
+  .pop-up-wrapper {
+    width: 400px;
+    border-top-right-radius: 30px;
+  }
+
+  section {
+    align-items: center;
+  }
+}
+
+@media (max-width: 450px) {
+  .pop-up-wrapper {
+    width: 370px;
+    height: 650px;
+  }
+
+  .user-email-tittle {
+    font-size: 18px;
+  }
+
+  .user-email {
+    font-size: 16px;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .pop-up-wrapper {
+    width: 330px;
+    height: 650px;
+  }
+}
+
+@media (max-width: 350px) {
+  .pop-up-wrapper {
+    width: 280px;
+    height: 650px;
+  }
+}
