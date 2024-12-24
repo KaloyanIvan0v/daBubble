@@ -1,31 +1,32 @@
 <section>
   <div class="header">
-    <div class="header-left" (click)="openEditChannelPopUp()">
-      <div class="header-tag"></div>
-      <div class="font24-700">{{ channelName }}</div>
-      <div class="drop-down-icon"></div>
-    </div>
-    <div class="header-right">
-      <div class="channel-users" (click)="openChannelUsersViewPopUp()">
-        <div class="user-imgs">
-          <div *ngFor="let user of channelUsers" class="user-img">
-            <img
-              referrerpolicy="no-referrer"
-              [src]="
-                user?.photoURL && user.photoURL.trim() !== ''
-                  ? user.photoURL
-                  : 'assets/img/profile-img/profile-img-placeholder.svg'
-              "
-              alt="User Image"
-            />
-          </div>
-        </div>
-        <div class="user-amount">{{ userAmount }}</div>
+    <div class="header-content">
+      <div class="header-left" (click)="openEditChannelPopUp()">
+        <div class="header-tag"></div>
+        <div class="font24-700">{{ channelName }}</div>
+        <div class="drop-down-icon"></div>
       </div>
-      <div class="add-user" (click)="openAddUserToChannelPopUp()"></div>
+      <div class="header-right">
+        <div class="channel-users" (click)="openChannelUsersViewPopUp()">
+          <div class="user-imgs">
+            <div *ngFor="let user of channelUsers" class="user-img">
+              <img
+                referrerpolicy="no-referrer"
+                [src]="
+                  user?.photoURL && user.photoURL.trim() !== ''
+                    ? user.photoURL
+                    : 'assets/img/profile-img/profile-img-placeholder.svg'
+                "
+                alt="User Image"
+              />
+            </div>
+          </div>
+          <div class="user-amount">{{ userAmount }}</div>
+        </div>
+        <div class="add-user" (click)="openAddUserToChannelPopUp()"></div>
+      </div>
     </div>
   </div>
-
   <app-chat
     *ngIf="messages$ | async as messages"
     class="chat-container"
