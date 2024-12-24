@@ -123,10 +123,14 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   showLeftSide(): boolean {
-    return (
-      !this.isMobile() ||
-      this.statefulWindowService.currentActiveComponentMobile() === 'left'
-    );
+    if (this.isMobile()) {
+      return (
+        !this.isMobile() ||
+        this.statefulWindowService.currentActiveComponentMobile() === 'left'
+      );
+    } else {
+      return this.statefulWindowService.leftSideComponentState() ? true : false;
+    }
   }
 
   showChat(): boolean {
