@@ -124,3 +124,30 @@ section {
   @include dFlex($jc: center, $ai: center);
   gap: 10px;
 }
+
+@media (max-width: 960px) {
+  .pop-up-wrapper {
+    width: 95%;
+    border-top-right-radius: 30px;
+  }
+
+  section {
+    align-items: center;
+  }
+}
+
+@media (max-width: 450px) {
+  .pop-up-wrapper {
+    width: 100%;
+    height: 550px;
+  }
+
+  .user-email-tittle {
+    font-size: 18px;
+  }
+
+  .user-email {
+    font-size: 16px;
+    padding-left: 0;
+  }
+}

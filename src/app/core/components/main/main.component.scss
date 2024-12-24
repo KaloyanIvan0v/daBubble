@@ -207,6 +207,7 @@ p {
   }
   .main-container {
     gap: 0px;
+    justify-content: flex-end;
 
     .main-workspace {
       margin: 0px;
@@ -230,5 +231,11 @@ p {
   }
   .workspace-menu-btn {
     display: none;
+  }
+
+  .own-profile {
+    right: unset;
+    top: unset;
+    left: unset;
   }
 }
