@@ -1,5 +1,6 @@
 <section *ngIf="popUpVisible">
   <div class="pop-up-wrapper">
+    <div class="close-overlay" (click)="closePopUp()"></div>
     <div class="profile-info" (click)="openProfilePopUp()">
       <div class="profile-icon"></div>
       Profil

@@ -43,5 +43,6 @@ export class MobileUserMenuComponent {
 
   openProfilePopUp() {
     this.workspaceService.ownProfileViewPopUp.set(true);
+    this.closePopUp();
   }
 }
