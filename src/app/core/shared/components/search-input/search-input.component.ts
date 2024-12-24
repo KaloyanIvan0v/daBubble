@@ -8,6 +8,7 @@ import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/f
 import { ShowUserPipe } from 'src/app/shared/pipes/show-user.pipe';
 import { Router } from '@angular/router';
 import { WorkspaceService } from '../../services/workspace-service/workspace.service';
+
 @Component({
   selector: 'app-search-input',
   standalone: true,
@@ -22,6 +23,7 @@ export class SearchInputComponent implements OnInit {
     public firebaseService: FirebaseServicesService,
     public searchService: SearchService,
     private router: Router,
+
     public workspaceService: WorkspaceService
   ) {}
 
@@ -53,7 +55,18 @@ export class SearchInputComponent implements OnInit {
     }
   }
 
+  clearInput() {
+    const input = document.querySelector('input') as HTMLInputElement;
+    input.value = '';
+  }
+
+  clearSearch() {
+    this.filteredMessages = [];
+    this.clearInput();
+  }
+
   openMessage(message: Message) {
+    this.clearSearch();
     this.navigateToMessage(message);
   }
 

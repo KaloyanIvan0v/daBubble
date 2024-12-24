@@ -13,7 +13,6 @@ import { Timestamp } from '@angular/fire/firestore';
 import { FirebaseDatePipe } from 'src/app/shared/pipes/firebase-date.pipe';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { MessageComponent } from '../message/message.component';
-import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 
 @Component({
   selector: 'app-chat',
@@ -24,50 +23,61 @@ import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/f
 })
 export class ChatComponent {
   @Input() messages: Message[] = [];
-  messageToScrollTo?: string; // hier landet die messageId
+  messageToScrollTo: string | null = null;
   @Output() messageToEdit: EventEmitter<Message> = new EventEmitter();
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
+  firstScrollDone: boolean = false;
 
   private lastMessageLength: number = 0;
-  constructor(
-    private firebaseService: FirebaseServicesService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.firstScrollDone = false;
+    this.route.queryParamMap.subscribe((params) => {
+      this.messageToScrollTo = params.get('messageId') || null;
+      if (this.messageToScrollTo) {
+        this.scrollToMessageIfNeeded(true);
+        this.firstScrollDone = true;
+      } else {
+        if (!this.messages.length) return;
+        this.setMessageToLastMessageToScroll();
+        this.scrollToMessageIfNeeded(false);
+      }
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.route.queryParamMap.subscribe((params) => {
-      this.messageToScrollTo = params.get('messageId') || undefined;
-    });
-    this.scrollToMessageIfNeeded();
-    if (changes['messages']) {
+    if (changes['messages'] && this.firstScrollDone) {
+      console.log('messages', this.messages);
       this.checkForNewMessages();
     }
   }
 
-  scrollToMessageIfNeeded() {
+  scrollToMessageIfNeeded(useSmooth: boolean = true) {
     if (!this.messageToScrollTo) return;
     setTimeout(() => {
       const elem = document.getElementById('message-' + this.messageToScrollTo);
       if (elem) {
-        elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        elem.scrollIntoView({
+          behavior: useSmooth ? 'smooth' : 'auto',
+          block: 'center',
+        });
       }
     }, 0);
   }
 
   private checkForNewMessages(): void {
     if (this.lastMessageLength !== this.messages.length) {
-      this.scrollToBottom();
+      setTimeout(() => {
+        this.setMessageToLastMessageToScroll();
+        this.scrollToMessageIfNeeded(true);
+      }, 200);
       this.lastMessageLength = this.messages.length;
     }
   }
 
-  private scrollToBottom(): void {
-    if (this.messageContainer) {
-      console.log('Scrolling to bottom');
-
-      this.messageContainer.nativeElement.scrollTop =
-        this.messageContainer.nativeElement.scrollHeight;
-    }
+  setMessageToLastMessageToScroll(): void {
+    this.messageToScrollTo = this.messages[this.messages.length - 1].id;
   }
 
   getTimestamp(time: Timestamp | Date | number): number | undefined {
