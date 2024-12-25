@@ -1,5 +1,11 @@
 <section class="authentication">
   <div
+    class="account-created-background"
+    *ngIf="this.authUIService.showAccountCreated"
+  >
+    <div class="account-created-popup">Konto erfolgreich erstellt!</div>
+  </div>
+  <div
     class="background-fade"
     [class.d-none]="removeLoginAnimation"
     #backgroundFade

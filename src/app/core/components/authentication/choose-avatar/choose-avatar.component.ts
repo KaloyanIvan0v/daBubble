@@ -3,14 +3,14 @@ import { Component, Input, signal } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
 import { SignupComponent } from '../signup/signup.component';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 
 @Component({
   selector: 'app-choose-avatar',
   standalone: true,
-  imports: [SharedModule, RouterLink],
+  imports: [SharedModule],
   templateUrl: './choose-avatar.component.html',
   styleUrl: './choose-avatar.component.scss',
 })
@@ -39,13 +39,26 @@ export class ChooseAvatarComponent {
 
   canProceed(): boolean {
     return (
-      this.uploadCareService.selectedPhoto !== null &&
-      this.uploadCareService.uploadComplete &&
-      !this.uploadCareService.isUploading
+      this.uploadCareService.selectedPhoto !== null ||
+      (this.uploadCareService.uploadComplete &&
+        !this.uploadCareService.isUploading)
     );
   }
 
   navigateToSignup() {
     this.router.navigate(['/authentication/signup']);
+  }
+
+  navigateToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
+  signUpSuccess() {
+    this.authUIService.showAccountCreated = true;
+
+    setTimeout(() => {
+      this.authUIService.showAccountCreated = false;
+      this.navigateToDashboard();
+    }, 1500);
   }
 }

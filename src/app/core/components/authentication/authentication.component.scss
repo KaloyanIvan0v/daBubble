@@ -240,6 +240,26 @@ form {
   );
 }
 
+.account-created-background {
+  background-color: rgba(0, 0, 0, 0.419);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  @include dFlex();
+  z-index: 999;
+}
+
+.account-created-popup {
+  width: 450px;
+  height: 120px;
+  background-color: $purple1;
+  color: white;
+  @include dFlex();
+  border-radius: 30px;
+  border-bottom-right-radius: 0;
+  font-size: 32px;
+}
+
 .move-to-target {
   animation: moving-to-target 0.7s ease-in-out forwards;
 }

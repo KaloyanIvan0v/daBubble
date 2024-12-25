@@ -1,4 +1,3 @@
-<!-- choose-avatar.component.html -->
 <div class="choose-avatar-container">
   <div class="back-arrow-img" (click)="navigateToSignup()"></div>
   <form #chooseAvatarForm="ngForm" (ngSubmit)="uploadCareService.saveAvatar()">
@@ -85,7 +84,7 @@
         class="primary-btn"
         type="submit"
         [disabled]="!canProceed()"
-        [routerLink]="['/dashboard']"
+        (click)="signUpSuccess()"
       >
         Weiter
       </button>

@@ -7,6 +7,7 @@ export class AuthUIService {
   constructor() {}
 
   isChecked: boolean = false;
+  showAccountCreated: boolean = false;
 
   toggleCheckbox() {
     this.isChecked = !this.isChecked;
