@@ -30,6 +30,7 @@ export class ResetPasswordComponent {
     try {
       await this.authService.resetPassword(this.user.email);
       this.resetLinkSent = true;
+      this.emailSentSuccess();
     } catch (error) {
       console.error('Reset Password Error:', error);
     }

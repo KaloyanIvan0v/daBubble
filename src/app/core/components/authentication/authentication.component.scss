@@ -269,6 +269,12 @@ form {
   border-radius: 30px;
   border-bottom-right-radius: 0;
   font-size: 32px;
+
+  img {
+    width: 30px;
+    height: auto;
+    margin-right: 10px;
+  }
 }
 
 .move-to-target {
@@ -578,6 +584,19 @@ form {
   .back-arrow-img {
     left: 1%;
     top: 4%;
+  }
+
+  .email-sent-popup {
+    width: 250px;
+    height: 80px;
+
+    font-size: 20px;
+
+    img {
+      width: 20px;
+      height: auto;
+      margin-right: 10px;
+    }
   }
 }
 
