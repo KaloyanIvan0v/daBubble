@@ -260,6 +260,17 @@ form {
   font-size: 32px;
 }
 
+.email-sent-popup {
+  width: 400px;
+  height: 120px;
+  background-color: $purple1;
+  color: white;
+  @include dFlex();
+  border-radius: 30px;
+  border-bottom-right-radius: 0;
+  font-size: 32px;
+}
+
 .move-to-target {
   animation: moving-to-target 0.7s ease-in-out forwards;
 }

@@ -8,7 +8,7 @@ export class AuthUIService {
 
   isChecked: boolean = false;
   showAccountCreated: boolean = false;
-
+  showEmailSent: boolean = false;
   toggleCheckbox() {
     this.isChecked = !this.isChecked;
   }

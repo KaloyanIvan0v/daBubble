@@ -1,10 +1,22 @@
 <section class="authentication">
   <div
     class="account-created-background"
-    *ngIf="this.authUIService.showAccountCreated"
+    *ngIf="
+      this.authUIService.showAccountCreated || this.authUIService.showEmailSent
+    "
   >
-    <div class="account-created-popup">Konto erfolgreich erstellt!</div>
+    <div
+      *ngIf="this.authUIService.showAccountCreated"
+      class="account-created-popup"
+    >
+      Konto erfolgreich erstellt!
+    </div>
+
+    <div *ngIf="this.authUIService.showEmailSent" class="email-sent-popup">
+      E-Mail gesendet
+    </div>
   </div>
+
   <div
     class="background-fade"
     [class.d-none]="removeLoginAnimation"

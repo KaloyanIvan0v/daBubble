@@ -38,4 +38,12 @@ export class ResetPasswordComponent {
   navigateToLogin() {
     this.router.navigate(['/authentication/login']);
   }
+
+  emailSentSuccess() {
+    this.authUIService.showEmailSent = true;
+
+    setTimeout(() => {
+      this.authUIService.showEmailSent = false;
+    }, 1500);
+  }
 }
