@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { Observable } from 'rxjs';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
+import { User } from 'src/app/core/shared/models/user.class';
 
 @Component({
   selector: 'app-profile-view',
@@ -32,4 +33,10 @@ export class ProfileViewComponent {
   get popUpVisible() {
     return this.workspaceService.profileViewPopUp();
   }
+
+  openChat() {}
+
+  openDirectChat(userUid: string) {}
+
+  getDirectChatByUserId(userUid: string) {}
 }

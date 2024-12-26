@@ -32,7 +32,7 @@
       <div class="user-email">{{ (userData$ | async)?.email }}</div>
     </div>
     <div class="dfc">
-      <div class="send-message-btn primary-btn">
+      <div (click)="openChat()" class="send-message-btn primary-btn">
         <img src="/assets/img/icons/mode_comment.svg" alt="Message Icon" />
         <div>Nachricht</div>
       </div>

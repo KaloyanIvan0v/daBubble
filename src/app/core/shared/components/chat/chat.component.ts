@@ -48,8 +48,9 @@ export class ChatComponent {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['messages'] && this.firstScrollDone) {
-      console.log('messages', this.messages);
-      this.checkForNewMessages();
+      setTimeout(() => {
+        this.checkForNewMessages();
+      }, 200);
     }
   }
 
