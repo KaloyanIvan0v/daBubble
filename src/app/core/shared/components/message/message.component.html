@@ -12,7 +12,11 @@
       Cancel edit
     </div>
     <div class="img-wrapper">
-      <img src="{{ (author$ | async)?.photoURL }}" alt="" />
+      <img
+        referrerpolicy="no-referrer"
+        src="{{ (author$ | async)?.photoURL }}"
+        alt=""
+      />
     </div>
     <div
       class="msg-content"

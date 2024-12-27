@@ -15,7 +15,7 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
   styleUrl: './choose-avatar.component.scss',
 })
 export class ChooseAvatarComponent {
-  @Input() signUpComponent!: SignupComponent; // Input to receive signup component reference
+  @Input() signUpComponent!: SignupComponent;
   userData$: Observable<any>;
 
   photos: string[] = [

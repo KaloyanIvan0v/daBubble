@@ -9,7 +9,7 @@
         referrerpolicy="no-referrer"
         [src]="
           (userData$ | async)?.photoURL &&
-          (userData$ | async)?.photoURL.trim() !== ''
+          (userData$ | async)?.photoURL!.trim() !== ''
             ? (userData$ | async)?.photoURL
             : 'assets/img/profile-img/profile-img-placeholder.svg'
         "
@@ -23,7 +23,6 @@
         <div class="user-status">Active</div>
       </div>
     </div>
-
     <div class="user-email-wrapper">
       <div class="email-wrapper-tittle">
         <img src="/assets/img/icons/mail-black.svg" alt="Mail Icon" />
@@ -32,6 +31,7 @@
       <div class="user-email">{{ (userData$ | async)?.email }}</div>
     </div>
     <div class="dfc">
+      <!-- Button zum Öffnen/Erstellen eines Chats -->
       <div (click)="openChat()" class="send-message-btn primary-btn">
         <img src="/assets/img/icons/mode_comment.svg" alt="Message Icon" />
         <div>Nachricht</div>
