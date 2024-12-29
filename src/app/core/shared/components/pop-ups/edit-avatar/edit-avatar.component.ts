@@ -24,15 +24,15 @@ export class EditAvatarComponent {
 
   updatePhoto(event: any) {
     this.workspaceService.editAvatarPopUp.set(false);
-    this.uploadCareService.onFileSelected(event);
+    // this.uploadCareService.onFileSelected(event);
     this.uploadCareService.saveAvatar();
   }
 
   resetCurrentUserAvatar() {
-    this.workspaceService.editAvatarPopUp.set(false);
-    this.uploadCareService.deleteFromUploadcare(
-      this.uploadCareService.uploadedFileUuid ?? ''
-    );
+    // this.workspaceService.editAvatarPopUp.set(false);
+    // this.uploadCareService.deleteFromUploadcare(
+    //   this.uploadCareService.uploadedFileUuid ?? ''
+    // );
   }
 
   closePopUp() {

@@ -26,9 +26,7 @@ export class LoginComponent implements OnInit {
     public activatedRoute: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {
-    // Moved login call to onLogin method to control execution
-  }
+  ngOnInit(): void {}
 
   async onLogin(event: Event) {
     event.preventDefault();

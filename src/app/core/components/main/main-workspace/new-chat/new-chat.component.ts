@@ -284,7 +284,6 @@ export class NewChatComponent implements OnInit {
       ? `${senderId}_${receiverId}`
       : `${receiverId}_${senderId}`;
   }
-
   private async checkChatExists(chatId: string): Promise<boolean> {
     try {
       return await this.firebaseService.checkDocExists(

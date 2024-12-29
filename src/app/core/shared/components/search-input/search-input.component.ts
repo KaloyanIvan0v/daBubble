@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
 import { CommonModule } from '@angular/common';
 import { Channel } from 'src/app/core/shared/models/channel.class';
@@ -16,14 +17,17 @@ import { WorkspaceService } from '../../services/workspace-service/workspace.ser
   templateUrl: './search-input.component.html',
   styleUrl: './search-input.component.scss',
 })
-export class SearchInputComponent implements OnInit {
+export class SearchInputComponent implements OnInit, OnDestroy {
   allMessages: Message[] = [];
   filteredMessages: Message[] = [];
+
+  // Array zum Speichern unserer Subscriptions
+  private subscriptions: Subscription[] = [];
+
   constructor(
     public firebaseService: FirebaseServicesService,
     public searchService: SearchService,
     private router: Router,
-
     public workspaceService: WorkspaceService
   ) {}
 
@@ -31,6 +35,9 @@ export class SearchInputComponent implements OnInit {
     this.getAllMessages();
   }
 
+  /**
+   * Sucht Nachrichten, in denen der eingegebene Text vorkommt.
+   */
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     const inputText = input.value.toLowerCase();
@@ -72,7 +79,7 @@ export class SearchInputComponent implements OnInit {
 
   navigateToMessage(message: Message) {
     const spaceId = message.location.split('/')[2];
-    const messageId = message.id; // Die eindeutige Nachricht-ID
+    const messageId = message.id; // Eindeutige Nachricht-ID
 
     if (this.isChannel(message.location)) {
       // Navigiere zum Channel-Chat und übergebe die messageId als Query-Parameter
@@ -89,46 +96,77 @@ export class SearchInputComponent implements OnInit {
   }
 
   isChannel(messagePath: string) {
-    if (messagePath !== '') {
-      return messagePath.split('/')[1] === 'channels';
-    } else {
-      return false;
-    }
+    return messagePath ? messagePath.split('/')[1] === 'channels' : false;
   }
 
   isMobile(): boolean {
     return window.innerWidth < 960;
   }
 
+  /**
+   * Lädt alle Nachrichten aus allen Channels und Chats.
+   */
   getAllMessages() {
     this.allMessages = [];
     this.getAllChatMessages();
     this.getAllChannelMessages();
   }
 
+  /**
+   * Ruft alle Channel-Nachrichten ab und merged sie in allMessages.
+   */
   getAllChannelMessages() {
-    this.firebaseService.getChannels().subscribe((channels: Channel[]) => {
-      const allChannels = channels;
-      for (const channel of allChannels) {
-        this.firebaseService
-          .getMessages('channels', channel.id)
-          .subscribe((messages: Message[]) => {
-            this.allMessages.push(...messages);
-          });
-      }
-    });
+    // 1. Channels abonnieren
+    const channelSub = this.firebaseService
+      .getChannels()
+      .subscribe((channels: Channel[]) => {
+        // 2. Für jeden Channel dessen Nachrichten abonnieren
+        channels.forEach((channel) => {
+          const msgSub = this.firebaseService
+            .getMessages('channels', channel.id)
+            .subscribe((messages: Message[]) => {
+              this.allMessages.push(...messages);
+            });
+
+          // msgSub mit tracken
+          this.subscriptions.push(msgSub);
+        });
+      });
+
+    // channelSub mit tracken
+    this.subscriptions.push(channelSub);
   }
 
+  /**
+   * Ruft alle Direkt-Chat-Nachrichten ab und merged sie in allMessages.
+   */
   getAllChatMessages() {
-    this.firebaseService.getChats().subscribe((chats: Chat[]) => {
-      const allChats = chats;
-      for (const chat of allChats) {
-        this.firebaseService
-          .getMessages('directMessages', chat.id)
-          .subscribe((messages: Message[]) => {
-            this.allMessages.push(...messages);
-          });
-      }
-    });
+    // 1. Chats abonnieren
+    const chatSub = this.firebaseService
+      .getChats()
+      .subscribe((chats: Chat[]) => {
+        // 2. Für jeden Chat dessen Nachrichten abonnieren
+        chats.forEach((chat) => {
+          const msgSub = this.firebaseService
+            .getMessages('directMessages', chat.id)
+            .subscribe((messages: Message[]) => {
+              this.allMessages.push(...messages);
+            });
+
+          // msgSub mit tracken
+          this.subscriptions.push(msgSub);
+        });
+      });
+
+    // chatSub mit tracken
+    this.subscriptions.push(chatSub);
+  }
+
+  /**
+   * Angular-Hook, der aufgerufen wird, wenn die Komponente zerstört wird.
+   * Hier unsubscriben wir von allen Subscriptions, um Speicherlecks zu vermeiden.
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

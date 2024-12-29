@@ -8,17 +8,15 @@ import {
   updateDoc,
   CollectionReference,
   docData,
-  getDocs,
   deleteDoc,
   orderBy,
   query,
   setDoc,
-  Query,
   QuerySnapshot,
   DocumentData,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, map, Observable, Observer, switchMap } from 'rxjs';
-import { where, getDoc, collectionGroup } from 'firebase/firestore';
+import { BehaviorSubject, Observable, Observer, switchMap } from 'rxjs';
+import { where, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
@@ -49,16 +47,6 @@ export class FirebaseServicesService implements OnDestroy {
     this.dataSubjects.clear();
   }
 
-  async getFilteredMessages(
-    searchText: string
-  ): Promise<QuerySnapshot<DocumentData>> {
-    const messagesQuery = query(
-      collectionGroup(this.firestore, 'messages'),
-      where('value.text', '==', searchText)
-    );
-    return await getDocs(messagesQuery);
-  }
-
   public setUserUID(uid: string | null): void {
     this.userUIDSubject.next(uid);
   }
@@ -76,27 +64,10 @@ export class FirebaseServicesService implements OnDestroy {
     return { ...data, id: doc.id };
   }
 
-  getMessages(collectionName: string, docId: string): Observable<Message[]> {
-    const messagesCollectionRef = collection(
-      this.firestore,
-      `${collectionName}/${docId}/messages`
-    );
-    const q = query(messagesCollectionRef, orderBy('time'));
-    return this.createObservableFromQuery<Message[]>(
-      q,
-      'Error fetching messages'
-    );
-  }
-
-  getThreadMessages(threadPath: string): Observable<Message[]> {
-    const threadMessagesCollectionRef = collection(this.firestore, threadPath);
-    const q = query(threadMessagesCollectionRef, orderBy('time'));
-    return this.createObservableFromQuery<Message[]>(
-      q,
-      'Error fetching thread messages'
-    );
-  }
-
+  /**
+   * Zentrale Methode zum Erstellen eines Observables aus einem beliebigen Query.
+   * Für die meisten Fälle wird diese Methode intern oder in getOrderedMessages() genutzt.
+   */
   private createObservableFromQuery<T>(
     q: any,
     errorMsg: string
@@ -112,6 +83,41 @@ export class FirebaseServicesService implements OnDestroy {
       );
       return () => unsubscribe();
     });
+  }
+
+  /**
+   * Gibt Nachrichten aus einer beliebigen Sub-Collection,
+   * z.B. "channels/{id}/messages", sortiert nach 'time', als Observable zurück.
+   */
+  private getOrderedMessages(path: string): Observable<Message[]> {
+    const messagesCollectionRef = collection(this.firestore, path);
+    const q = query(messagesCollectionRef, orderBy('time'));
+    return new Observable<Message[]>((observer) => {
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot: QuerySnapshot) => {
+          const data = snapshot.docs.map((doc) => this.mapDocumentData(doc));
+          observer.next(data as Message[]);
+        },
+        (error) => observer.error(`Error fetching messages: ${error}`)
+      );
+      return () => unsubscribe();
+    });
+  }
+
+  /**
+   * Wrapper für getOrderedMessages() – holt die Messages für "collectionName/docId/messages".
+   */
+  getMessages(collectionName: string, docId: string): Observable<Message[]> {
+    const path = `${collectionName}/${docId}/messages`;
+    return this.getOrderedMessages(path);
+  }
+
+  /**
+   * Wrapper für getOrderedMessages() – holt die Messages direkt über den threadPath.
+   */
+  getThreadMessages(threadPath: string): Observable<Message[]> {
+    return this.getOrderedMessages(threadPath);
   }
 
   async sendMessage(messagePath: string, message: Message) {
@@ -152,6 +158,9 @@ export class FirebaseServicesService implements OnDestroy {
     return deleteDoc(messageDocRef);
   }
 
+  /**
+   * Gibt eine Collection als Observable zurück, optional gefiltert nach uid (array-contains).
+   */
   getCollection<T>(
     collectionName: string,
     uidAccess: boolean
@@ -159,27 +168,16 @@ export class FirebaseServicesService implements OnDestroy {
     const refCollection = this.getCollectionRef(collectionName);
     return this.userUIDSubject.pipe(
       switchMap((uid) => {
-        const userSpecificQuery = this.createUserSpecificQuery(
-          refCollection,
-          uidAccess,
-          uid
-        );
+        const userSpecificQuery =
+          uidAccess && uid
+            ? query(refCollection, where('uid', 'array-contains', uid))
+            : refCollection;
         return this.createCollectionObservable<T>(
           userSpecificQuery,
           collectionName
         );
       })
     );
-  }
-
-  private createUserSpecificQuery(
-    refCollection: CollectionReference,
-    uidAccess: boolean,
-    uid: string | null
-  ) {
-    return uidAccess && uid
-      ? query(refCollection, where('uid', 'array-contains', uid))
-      : refCollection;
   }
 
   private createCollectionObservable<T>(
@@ -202,6 +200,9 @@ export class FirebaseServicesService implements OnDestroy {
     });
   }
 
+  /**
+   * Caching-Version von getDoc: Holt ein Dokument als Observable und cacht es in dataSubjects.
+   */
   getDoc<T>(collectionName: string, docId: string): Observable<T> {
     const cacheKey = `${collectionName}-${docId}`;
     if (!this.dataSubjects.has(cacheKey)) {
@@ -217,6 +218,7 @@ export class FirebaseServicesService implements OnDestroy {
   ): void {
     const subject = new BehaviorSubject<T | null>(null);
     this.dataSubjects.set(cacheKey, subject);
+
     const docRef = this.getDocRef(collectionName, docId);
     const unsubscribe = onSnapshot(
       docRef,
@@ -230,9 +232,13 @@ export class FirebaseServicesService implements OnDestroy {
       },
       (error) => subject.error(`Error fetching document ${docId}: ${error}`)
     );
+
     this.unsubscribeFunctions.set(cacheKey, unsubscribe);
   }
 
+  /**
+   * Holt ein Dokument einmalig (ohne Observable).
+   */
   async getDocOnce(collectionName: string, docId: string): Promise<any> {
     try {
       const docRef = doc(this.firestore, `${collectionName}/${docId}`);
@@ -244,6 +250,9 @@ export class FirebaseServicesService implements OnDestroy {
     }
   }
 
+  /**
+   * Fügt ein Dokument in eine Collection ein und gibt die generierte ID zurück.
+   */
   async addDoc<T extends { [x: string]: any }>(
     collectionName: string,
     data: T
@@ -253,6 +262,9 @@ export class FirebaseServicesService implements OnDestroy {
     return docRef.id;
   }
 
+  /**
+   * Aktualisiert ein bestehendes Dokument in einer Collection.
+   */
   async updateDoc<T>(
     collectionName: string,
     docId: string,
@@ -262,6 +274,9 @@ export class FirebaseServicesService implements OnDestroy {
     return updateDoc(docRef, data);
   }
 
+  /**
+   * Beispiele für bequeme Getter verschiedener Collections / Dokumente.
+   */
   getUsers(): Observable<any> {
     return this.getCollection('users', false);
   }
@@ -279,6 +294,9 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getCollection('directMessages', true);
   }
 
+  /**
+   * Holt alle Direct-Chats als Observable und resolved die User-Daten.
+   */
   getDirectChats(): Observable<any[]> {
     const directMessagesCollection = this.getCollectionRef('directMessages');
     return new Observable<any[]>((observer) => {
@@ -314,41 +332,48 @@ export class FirebaseServicesService implements OnDestroy {
     observer.error(error);
   }
 
+  /**
+   * Verarbeitet jeden Chat-Eintrag und resolved dessen User-Daten über resolveUserData().
+   */
   private async processChatSnapshots(
     snapshot: QuerySnapshot<DocumentData>
   ): Promise<any[]> {
-    const chatPromises = snapshot.docs.map((doc: any) => {
+    const chatPromises = snapshot.docs.map(async (doc: any) => {
       const chat = this.mapDocumentData<any>(doc);
       return this.resolveUserData(chat);
     });
     return Promise.all(chatPromises);
   }
 
+  /**
+   * Öffentliche Methode, um manuell einen Chat (z.B. nach dem Hinzufügen) zu ergänzen.
+   */
   async addUserToChat(chat: any): Promise<any> {
     return this.resolveUserData(chat);
   }
 
+  /**
+   * Zentrale Methode zum Resolven der User-Daten aus einem Chat.
+   */
   private async resolveUserData(chat: any): Promise<any> {
-    if (chat.receiver) return this.useReceiverData(chat);
-    if (chat.recipientUid) return await this.fetchUserData(chat);
-    return this.useFallbackUserData(chat);
-  }
-
-  private useReceiverData(chat: any): any {
-    return { ...chat, user: chat.receiver };
-  }
-
-  private async fetchUserData(chat: any): Promise<any> {
-    try {
-      const userData = await this.getUser(chat.recipientUid).toPromise();
-      return { ...chat, user: userData || this.getFallbackUserData() };
-    } catch (error) {
-      console.error('Error retrieving user data for chat:', error);
-      return this.useFallbackUserData(chat);
+    // Falls bereits ein 'receiver'-Objekt vorhanden ist.
+    if (chat.receiver) {
+      return { ...chat, user: chat.receiver };
     }
-  }
 
-  private useFallbackUserData(chat: any): any {
+    // Falls wir eine recipientUid haben, versuchen wir den User aus 'users' zu holen.
+    if (chat.recipientUid) {
+      try {
+        // getUser() gibt ein Observable zurück; per toPromise() einmalig auslesen
+        const userData = await this.getUser(chat.recipientUid).toPromise();
+        return { ...chat, user: userData || this.getFallbackUserData() };
+      } catch (error) {
+        console.error('Error retrieving user data for chat:', error);
+        return { ...chat, user: this.getFallbackUserData() };
+      }
+    }
+
+    // Fallback, falls nichts davon greift.
     return { ...chat, user: this.getFallbackUserData() };
   }
 
@@ -360,22 +385,20 @@ export class FirebaseServicesService implements OnDestroy {
   }
 
   getUser(uid: string): Observable<User> {
-    return this.getDoc('users', uid);
+    return this.getDoc<User>('users', uid);
   }
 
   getChannel(channelId: string): Observable<Channel> {
-    return this.getDoc('channels', channelId);
+    return this.getDoc<Channel>('channels', channelId);
   }
-
-  // getChannel(channelId: string): Observable<Channel> {
-  //   const channelDocRef = doc(this.firestore, 'channels', channelId);
-  //   return docData<Channel>(channelDocRef);
-  // }
 
   getChat(id: string): Observable<any> {
     return this.getDoc('chats', id);
   }
 
+  /**
+   * Gibt eine generierte ID zurück, ohne etwas in Firestore zu speichern.
+   */
   getUniqueId() {
     const id = doc(collection(this.firestore, 'dummyCollection')).id;
     return id;
@@ -386,17 +409,9 @@ export class FirebaseServicesService implements OnDestroy {
     return docData(userDocRef, { idField: 'uid' }) as Observable<User>;
   }
 
-  private getDocs(q: any): Observable<any[]> {
-    return new Observable((observer) => {
-      getDocs(q)
-        .then((snapshot) => {
-          const results = snapshot.docs.map((doc) => doc.data());
-          observer.next(results);
-        })
-        .catch((error) => observer.error(error));
-    });
-  }
-
+  /**
+   * Prüft einmalig, ob ein Dokument existiert.
+   */
   async checkDocExists(
     collectionName: string,
     docId: string
@@ -406,212 +421,11 @@ export class FirebaseServicesService implements OnDestroy {
     return docSnap.exists();
   }
 
-  searchUsers(qText: string): Observable<any[]> {
-    const uRef = collection(this.firestore, 'users');
-    const lower = qText.trim().toLowerCase();
-    if (qText.startsWith('@'))
-      return this.searchByUsername(uRef, qText.slice(1).toLowerCase());
-    if (this.isEmail(qText)) return this.searchByExactEmail(uRef, lower);
-    return this.searchByEmailPrefix(uRef, lower);
-  }
-
-  private searchByUsername(
-    uRef: CollectionReference,
-    username: string
-  ): Observable<any[]> {
-    const qy = query(
-      uRef,
-      where('name', '>=', username),
-      where('name', '<=', username + '\uf8ff')
-    );
-    return this.getDocs(qy).pipe(
-      map((r) => r.map((res) => ({ ...res, type: 'user' })))
-    );
-  }
-
-  private searchByExactEmail(
-    uRef: CollectionReference,
-    email: string
-  ): Observable<any[]> {
-    const qy = query(uRef, where('email', '==', email));
-    return this.getDocs(qy).pipe(
-      map((r) => r.map((res) => ({ ...res, type: 'user' })))
-    );
-  }
-
-  private searchByEmailPrefix(
-    uRef: CollectionReference,
-    prefix: string
-  ): Observable<any[]> {
-    const qy = query(
-      uRef,
-      where('email', '>=', prefix),
-      where('email', '<=', prefix + '\uf8ff')
-    );
-    return this.getDocs(qy).pipe(
-      map((r) => r.map((res) => ({ ...res, type: 'user' })))
-    );
-  }
-
+  /**
+   * Primitive Email-Check-Funktion.
+   */
   isEmail(qText: string): boolean {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]*$/;
     return emailPattern.test(qText);
-  }
-
-  searchChannels(
-    queryText: string,
-    currentUserId: string | null = null
-  ): Observable<any[]> {
-    const channelName = queryText.trim().slice(1).toLowerCase();
-    const channelsRef = collection(this.firestore, 'channels');
-    const qy = currentUserId
-      ? this.buildMemberQuery(channelsRef, currentUserId)
-      : this.buildNameQuery(channelsRef, channelName);
-
-    return this.executeChannelQuery(qy, channelName, currentUserId);
-  }
-
-  private buildMemberQuery(
-    channelsRef: CollectionReference,
-    currentUserId: string
-  ) {
-    return query(channelsRef, where('uid', 'array-contains', currentUserId));
-  }
-
-  private buildNameQuery(
-    channelsRef: CollectionReference,
-    channelName: string
-  ) {
-    return query(
-      channelsRef,
-      where('name', '>=', channelName),
-      where('name', '<=', channelName + '\uf8ff')
-    );
-  }
-
-  private executeChannelQuery(
-    qy: Query<DocumentData>,
-    channelName: string,
-    currentUserId: string | null
-  ): Observable<any[]> {
-    return new Observable((observer) => {
-      getDocs(qy)
-        .then((snapshot: QuerySnapshot<DocumentData>) => {
-          const results = this.processChannelDocs(
-            snapshot,
-            channelName,
-            currentUserId
-          );
-          observer.next(results);
-        })
-        .catch((error) => observer.error(error));
-    });
-  }
-
-  private processChannelDocs(
-    snapshot: QuerySnapshot<DocumentData>,
-    channelName: string,
-    currentUserId: string | null
-  ): any[] {
-    const docs = snapshot.docs.map((doc) =>
-      this.mapChannelDoc(doc, channelName, currentUserId)
-    );
-    return docs.filter((res) => res !== null);
-  }
-
-  private mapChannelDoc(
-    doc: any,
-    channelName: string,
-    currentUserId: string | null
-  ): any {
-    const data = doc.data();
-    const docName = ((data['name'] as string) || '').toLowerCase();
-
-    if (currentUserId) {
-      return this.filterChannelForMember(data, doc.id, docName, channelName);
-    } else {
-      return { ...data, id: doc.id, type: 'channel' };
-    }
-  }
-
-  private filterChannelForMember(
-    data: any,
-    docId: string,
-    docName: string,
-    channelName: string
-  ): any | null {
-    const withinRange =
-      docName >= channelName && docName <= channelName + '\uf8ff';
-    return withinRange ? { ...data, id: docId, type: 'channel' } : null;
-  }
-
-  search(
-    queryText: string,
-    currentUserId: string | null = null
-  ): Observable<any[]> {
-    if (queryText.startsWith('@')) {
-      return this.searchUsers(queryText);
-    } else if (queryText.startsWith('#')) {
-      return this.searchChannels(queryText, currentUserId);
-    } else {
-      return this.searchUsers(queryText);
-    }
-  }
-
-  searchAllChannelsAndUsers(queryText: string): Observable<any[]> {
-    const lowerCaseQuery = queryText.trim().toLowerCase();
-    const userQuery = this.buildUserQuery(lowerCaseQuery);
-    const channelQuery = this.buildChannelQuery(lowerCaseQuery);
-    return this.executeAllChannelsAndUsersSearch(userQuery, channelQuery);
-  }
-
-  private buildUserQuery(lowerCaseQuery: string): Query<DocumentData> {
-    const usersRef = collection(this.firestore, 'users');
-    return query(
-      usersRef,
-      where('name', '>=', lowerCaseQuery),
-      where('name', '<=', lowerCaseQuery + '\uf8ff')
-    );
-  }
-
-  private buildChannelQuery(lowerCaseQuery: string): Query<DocumentData> {
-    const channelsRef = collection(this.firestore, 'channels');
-    return query(
-      channelsRef,
-      where('name', '>=', lowerCaseQuery),
-      where('name', '<=', lowerCaseQuery + '\uf8ff')
-    );
-  }
-
-  private executeAllChannelsAndUsersSearch(
-    userQuery: Query<DocumentData>,
-    channelQuery: Query<DocumentData>
-  ): Observable<any[]> {
-    return new Observable((observer) => {
-      Promise.all([
-        this.fetchUsers(userQuery),
-        this.fetchChannels(channelQuery),
-      ])
-        .then(([users, channels]) => observer.next([...users, ...channels]))
-        .catch((error) => observer.error(error));
-    });
-  }
-
-  private fetchUsers(userQuery: Query<DocumentData>): Promise<any[]> {
-    return getDocs(userQuery).then((snapshot) =>
-      snapshot.docs.map((doc) => ({
-        ...this.mapDocumentData(doc),
-        type: 'user',
-      }))
-    );
-  }
-
-  private fetchChannels(channelQuery: Query<DocumentData>): Promise<any[]> {
-    return getDocs(channelQuery).then((snapshot) =>
-      snapshot.docs.map((doc) => ({
-        ...this.mapDocumentData(doc),
-        type: 'channel',
-      }))
-    );
   }
 }
