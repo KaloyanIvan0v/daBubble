@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, OnDestroy, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
@@ -10,7 +10,6 @@ import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edi
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
-import { ActivatedRoute } from '@angular/router';
 import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
 
 @Component({
@@ -28,7 +27,7 @@ import { ChatComponent } from 'src/app/core/shared/components/chat/chat.componen
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
 })
-export class ChannelChatComponent implements OnInit, OnDestroy {
+export class ChannelChatComponent implements OnDestroy {
   private subscriptions = new Subscription();
   private channelSubscription?: Subscription;
   private messagesSubscription?: Subscription;
@@ -53,8 +52,7 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService,
-    private route: ActivatedRoute
+    private firebaseService: FirebaseServicesService
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
@@ -66,10 +64,6 @@ export class ChannelChatComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  ngOnInit(): void {}
-
-  //@ViewChild('messageContainer') private messageContainer!: ElementRef;
 
   messageToEditHandler($event: Message): void {
     this.messageToEdit = $event;

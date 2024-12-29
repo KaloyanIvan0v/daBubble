@@ -31,16 +31,13 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   chatId: string = '';
   currentUserUid: string = '';
   receiverId: string | null = null;
-
   receiverName$: Observable<string> = of('Name Placeholder');
   receiverPhotoURL$: Observable<string> = of(
     '/assets/img/profile-img/profile-img-placeholder.svg'
   );
-
   messages$: Observable<Message[]> = of([]);
   messageToEdit: Message | undefined = undefined;
   usersUid: string[] = [];
-
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -68,65 +65,83 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   private initializeComponent(): void {
-    from(this.authService.getCurrentUserUID())
+    this.getCurrentUserUidAndParams$()
       .pipe(
-        switchMap((uid) => {
-          this.currentUserUid = uid ?? '';
-          return this.route.params;
-        }),
-        switchMap((params) => {
-          this.chatId = params['chatId'];
-          this.initializeReceiverData();
-          return this.firebaseService
-            .getMessages('directMessages', this.chatId)
-            .pipe(
-              catchError((error) => {
-                console.error('Error fetching messages:', error);
-                return of([]);
-              })
-            );
-        }),
+        switchMap(() => this.getMessagesForChat$()),
         takeUntil(this.destroy$)
       )
-      .subscribe((messages) => {
-        this.messages$ = of(messages);
-      });
+      .subscribe((messages) => (this.messages$ = of(messages)));
+  }
+
+  private getCurrentUserUidAndParams$(): Observable<void> {
+    return from(this.authService.getCurrentUserUID()).pipe(
+      switchMap((uid) => {
+        this.currentUserUid = uid ?? '';
+        return this.route.params;
+      }),
+      map((params) => {
+        this.chatId = params['chatId'];
+        this.initializeReceiverData();
+      })
+    );
+  }
+
+  private getMessagesForChat$(): Observable<Message[]> {
+    return this.firebaseService.getMessages('directMessages', this.chatId).pipe(
+      catchError((error) => {
+        console.error('Error fetching messages:', error);
+        return of([]);
+      })
+    );
   }
 
   private initializeReceiverData(): void {
-    const chatData$ = this.route.params.pipe(
+    const chatData$ = this.getChatDataStream();
+    const receiverData$ = this.getReceiverDataStream(chatData$);
+    this.setReceiverNameStream(receiverData$);
+    this.setReceiverPhotoStream(receiverData$);
+    this.subscribeToReceiverData(receiverData$);
+  }
+
+  private getChatDataStream(): Observable<DirectMessage | null> {
+    return this.route.params.pipe(
       switchMap((params) => this.getChatData(params['chatId']))
     );
+  }
 
-    const receiverData$ = chatData$.pipe(
+  private getReceiverDataStream(
+    chatData$: Observable<DirectMessage | null>
+  ): Observable<User> {
+    return chatData$.pipe(
       switchMap((chatData) => this.getReceiverData(chatData))
     );
+  }
 
+  private setReceiverNameStream(receiverData$: Observable<User>): void {
     this.receiverName$ = receiverData$.pipe(
-      map((user) => user?.name || 'Unknown User'),
+      map((u) => u?.name || 'Unknown User'),
       catchError(() => of('Unknown User'))
     );
+  }
 
+  private setReceiverPhotoStream(receiverData$: Observable<User>): void {
     this.receiverPhotoURL$ = receiverData$.pipe(
       map(
-        (user) =>
-          user?.photoURL ||
-          '/assets/img/profile-img/profile-img-placeholder.svg'
+        (u) =>
+          u?.photoURL || '/assets/img/profile-img/profile-img-placeholder.svg'
       ),
       catchError(() =>
         of('/assets/img/profile-img/profile-img-placeholder.svg')
       )
     );
+  }
 
+  private subscribeToReceiverData(receiverData$: Observable<User>): void {
     receiverData$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (user) => {
-        if (user) {
-          this.setUsersUid(user.uid);
-        }
+        if (user) this.setUsersUid(user.uid);
       },
-      error: (err) => {
-        console.error('Error fetching receiver data:', err);
-      },
+      error: (err) => console.error('Error fetching receiver data:', err),
     });
   }
 
@@ -143,22 +158,30 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   private getReceiverData(chatData: DirectMessage | null): Observable<User> {
+    const receiverId = this.extractReceiverIdFromChatData(chatData);
+    if (!receiverId) return of(this.getDefaultUser());
+    this.setUsersUid(receiverId);
+    return this.getReceiverDataFromFirebase$(receiverId);
+  }
+
+  private extractReceiverIdFromChatData(
+    chatData: DirectMessage | null
+  ): string | null {
     if (chatData?.uid && Array.isArray(chatData.uid)) {
-      const receiverId =
-        chatData.uid.find((uid) => uid !== this.currentUserUid) || null;
-      this.receiverId = receiverId;
-      if (receiverId) {
-        this.setUsersUid(receiverId);
-        return this.firebaseService.getUser(receiverId).pipe(
-          map((user) => user || this.getDefaultUser()),
-          catchError((error) => {
-            console.error('Error fetching receiver user data:', error);
-            return of(this.getDefaultUser());
-          })
-        );
-      }
+      return chatData.uid.find((uid) => uid !== this.currentUserUid) || null;
     }
-    return of(this.getDefaultUser());
+    return null;
+  }
+
+  private getReceiverDataFromFirebase$(receiverId: string): Observable<User> {
+    this.receiverId = receiverId;
+    return this.firebaseService.getUser(receiverId).pipe(
+      map((user) => user || this.getDefaultUser()),
+      catchError((error) => {
+        console.error('Error:', error);
+        return of(this.getDefaultUser());
+      })
+    );
   }
 
   private getDefaultUser(): User {

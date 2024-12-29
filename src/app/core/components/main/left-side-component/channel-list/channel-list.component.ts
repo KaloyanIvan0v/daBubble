@@ -50,16 +50,14 @@ export class ChannelListComponent {
   }
 
   navigateToChannelChat(currentActiveUnitId: string) {
-    this.setChannelId(currentActiveUnitId);
+    this.setCurrentActiveUnitId(currentActiveUnitId);
     this.router.navigate(['dashboard', 'channel-chat']);
-    //this.currentActiveUnitId = this.workspaceService.currentActiveUnitId();
-
     if (window.innerWidth < 960) {
       this.statefulWindowService.openChatOnMobile();
     }
   }
 
-  setChannelId(currentActiveUnitId: string) {
+  setCurrentActiveUnitId(currentActiveUnitId: string) {
     this.workspaceService.currentActiveUnitId.set(currentActiveUnitId);
   }
 }

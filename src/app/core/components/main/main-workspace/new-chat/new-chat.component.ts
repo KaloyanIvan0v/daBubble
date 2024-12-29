@@ -1,7 +1,13 @@
 import { SearchService } from './../../../../shared/services/search-service/search.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
@@ -25,12 +31,11 @@ import { ChannelsListComponent } from 'src/app/core/shared/components/channels-l
     ChannelsListComponent,
   ],
   templateUrl: './new-chat.component.html',
-  styleUrl: './new-chat.component.scss',
+  styleUrls: ['./new-chat.component.scss'],
 })
-export class NewChatComponent implements OnInit {
+export class NewChatComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
   prefillValue: string | null = null;
-
   isSelected: boolean = false;
   loggedInUserId: string | null = null;
   selectedUserId: string | null = null;
@@ -40,7 +45,6 @@ export class NewChatComponent implements OnInit {
   userData$: Observable<any>;
   selectedUserPhotoURL: string | null = null;
   selectedUserName: string | null = null;
-
   users: User[] = [];
   channels: Channel[] = [];
   chats: any = [];
@@ -49,9 +53,7 @@ export class NewChatComponent implements OnInit {
   filteredChannels: Channel[] = [];
   showResults: boolean = false;
   currentLoggedInUser: User | null = null;
-
   @ViewChild('searchInput', { static: false }) searchContainer!: ElementRef;
-
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -79,90 +81,95 @@ export class NewChatComponent implements OnInit {
 
   async setCurrentLoggedInUser() {
     let loggedInUserId = await this.authService.getCurrentUserUID();
-    this.firebaseService.getUser(loggedInUserId as string).subscribe((user) => {
-      this.currentLoggedInUser = user;
-    });
+    this.firebaseService
+      .getUser(loggedInUserId as string)
+      .subscribe((user) => (this.currentLoggedInUser = user));
   }
 
   loadUsers(): void {
     this.firebaseService
       .getUsers()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((users) => {
-        this.users = users;
-      });
+      .subscribe((users) => (this.users = users));
   }
 
   loadChannels(): void {
     this.firebaseService
       .getChannels()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((channels) => {
-        this.channels = channels;
-      });
+      .subscribe((channels) => (this.channels = channels));
   }
 
   loadChats(): void {
     this.firebaseService
       .getChats()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((chats) => {
-        this.chats = chats;
-      });
+      .subscribe((chats) => (this.chats = chats));
   }
 
   search(): void {
-    if (this.inputValue !== '') {
-      this.openSearchResults();
-      if (this.firstLetterIs(this.inputValue, '@')) {
-        this.filteredUsers = this.searchUsers(this.inputValue);
-      } else if (this.firstLetterIs(this.inputValue, '#')) {
-        this.filteredChannels = this.searchChannels(this.inputValue);
-      } else {
-        this.filteredUsers = this.searchEmail(this.inputValue);
-      }
-    } else {
-      this.showResults = false;
-      this.filteredUsers = [];
-      this.filteredChannels = [];
-    }
+    if (this.isInputNotEmpty()) this.handleNonEmptyInput();
+    else this.handleEmptyInput();
+  }
+
+  private isInputNotEmpty(): boolean {
+    return this.inputValue !== '';
+  }
+
+  private handleNonEmptyInput(): void {
+    this.openSearchResults();
+    if (this.firstLetterIs(this.inputValue, '@')) this.handleAtSign();
+    else if (this.firstLetterIs(this.inputValue, '#')) this.handleHashSign();
+    else this.handleNoSign();
+  }
+
+  private handleAtSign(): void {
+    this.filteredUsers = this.searchUsers(this.inputValue);
+  }
+
+  private handleHashSign(): void {
+    this.filteredChannels = this.searchChannels(this.inputValue);
+  }
+
+  private handleNoSign(): void {
+    this.filteredUsers = this.searchEmail(this.inputValue);
+  }
+
+  private handleEmptyInput(): void {
+    this.showResults = false;
+    this.filteredUsers = [];
+    this.filteredChannels = [];
   }
 
   firstLetterIs(input: string, letter: string): boolean {
-    if (input.length > 0) {
-      return input[0] === letter;
-    }
+    if (input.length > 0) return input[0] === letter;
     return false;
   }
 
   removeFirstLetter(input: string): string {
-    if (input.length > 0) {
-      return input.slice(1);
-    }
+    if (input.length > 0) return input.slice(1);
     return input;
   }
 
   searchChannels(input: string): Channel[] {
-    const channelName: string = this.removeFirstLetter(input).toLowerCase();
-    return this.channels.filter((channel: Channel) =>
-      channel.name.toLowerCase().startsWith(channelName)
+    const channelName = this.removeFirstLetter(input).toLowerCase();
+    return this.channels.filter((ch) =>
+      ch.name.toLowerCase().startsWith(channelName)
     );
   }
 
   searchUsers(input: string): string[] {
-    const userName: string = this.removeFirstLetter(input).toLowerCase();
+    const userName = this.removeFirstLetter(input).toLowerCase();
     return this.users
-      .filter((user: User) => user.name.toLowerCase().startsWith(userName))
-      .map((user: User) => user.uid);
+      .filter((u) => u.name.toLowerCase().startsWith(userName))
+      .map((u) => u.uid);
   }
 
   searchEmail(input: string): string[] {
-    const inputToLowerCase: string = input.toLowerCase();
+    const inputLC = input.toLowerCase();
     return this.users
-      .filter((user: User) =>
-        user.email.toLowerCase().startsWith(inputToLowerCase)
-      )
-      .map((user: User) => user.uid);
+      .filter((u) => u.email.toLowerCase().startsWith(inputLC))
+      .map((u) => u.uid);
   }
 
   onFocusOut(): void {
@@ -206,26 +213,36 @@ export class NewChatComponent implements OnInit {
   }
 
   onUserSelected($event: User): void {
-    if (this.chatExists($event.uid)) {
-      this.openChat($event.uid);
-    } else {
-      const senderId = this.currentLoggedInUser!.uid;
-      const receiverId = $event.uid;
+    if (this.chatExists($event.uid)) this.openChat($event.uid);
+    else this.processNewChat($event);
+  }
 
-      const senderData = {
-        uid: this.currentLoggedInUser!.uid,
-        name: this.currentLoggedInUser!.name || 'Sender Name',
-        photoURL: this.currentLoggedInUser!.photoURL || '',
-      };
+  private processNewChat($event: User): void {
+    const senderId = this.currentLoggedInUser!.uid;
+    const receiverId = $event.uid;
+    const senderData = this.buildSenderData();
+    const receiverData = this.buildReceiverData($event);
+    this.handleChatCreation(senderId, receiverId, senderData, receiverData);
+  }
 
-      const receiverData = {
-        uid: $event.uid,
-        name: $event.name,
-        photoURL: $event.photoURL,
-      };
+  private buildSenderData(): { uid: string; name: string; photoURL: string } {
+    return {
+      uid: this.currentLoggedInUser!.uid,
+      name: this.currentLoggedInUser!.name || 'Sender Name',
+      photoURL: this.currentLoggedInUser!.photoURL || '',
+    };
+  }
 
-      this.handleChatCreation(senderId, receiverId, senderData, receiverData);
-    }
+  private buildReceiverData($event: User): {
+    uid: string;
+    name: string;
+    photoURL: string;
+  } {
+    return {
+      uid: $event.uid,
+      name: $event.name,
+      photoURL: $event.photoURL,
+    };
   }
 
   navigateTo(space: string): void {
@@ -233,7 +250,9 @@ export class NewChatComponent implements OnInit {
   }
 
   chatExists(userUid: string): boolean {
-    return this.chats.find((chat: any) => chat.receiver.uid.includes(userUid));
+    return !!this.chats.find((chat: any) =>
+      chat.receiver.uid.includes(userUid)
+    );
   }
 
   getChatIdByUserId(userUid: string): any {
@@ -242,36 +261,100 @@ export class NewChatComponent implements OnInit {
 
   private logActiveChannel(): void {
     const channelId = this.workspaceService.getActiveChannelId();
-    if (channelId) {
-      console.log('Retrieved Channel ID:', channelId);
-    } else {
-      console.warn('No Channel ID available.');
-    }
+    if (channelId) console.log('Retrieved Channel ID:', channelId);
+    else console.warn('No Channel ID available.');
   }
 
   async handleChatCreation(
     senderId: string,
     receiverId: string,
-    senderData: { uid: string; name: string; photoURL: string },
-    receiverData: { uid: string; name: string; photoURL: string }
+    sData: { uid: string; name: string; photoURL: string },
+    rData: { uid: string; name: string; photoURL: string }
   ): Promise<void> {
     const chatId = this.generateChatId(senderId, receiverId);
     try {
-      const exists = await this.checkChatExists(chatId);
-      if (exists) {
-        this.navigateToChat(chatId);
-      } else {
-        await this.createAndNavigateChat(
-          chatId,
-          senderId,
-          receiverId,
-          senderData,
-          receiverData
-        );
-      }
-    } catch (error) {
-      console.error('Error during chat creation:', error);
+      await this.processChatCreation(
+        chatId,
+        senderId,
+        receiverId,
+        sData,
+        rData
+      );
+    } catch (e) {
+      console.error('Error during chat creation:', e);
     }
+  }
+
+  private async processChatCreation(
+    chatId: string,
+    senderId: string,
+    receiverId: string,
+    sData: { uid: string; name: string; photoURL: string },
+    rData: { uid: string; name: string; photoURL: string }
+  ): Promise<void> {
+    const exists = await this.checkChatExists(chatId);
+    if (exists) this.navigateToChat(chatId);
+    else
+      await this.createAndNavigateChat(
+        chatId,
+        senderId,
+        receiverId,
+        sData,
+        rData
+      );
+  }
+
+  private async createAndNavigateChat(
+    chatId: string,
+    senderId: string,
+    receiverId: string,
+    sData: { uid: string; name: string; photoURL: string },
+    rData: { uid: string; name: string; photoURL: string }
+  ): Promise<void> {
+    const chatData = this.buildChatData(
+      chatId,
+      senderId,
+      receiverId,
+      sData,
+      rData
+    );
+    await this.saveAndNavigateChat(chatId, chatData);
+  }
+
+  private async saveAndNavigateChat(
+    chatId: string,
+    chatData: any
+  ): Promise<void> {
+    try {
+      await this.createChatDocument(chatId, chatData);
+      this.navigateToChat(chatId);
+    } catch (e) {
+      console.error('Error creating chat:', e);
+    }
+  }
+
+  private async createChatDocument(
+    chatId: string,
+    chatData: any
+  ): Promise<void> {
+    const docRef = this.firebaseService.getDocRef('directMessages', chatId);
+    await setDoc(docRef, chatData);
+  }
+
+  private buildChatData(
+    chatId: string,
+    senderId: string,
+    receiverId: string,
+    sData: { uid: string; name: string; photoURL: string },
+    rData: { uid: string; name: string; photoURL: string }
+  ): any {
+    return {
+      uid: [senderId, receiverId],
+      id: chatId,
+      timestamp: new Date(),
+      sender: { ...sData },
+      receiver: { ...rData },
+    };
   }
 
   private navigateToChat(chatId: string): void {
@@ -284,6 +367,7 @@ export class NewChatComponent implements OnInit {
       ? `${senderId}_${receiverId}`
       : `${receiverId}_${senderId}`;
   }
+
   private async checkChatExists(chatId: string): Promise<boolean> {
     try {
       return await this.firebaseService.checkDocExists(
@@ -294,54 +378,5 @@ export class NewChatComponent implements OnInit {
       console.error('Error checking chat existence:', error);
       return false;
     }
-  }
-
-  private async createAndNavigateChat(
-    chatId: string,
-    senderId: string,
-    receiverId: string,
-    senderData: { uid: string; name: string; photoURL: string },
-    receiverData: { uid: string; name: string; photoURL: string }
-  ): Promise<void> {
-    const chatData = this.buildChatData(
-      chatId,
-      senderId,
-      receiverId,
-      senderData,
-      receiverData
-    );
-    try {
-      await setDoc(
-        this.firebaseService.getDocRef('directMessages', chatId),
-        chatData
-      );
-      this.navigateToChat(chatId);
-    } catch (error) {
-      console.error('Error creating chat:', error);
-    }
-  }
-
-  private buildChatData(
-    chatId: string,
-    senderId: string,
-    receiverId: string,
-    senderData: { uid: string; name: string; photoURL: string },
-    receiverData: { uid: string; name: string; photoURL: string }
-  ): any {
-    return {
-      uid: [senderId, receiverId],
-      id: chatId,
-      timestamp: new Date(),
-      sender: {
-        uid: senderData.uid,
-        name: senderData.name,
-        photoURL: senderData.photoURL,
-      },
-      receiver: {
-        uid: receiverData.uid,
-        name: receiverData.name,
-        photoURL: receiverData.photoURL,
-      },
-    };
   }
 }

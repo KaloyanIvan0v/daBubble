@@ -33,25 +33,15 @@ export class ChatListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.getCurrentUserUID().then((uid) => {
+    this.getLoggedInUserID().then((uid) => {
       this.loggedInUserId = uid;
-
-      // Combine chats and corresponding users into a single observable
-      this.chatsWithUsers$ = this.firebaseService.getDirectChats().pipe(
+      this.chatsWithUsers$ = this.getAllDirectChats().pipe(
         switchMap((chats: DirectMessage[]) => {
-          const chatsWithUserObservables = chats.map((chat) => {
-            const otherUserId = chat.uid.find(
-              (uid) => uid !== this.loggedInUserId
-            );
-            if (otherUserId) {
-              return this.firebaseService
-                .getUser(otherUserId)
-                .pipe(map((user) => ({ chat, user })));
-            } else {
-              return of({ chat, user: null });
-            }
-          });
-          return combineLatest(chatsWithUserObservables);
+          const chatObservables = this.getAllChatsWithUserObservables(
+            chats,
+            uid
+          );
+          return this.combineChatsWithUsers(chatObservables);
         })
       );
     });
@@ -62,11 +52,46 @@ export class ChatListComponent implements OnInit {
     this.destroy$.complete();
   }
 
+  private getLoggedInUserID(): Promise<string | null> {
+    return this.authService.getCurrentUserUID();
+  }
+
+  private getAllDirectChats(): Observable<DirectMessage[]> {
+    return this.firebaseService.getDirectChats();
+  }
+
+  private getChatWithUser(
+    chat: DirectMessage,
+    currentUserId: string | null
+  ): Observable<{ chat: DirectMessage; user: User | null }> {
+    const otherUserId = chat.uid.find((uid) => uid !== currentUserId);
+    if (!otherUserId) {
+      return of({ chat, user: null });
+    }
+    return this.firebaseService
+      .getUser(otherUserId)
+      .pipe(map((user) => ({ chat, user })));
+  }
+
+  private getAllChatsWithUserObservables(
+    chats: DirectMessage[],
+    currentUserId: string | null
+  ): Array<Observable<{ chat: DirectMessage; user: User | null }>> {
+    return chats.map((chat) => this.getChatWithUser(chat, currentUserId));
+  }
+
+  private combineChatsWithUsers(
+    chatUserObservables: Array<
+      Observable<{ chat: DirectMessage; user: User | null }>
+    >
+  ): Observable<Array<{ chat: DirectMessage; user: User | null }>> {
+    return combineLatest(chatUserObservables);
+  }
+
   navigateToDirectChat(chatId: string): void {
     this.selectedChatId = chatId;
     this.setCurrentActiveUnitId(chatId);
     this.router.navigate(['dashboard', 'direct-chat', chatId]);
-
     if (window.innerWidth < 960) {
       this.statefulWindowService.openChatOnMobile();
     }

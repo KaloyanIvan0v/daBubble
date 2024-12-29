@@ -14,7 +14,7 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 import { Observable } from 'rxjs';
 import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
 import { SearchInputComponent } from 'src/app/core/shared/components/search-input/search-input.component';
-import { NavigationEnd, Router } from '@angular/router';
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -24,9 +24,7 @@ import { NavigationEnd, Router } from '@angular/router';
 })
 export class HeaderComponent {
   userData$: Observable<any>;
-
   loggedInUserId: string | null = null;
-
   logoSrc: string = 'assets/img/logo-long.svg';
   isBelow960: boolean = false;
   showDevSpaceOnMobile: boolean = false;
@@ -37,7 +35,6 @@ export class HeaderComponent {
     public authService: AuthService,
     public cdRef: ChangeDetectorRef,
     public searchService: SearchService,
-    private router: Router,
     public statefulService: StatefulWindowServiceService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
