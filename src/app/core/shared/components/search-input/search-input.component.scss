@@ -10,7 +10,7 @@
   min-width: 100px;
   background-color: white;
   border-radius: 42px;
-  margin: 0px 20px;
+  margin-left: 20px;
 
   input {
     width: 100%;
@@ -130,6 +130,19 @@
   font-size: 12px;
   border-radius: 13px;
   color: $text-grey;
+}
+
+@media (max-width: 1400px) {
+  .search-wrapper {
+    width: 90%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .search-wrapper input {
+    font-size: 20px;
+    margin-left: 15px;
+  }
 }
 
 @media (max-width: 960px) {
