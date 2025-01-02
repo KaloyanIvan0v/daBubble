@@ -2,7 +2,7 @@
   <!-- Subscribe to userData$ and assign emitted value to userData -->
   <div class="pop-up-wrapper" *ngIf="userData$ | async as userData">
     <div class="header">
-      <div class="font24-700">Profile</div>
+      <div class="font24-700">Profil</div>
       <div class="close-button" (click)="closePopUp()"></div>
     </div>
     <div class="user-img">
@@ -22,7 +22,12 @@
       <div class="df-sb-100">
         <div class="user-name">{{ userData.name }}</div>
         <div class="purple3-btn" (click)="openEditProfilePopUp()">
-          Bearbeiten
+          <span class="edit-text">Bearbeiten</span>
+          <img
+            class="edit-btn"
+            src="assets/img/buttons/edit-black.svg"
+            alt="edit-img"
+          />
         </div>
       </div>
 

@@ -125,14 +125,29 @@ section {
   gap: 10px;
 }
 
+.edit-btn {
+  display: none;
+}
+
 @media (max-width: 960px) {
   .pop-up-wrapper {
-    width: 95%;
+    max-width: 398px;
     border-top-right-radius: 30px;
   }
 
   section {
     align-items: center;
+  }
+
+  .edit-text {
+    display: none;
+  }
+
+  .edit-btn {
+    display: block;
+    background-color: #eceefe;
+    border-radius: 50px;
+    padding: 3px;
   }
 }
 
