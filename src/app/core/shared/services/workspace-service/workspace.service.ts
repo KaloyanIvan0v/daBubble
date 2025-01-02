@@ -14,7 +14,7 @@ export class WorkspaceService {
   private sessionStorageService = inject(SessionStorageService);
 
   currentActiveUnitId = signal('');
-  currentActiveUserId = signal('123456789'); // Open UserView PopUp
+  currentActiveUserId = signal('123456789');
   currentActiveDmUser = signal<User | null>(null);
   private activeChannelId = new BehaviorSubject<string | null>(null);
 

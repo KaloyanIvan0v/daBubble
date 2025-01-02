@@ -34,6 +34,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   @Input() usersUid: string[] = [];
   @Input() space: string = '';
   @Input() showMentionButton: boolean = true;
+
   filteredUserUids: string[] = [];
   channelName = signal<string>('');
   receiverName = signal<string>('');
@@ -45,7 +46,6 @@ export class InputBoxComponent implements OnChanges, OnInit {
 
   userListBottom = 0;
   userListLeft = 0;
-
   inputData = new InputBoxData('', []);
   selectedUser: User | null = null;
   showUserList: boolean = false;
@@ -166,7 +166,6 @@ export class InputBoxComponent implements OnChanges, OnInit {
     const message = this.inputData.message;
     const cursorPos = textarea.selectionStart;
     const lastAtIndex = message.lastIndexOf('@', cursorPos - 1);
-
     if (lastAtIndex !== -1) {
       this.replaceMentionedUser(message, user, cursorPos, lastAtIndex);
     } else {
@@ -183,22 +182,17 @@ export class InputBoxComponent implements OnChanges, OnInit {
   }
 
   async checkForMentionSign() {
-    const { textarea, message, cursorPos } = this.getCursorData();
+    const { message, cursorPos } = this.getCursorData();
     if (this.shouldHideUserList(cursorPos, message)) return;
-
     const lastAtIndex = this.getLastAtIndex(message, cursorPos);
     if (this.invalidAtIndex(lastAtIndex)) return;
-
     if (this.hasTrailingSpace(message, lastAtIndex, cursorPos)) return;
-
     await this.handleValidMention(message, lastAtIndex, cursorPos);
   }
 
   async setFilteredUsers(partialName: string) {
     const users = await this.getUsersFromUids(this.usersUid);
     const filteredUsers = this.filterUsers(users, partialName);
-
-    // Nur Nutzer verwenden, die nicht null sind
     const nonNullUsers = filteredUsers.filter(
       (user) => user !== null && user !== undefined
     );
@@ -375,7 +369,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   private createMarker(): HTMLSpanElement {
     const marker = document.createElement('span');
     marker.textContent = '@';
-    marker.style.backgroundColor = 'yellow'; // Testvisualisierung
+    marker.style.backgroundColor = 'yellow';
     return marker;
   }
 

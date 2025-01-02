@@ -65,16 +65,14 @@ export class MainService {
     message: Message
   ): Promise<void> {
     if (receiverId) {
-      // Create a consistent and unique path for direct messages
-      const sortedUserIds = [userId, receiverId].sort(); // Ensure consistent order
+      const sortedUserIds = [userId, receiverId].sort();
       const directMessagePath = `directMessages/${sortedUserIds.join(
         '_'
       )}/messages`;
-      console.log('Direct message path:', directMessagePath); // Log for debugging
+      console.log('Direct message path:', directMessagePath);
       await this.firestore.sendMessage(directMessagePath + '/' + id, message);
     } else {
-      // Otherwise, send it as a channel message
-      console.log('Channel message path:', messagePath); // Log for debugging
+      console.log('Channel message path:', messagePath);
       await this.firestore.sendMessage(messagePath + '/' + id, message);
     }
   }

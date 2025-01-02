@@ -1,4 +1,4 @@
-import { Component, effect } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
@@ -52,12 +52,6 @@ export class RightSideContainerComponent {
       if (this.threadPath !== '') {
         this.loadThread();
       }
-    });
-    effect(() => {
-      console.log(
-        'right side container',
-        this.statefulWindowService.rightSideComponentState()
-      );
     });
   }
 

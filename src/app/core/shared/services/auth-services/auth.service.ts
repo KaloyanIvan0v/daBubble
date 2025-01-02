@@ -31,7 +31,7 @@ export class AuthService {
   private nextSubject = new Subject<any>();
 
   provider = new GoogleAuthProvider();
-  private popupOpen = false; // Tracks if a popup is already open
+  private popupOpen = false;
   constructor(
     private auth: Auth,
     public authUIService: AuthUIService,
@@ -66,7 +66,6 @@ export class AuthService {
       status: true,
     };
 
-    // Save user data to Firestore
     await setDoc(doc(this.firestore, 'users', user.uid), userData);
   }
 
@@ -120,7 +119,6 @@ export class AuthService {
     result: any
   ): Promise<void> {
     const isNewUser = getAdditionalUserInfo(result)?.isNewUser;
-
     if (isNewUser) {
       if (user.email) {
         await this.saveUserDataToFirestore(
@@ -150,7 +148,7 @@ export class AuthService {
 
   async logoutUser(): Promise<void> {
     this.authStatusChanged.set(false);
-    this.currentUser$.next(null); // Reset current user to null
+    this.currentUser$.next(null);
 
     await this.auth.signOut();
     this.router.navigate(['authentication', 'login']);

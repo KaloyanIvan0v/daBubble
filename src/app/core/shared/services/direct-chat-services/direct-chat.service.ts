@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseServicesService } from '../firebase/firebase.service';
-import { Subscription, Observable, BehaviorSubject } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { DirectMessage } from '../../models/direct-message.class';
 
 @Injectable({

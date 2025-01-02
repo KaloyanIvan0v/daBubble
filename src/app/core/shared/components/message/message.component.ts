@@ -39,16 +39,17 @@ export class MessageComponent implements OnInit, OnDestroy {
   @Input() message!: Message;
   @Input() showThread: boolean = true;
   @Input() editActive: boolean = false;
+  @Output() messageToEdit = new EventEmitter<Message>();
+
   author$: Observable<User> = new Observable();
   showEmojiPicker = false;
   loggedInUserId: string | null = '';
   containerRef!: ElementRef;
   lastTwoReactions: string[] = [];
   threadMessages: Message[] = [];
-  @Output() messageToEdit = new EventEmitter<Message>();
   lastThreadMessage: Message | null = null;
-  private destroy$ = new Subject<void>();
   usersUid: string[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private firebaseService: FirebaseServicesService,

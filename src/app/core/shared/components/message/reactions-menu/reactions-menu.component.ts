@@ -23,15 +23,16 @@ import { StatefulWindowServiceService } from '../../../services/stateful-window-
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ReactionsMenuComponent implements OnInit {
-  showEmojiPicker = false;
-  showEditMessage = false;
-  selectedEmoji: string = '';
   @Input() message!: Message;
   @Input() lastTwoReactions: string[] = [];
   @Input() ownMessage: boolean = false;
   @Input() showThread: boolean = true;
   @Input() channelUsersUid: string[] = [];
   @Output() messageToEdit = new EventEmitter<Message>();
+
+  showEmojiPicker = false;
+  showEditMessage = false;
+  selectedEmoji: string = '';
   currentUserId: string = '';
 
   constructor(

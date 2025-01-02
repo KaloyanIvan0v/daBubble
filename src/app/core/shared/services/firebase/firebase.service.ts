@@ -63,10 +63,6 @@ export class FirebaseServicesService implements OnDestroy {
     return { ...data, id: doc.id };
   }
 
-  /**
-   * Zentrale Methode zum Erstellen eines Observables aus einem beliebigen Query.
-   * Für die meisten Fälle wird diese Methode intern oder in getOrderedMessages() genutzt.
-   */
   private createObservableFromQuery<T>(
     q: any,
     errorMsg: string
@@ -84,10 +80,6 @@ export class FirebaseServicesService implements OnDestroy {
     });
   }
 
-  /**
-   * Gibt Nachrichten aus einer beliebigen Sub-Collection,
-   * z.B. "channels/{id}/messages", sortiert nach 'time', als Observable zurück.
-   */
   private getOrderedMessages(path: string): Observable<Message[]> {
     const messagesCollectionRef = collection(this.firestore, path);
     const q = query(messagesCollectionRef, orderBy('time'));
@@ -104,17 +96,11 @@ export class FirebaseServicesService implements OnDestroy {
     });
   }
 
-  /**
-   * Wrapper für getOrderedMessages() – holt die Messages für "collectionName/docId/messages".
-   */
   getMessages(collectionName: string, docId: string): Observable<Message[]> {
     const path = `${collectionName}/${docId}/messages`;
     return this.getOrderedMessages(path);
   }
 
-  /**
-   * Wrapper für getOrderedMessages() – holt die Messages direkt über den threadPath.
-   */
   getThreadMessages(threadPath: string): Observable<Message[]> {
     return this.getOrderedMessages(threadPath);
   }
@@ -157,9 +143,6 @@ export class FirebaseServicesService implements OnDestroy {
     return deleteDoc(messageDocRef);
   }
 
-  /**
-   * Gibt eine Collection als Observable zurück, optional gefiltert nach uid (array-contains).
-   */
   getCollection<T>(
     collectionName: string,
     uidAccess: boolean
@@ -199,9 +182,6 @@ export class FirebaseServicesService implements OnDestroy {
     });
   }
 
-  /**
-   * Caching-Version von getDoc: Holt ein Dokument als Observable und cacht es in dataSubjects.
-   */
   getDoc<T>(collectionName: string, docId: string): Observable<T> {
     const cacheKey = `${collectionName}-${docId}`;
     if (!this.dataSubjects.has(cacheKey)) {
@@ -235,9 +215,6 @@ export class FirebaseServicesService implements OnDestroy {
     this.unsubscribeFunctions.set(cacheKey, unsubscribe);
   }
 
-  /**
-   * Holt ein Dokument einmalig (ohne Observable).
-   */
   async getDocOnce(collectionName: string, docId: string): Promise<any> {
     try {
       const docRef = doc(this.firestore, `${collectionName}/${docId}`);
@@ -249,9 +226,6 @@ export class FirebaseServicesService implements OnDestroy {
     }
   }
 
-  /**
-   * Fügt ein Dokument in eine Collection ein und gibt die generierte ID zurück.
-   */
   async addDoc<T extends { [x: string]: any }>(
     collectionName: string,
     data: T
@@ -261,9 +235,6 @@ export class FirebaseServicesService implements OnDestroy {
     return docRef.id;
   }
 
-  /**
-   * Aktualisiert ein bestehendes Dokument in einer Collection.
-   */
   async updateDoc<T>(
     collectionName: string,
     docId: string,
@@ -273,9 +244,6 @@ export class FirebaseServicesService implements OnDestroy {
     return updateDoc(docRef, data);
   }
 
-  /**
-   * Beispiele für bequeme Getter verschiedener Collections / Dokumente.
-   */
   getUsers(): Observable<any> {
     return this.getCollection('users', false);
   }
@@ -293,9 +261,6 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getCollection('directMessages', true);
   }
 
-  /**
-   * Holt alle Direct-Chats als Observable und resolved die User-Daten.
-   */
   getDirectChats(): Observable<any[]> {
     const directMessagesCollection = this.getCollectionRef('directMessages');
     return new Observable<any[]>((observer) => {
@@ -331,9 +296,6 @@ export class FirebaseServicesService implements OnDestroy {
     observer.error(error);
   }
 
-  /**
-   * Verarbeitet jeden Chat-Eintrag und resolved dessen User-Daten über resolveUserData().
-   */
   private async processChatSnapshots(
     snapshot: QuerySnapshot<DocumentData>
   ): Promise<any[]> {
@@ -344,26 +306,17 @@ export class FirebaseServicesService implements OnDestroy {
     return Promise.all(chatPromises);
   }
 
-  /**
-   * Öffentliche Methode, um manuell einen Chat (z.B. nach dem Hinzufügen) zu ergänzen.
-   */
   async addUserToChat(chat: any): Promise<any> {
     return this.resolveUserData(chat);
   }
 
-  /**
-   * Zentrale Methode zum Resolven der User-Daten aus einem Chat.
-   */
   private async resolveUserData(chat: any): Promise<any> {
-    // Falls bereits ein 'receiver'-Objekt vorhanden ist.
     if (chat.receiver) {
       return { ...chat, user: chat.receiver };
     }
 
-    // Falls wir eine recipientUid haben, versuchen wir den User aus 'users' zu holen.
     if (chat.recipientUid) {
       try {
-        // getUser() gibt ein Observable zurück; per toPromise() einmalig auslesen
         const userData = await this.getUser(chat.recipientUid).toPromise();
         return { ...chat, user: userData || this.getFallbackUserData() };
       } catch (error) {
@@ -372,7 +325,6 @@ export class FirebaseServicesService implements OnDestroy {
       }
     }
 
-    // Fallback, falls nichts davon greift.
     return { ...chat, user: this.getFallbackUserData() };
   }
 
@@ -395,9 +347,6 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getDoc('chats', id);
   }
 
-  /**
-   * Gibt eine generierte ID zurück, ohne etwas in Firestore zu speichern.
-   */
   getUniqueId() {
     const id = doc(collection(this.firestore, 'dummyCollection')).id;
     return id;
@@ -408,9 +357,6 @@ export class FirebaseServicesService implements OnDestroy {
     return docData(userDocRef, { idField: 'uid' }) as Observable<User>;
   }
 
-  /**
-   * Prüft einmalig, ob ein Dokument existiert.
-   */
   async checkDocExists(
     collectionName: string,
     docId: string
@@ -420,9 +366,6 @@ export class FirebaseServicesService implements OnDestroy {
     return docSnap.exists();
   }
 
-  /**
-   * Primitive Email-Check-Funktion.
-   */
   isEmail(qText: string): boolean {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]*$/;
     return emailPattern.test(qText);

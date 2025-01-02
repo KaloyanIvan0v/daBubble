@@ -1,4 +1,4 @@
-import { Injectable, SimpleChanges } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Message } from '../../models/message.class';
 
@@ -13,8 +13,6 @@ export class ThreadService {
     []
   );
   constructor() {}
-
-  OnChanges(changes: SimpleChanges) {}
 
   openThread(message: Message) {
     this.currentThreadPath.next(

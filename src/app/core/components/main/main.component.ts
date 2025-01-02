@@ -141,18 +141,13 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   showThread() {
-    if (this.isMobile()) {
-      return (
-        this.isMobile() &&
-        this.statefulWindowService.currentActiveComponentMobile() ===
-          'thread' &&
-        this.statefulWindowService.rightSideComponentState()
-      );
-    } else {
-      return this.statefulWindowService.rightSideComponentState()
-        ? true
-        : false;
+    if (!this.isMobile()) {
+      return !!this.statefulWindowService.rightSideComponentState();
     }
+    return (
+      this.statefulWindowService.currentActiveComponentMobile() === 'thread' &&
+      this.statefulWindowService.rightSideComponentState()
+    );
   }
 
   checkIfMobile() {
@@ -179,14 +174,6 @@ export class MainComponent implements OnInit, OnDestroy {
       ? 'Workspace-Menu schließen'
       : 'Workspace-Menu öffnen';
   }
-
-  // openThread() {
-  //   if (this.isMobile()) {
-  //     this.statefulWindowService.rightSideComponentState.set(true);
-  //   } else {
-  //     this.statefulWindowService.rightSideComponentState.set(false);
-  //   }
-  // }
 
   backToList() {
     if (this.isMobile()) {
