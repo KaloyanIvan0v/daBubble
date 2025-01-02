@@ -19,6 +19,7 @@ section {
 
 .header-content {
   @include dFlex($jc: space-between);
+  height: 100%;
 }
 
 app-input-box {
@@ -195,6 +196,16 @@ app-input-box {
 @media (max-width: 960px) {
   .channel-users {
     display: none;
+  }
+}
+
+@media (max-width: 550px) {
+  .header {
+    height: 60px;
+
+    .font24-700 {
+      font-size: 20px;
+    }
   }
 }
 
