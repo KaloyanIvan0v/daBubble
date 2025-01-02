@@ -1,4 +1,3 @@
-<!-- login.component.html -->
 <div class="login-container">
   <form (submit)="onLogin($event)" #loginForm="ngForm">
     <h2>Anmeldung</h2>
@@ -50,8 +49,8 @@
         />
       </div>
 
-      <div *ngIf="password.invalid && password.touched" class="error-message">
-        <p>Falsches Passwort oder E-Mail. Bitto noch einmal versuchen.</p>
+      <div *ngIf="loginError" class="error-message">
+        <p>Falsches Passwort oder E-Mail. Bitte noch einmal versuchen.</p>
       </div>
     </div>
 

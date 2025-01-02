@@ -4,19 +4,22 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../shared/services/auth-services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthUIService } from 'src/app/core/shared/services/authUI-services/authUI.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [SharedModule],
+  imports: [FormsModule, ReactiveFormsModule, SharedModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'], // Changed to styleUrls
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
   user = {
     email: '',
     password: '',
   };
+
+  loginError: boolean = false;
 
   constructor(
     public authService: AuthService,
@@ -43,11 +46,11 @@ export class LoginComponent implements OnInit {
       if (user) {
         const uid = await this.authService.getCurrentUserUID();
         this.firebaseService.setUserUID(uid);
-
         this.router.navigate(['/dashboard']);
+        this.loginError = false;
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      this.loginError = true;
     }
   }
 
