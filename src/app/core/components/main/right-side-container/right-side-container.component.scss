@@ -110,3 +110,9 @@ app-input-box {
   height: 1px;
   background-color: $light-purple;
 }
+
+@media (max-width: 960px) {
+  section {
+    padding-bottom: 0;
+  }
+}

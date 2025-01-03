@@ -197,6 +197,10 @@ app-input-box {
   .channel-users {
     display: none;
   }
+
+  section {
+    padding-bottom: 0;
+  }
 }
 
 @media (max-width: 550px) {

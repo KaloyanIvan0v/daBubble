@@ -107,3 +107,23 @@ section {
   color: $purple3;
   font-weight: 700;
 }
+
+@media (max-width: 960px) {
+  section {
+    margin: 0 15px;
+  }
+}
+
+@media (max-width: 550px) {
+  section {
+    padding: 15px;
+  }
+
+  .left-wrapper {
+    .add-emoji,
+    .mention-button {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
