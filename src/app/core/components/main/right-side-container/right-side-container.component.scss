@@ -116,3 +116,14 @@ app-input-box {
     padding-bottom: 0;
   }
 }
+
+@media (max-width: 550px) {
+  .header {
+    min-height: 60px;
+    padding: 0 20px;
+  }
+
+  .header-tittle {
+    font-size: 20px;
+  }
+}

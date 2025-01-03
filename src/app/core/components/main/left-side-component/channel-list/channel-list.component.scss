@@ -162,7 +162,7 @@ header {
 
   .add-channel {
     color: $purple3;
-
+    gap: 5px;
     .add-img {
       @include iconButton(
         "/assets/img/buttons/add_circle-blue.svg",
@@ -184,5 +184,28 @@ header {
 
   .add-channel {
     padding-left: 40px;
+
+    &:hover {
+      width: 312px;
+      height: 40px;
+      padding-left: 48px;
+      gap: 13px;
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .channel-tittle {
+    font-size: 18px;
+  }
+
+  .channel {
+    padding: 0px 8px;
+  }
+
+  .drop-down-closed,
+  .drop-down-open {
+    width: 30px !important;
+    height: 30px !important;
   }
 }
