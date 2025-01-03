@@ -34,9 +34,10 @@ section {
 .user-img {
   @include dFlex($jc: center, $ai: center);
   width: 100%;
+  margin: 0 auto;
   img {
     width: 200px;
-    height: auto;
+    height: 200px;
     border-radius: 50%;
     object-fit: cover;
     object-position: center;
@@ -47,7 +48,7 @@ section {
   @include dFlex($fd: column, $ai: start);
   width: 100%;
   gap: 10px;
-  .tittle {
+  .title {
     @include dFlex($ai: center);
     font-size: 20px;
     font-weight: 700;
@@ -76,4 +77,69 @@ section {
   @include dFlex($jc: space-around);
   width: 100%;
   gap: 20px;
+}
+
+@media (max-width: 960px) {
+  .pop-up-wrapper {
+    max-width: 398px;
+    border-top-right-radius: 30px;
+    gap: 40px;
+  }
+
+  section {
+    align-items: center;
+  }
+
+  .user-img {
+    width: 200px;
+    height: 200px;
+  }
+
+  .edit-section-wrapper {
+    img {
+      margin-right: 15px;
+    }
+  }
+}
+
+@media (max-width: 450px) {
+  .pop-up-wrapper {
+    width: 370px;
+    height: 650px;
+    justify-content: flex-start;
+    padding: 35px 20px;
+    gap: 30px;
+  }
+
+  .edit-section-wrapper {
+    .title {
+      font-size: 18px;
+      gap: 0;
+    }
+
+    .input-wrapper {
+      padding: 10px 15px;
+    }
+  }
+
+  .pop-up-input {
+    padding: 10px 15px;
+  }
+
+  .btn-wrapper {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .pop-up-wrapper {
+    width: 330px;
+    padding: 30px 15px;
+  }
+}
+
+@media (max-width: 350px) {
+  .pop-up-wrapper {
+    width: 300px;
+  }
 }
