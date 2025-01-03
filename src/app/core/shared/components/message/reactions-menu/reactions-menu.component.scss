@@ -92,3 +92,24 @@ section {
     //transform: translate(15%, 15%);
   }
 }
+
+@media (max-width: 550px) {
+  section {
+    padding: 0 8px;
+  }
+
+  .edit-message {
+    font-size: 15px;
+    padding: 5px 10px;
+  }
+
+  .edit-message-wrapper {
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 450px) {
+  .edit-message {
+    font-size: 13px;
+  }
+}

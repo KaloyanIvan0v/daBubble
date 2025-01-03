@@ -238,3 +238,19 @@ section {
     background-color: $purple2;
   }
 }
+
+@media (max-width: 550px) {
+  section {
+    padding: 0 10px;
+  }
+
+  .img-wrapper {
+    min-width: 50px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .reactions-menu-own-message {
+    left: 25px;
+  }
+}
