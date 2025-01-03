@@ -44,3 +44,9 @@
   font-size: 18px;
   font-weight: 400;
 }
+
+@media (max-width: 550px) {
+  .message-container {
+    gap: 20px;
+  }
+}

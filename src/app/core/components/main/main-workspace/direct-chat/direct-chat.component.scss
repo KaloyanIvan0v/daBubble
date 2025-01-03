@@ -117,6 +117,12 @@ app-input-box {
   height: 145px;
 }
 
+@media (max-width: 960px) {
+  section {
+    padding-bottom: 0;
+  }
+}
+
 @media (max-width: 550px) {
   .header {
     height: 60px;
@@ -124,5 +130,9 @@ app-input-box {
     .font24-700 {
       font-size: 20px;
     }
+  }
+
+  .header-user-info {
+    padding: 0px 0px 0px 8px;
   }
 }
