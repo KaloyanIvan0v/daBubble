@@ -137,4 +137,24 @@ header {
   .chat-items {
     padding-left: 30px;
   }
+
+  .chat-item {
+    padding: 4px 15px;
+  }
+}
+
+@media (max-width: 400px) {
+  .chat-title {
+    font-size: 18px;
+  }
+
+  .drop-down-closed,
+  .drop-down-open {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .chat-item {
+    padding: 0px 8px;
+  }
 }
