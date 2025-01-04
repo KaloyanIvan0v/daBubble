@@ -9,11 +9,12 @@ import { User } from 'src/app/core/shared/models/user.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { Router } from '@angular/router';
 import { takeUntil, first } from 'rxjs/operators';
+import { UserListComponent } from '../../user-list/user-list.component';
 
 @Component({
   selector: 'app-edit-channel',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserListComponent],
   templateUrl: './edit-channel.component.html',
   styleUrls: ['./edit-channel.component.scss'],
 })
@@ -116,5 +117,18 @@ export class EditChannelComponent implements OnDestroy {
 
   get popUpVisible() {
     return this.workspaceService.editChannelPopUp();
+  }
+
+  onUserSelected($event: User) {
+    this.openProfileView($event.uid);
+  }
+
+  openProfileView(uid: string) {
+    this.workspaceService.currentActiveUserId.set(uid);
+    this.workspaceService.profileViewPopUp.set(true);
+  }
+
+  openAddUserToChannelPopUp() {
+    this.workspaceService.addUserToChannelPopUp.set(true);
   }
 }

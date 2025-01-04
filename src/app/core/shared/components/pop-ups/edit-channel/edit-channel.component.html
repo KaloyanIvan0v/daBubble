@@ -45,7 +45,7 @@
       ngClass="{{ editDescriptionActive ? 'edit-wrapper-no-border' : '' }}"
     >
       <div class="inner-tittle-wrapper">
-        <div class="font18-700">Berscheibung</div>
+        <div class="font18-700">Beschreibung</div>
         <div
           *ngIf="!editDescriptionActive"
           class="purple3-btn"
@@ -83,6 +83,19 @@
         <div class="creator-name">{{ (channelCreator$ | async)?.name }}</div>
       </div>
     </div>
+    <div class="edit-wrapper member-list">
+      <div class="font24-700">Mitglieder</div>
+      <app-user-list
+        class="user-list"
+        [usersUid]="channelData.uid"
+        (selectedUser)="onUserSelected($event)"
+      ></app-user-list>
+      <div class="add-member" (click)="openAddUserToChannelPopUp()">
+        <div class="add-person-icon"></div>
+        <div class="font18-400">Mitglieder hinzufügen</div>
+      </div>
+    </div>
+
     <div class="btn-wrapper">
       <div class="primary-btn" (click)="leaveChannel()">Channel verlassen</div>
     </div>

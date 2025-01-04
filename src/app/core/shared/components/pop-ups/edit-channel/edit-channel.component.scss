@@ -78,10 +78,52 @@ section {
   color: $purple3;
 }
 
+.member-list {
+  align-items: flex-start;
+  padding: 20px;
+  display: none;
+}
+
+.user-list {
+  margin-top: 20px;
+}
+
+.add-member {
+  @include dFlex($jc: start);
+  width: 100%;
+  gap: 15px;
+  padding: 12px 29px;
+  &:hover {
+    background-color: $bg-color;
+    border-radius: 35px;
+    color: $purple3;
+    cursor: pointer;
+    .add-person-icon {
+      @include iconButton(
+        "/assets/img/buttons/add-person-blue.svg",
+        "/assets/img/buttons/add-person-blue.svg"
+      );
+    }
+  }
+}
+
+.add-person-icon {
+  @include iconButton(
+    "/assets/img/buttons/add-person-black.svg",
+    "/assets/img/buttons/add-person-blue.svg"
+  );
+  background-color: $bg-color;
+  border-radius: 50%;
+}
+
 @media (max-width: 960px) {
   .pop-up-wrapper {
     min-height: 100vh;
     min-width: 100vw;
     border-radius: unset;
+  }
+
+  .member-list {
+    display: flex;
   }
 }

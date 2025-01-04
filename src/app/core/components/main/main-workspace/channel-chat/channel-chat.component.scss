@@ -208,8 +208,9 @@ app-input-box {
   }
 
   .edit-channel {
-    top: unset;
-    left: unset;
+    top: 0;
+    left: 0;
+    position: fixed;
   }
 }
 
