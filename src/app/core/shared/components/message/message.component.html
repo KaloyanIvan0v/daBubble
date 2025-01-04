@@ -14,7 +14,11 @@
     <div class="img-wrapper">
       <img
         referrerpolicy="no-referrer"
-        src="{{ (author$ | async)?.photoURL }}"
+        [src]="
+          ((author$ | async)?.photoURL || '') === ''
+            ? 'assets/img/profile-img/profile-img-placeholder.svg'
+            : (author$ | async)?.photoURL
+        "
         alt=""
       />
     </div>
