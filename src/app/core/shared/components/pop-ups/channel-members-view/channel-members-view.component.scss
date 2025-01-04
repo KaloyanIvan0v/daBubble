@@ -113,3 +113,32 @@ section {
 .user-list {
   width: 100%;
 }
+
+@media (max-width: 960px) {
+  .pop-up-wrapper {
+    padding: 30px;
+    width: 398px;
+  }
+}
+
+@media (max-width: 550px) {
+  .pop-up-wrapper {
+    padding: 15px;
+    width: 350px;
+  }
+
+  .add-member {
+    padding: 8px 25px;
+  }
+}
+
+@media (max-width: 450px) {
+  .pop-up-wrapper {
+    width: 300px;
+    padding: 20px;
+  }
+
+  .add-member {
+    padding: 0;
+  }
+}

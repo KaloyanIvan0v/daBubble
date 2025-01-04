@@ -30,6 +30,8 @@ section {
 
 .img-wrapper {
   position: relative;
+  width: 50px;
+  height: 50px;
 }
 
 .dot-offline {
@@ -60,4 +62,16 @@ section {
   font-size: 14px;
   font-weight: 400;
   color: $purple2;
+}
+
+@media (max-width: 960px) {
+  .member {
+    padding: 8px 18px;
+  }
+}
+
+@media (max-width: 450px) {
+  .member {
+    padding: 0;
+  }
 }

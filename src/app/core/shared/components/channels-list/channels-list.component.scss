@@ -23,18 +23,21 @@ section {
     border-radius: 35px;
     color: $purple3;
     font-weight: 700;
+
     .tag-symbol {
       @include iconButton(
         "/assets/img/icons/tag-blue.svg",
         "/assets/img/icons/tag-blue.svg"
       );
     }
+
     .user-symbol {
       @include iconButton(
         "/assets/img/icons/account_circle-blue.svg",
         "/assets/img/icons/account_circle-blue.svg"
       );
     }
+
     .amount-chip {
       background-color: white;
     }

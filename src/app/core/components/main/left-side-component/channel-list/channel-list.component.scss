@@ -170,13 +170,6 @@ header {
       );
     }
   }
-}
-
-@media (max-width: 550px) {
-  .channel {
-    font-size: 17px;
-    margin-bottom: 15px;
-  }
 
   .channel-list {
     padding-left: 20px;
@@ -191,6 +184,13 @@ header {
       padding-left: 48px;
       gap: 13px;
     }
+  }
+}
+
+@media (max-width: 550px) {
+  .channel {
+    font-size: 17px;
+    margin-bottom: 15px;
   }
 }
 

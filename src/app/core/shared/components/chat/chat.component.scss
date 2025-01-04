@@ -49,4 +49,14 @@
   .message-container {
     gap: 20px;
   }
+
+  .daily-divider-date {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 350px) {
+  .message-container {
+    gap: 10px;
+  }
 }

@@ -163,4 +163,19 @@
       object-fit: contain;
     }
   }
+
+  .search-results {
+    padding: 0;
+    top: 50px;
+  }
+}
+
+@media (max-width: 550px) {
+  .search-result-item {
+    padding: 5px 10px;
+  }
+
+  .message {
+    padding: 5px 10px;
+  }
 }

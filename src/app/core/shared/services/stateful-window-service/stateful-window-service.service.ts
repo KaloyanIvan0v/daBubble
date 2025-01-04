@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { HostListener, Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +11,11 @@ export class StatefulWindowServiceService {
   currentActiveComponentMobile = signal<'left' | 'chat' | 'thread'>('left');
   startWidth = 1400;
   endWidth = 960;
+  isBelow960: boolean = false;
+
+  updateView(screenWidth: number): void {
+    this.isBelow960 = screenWidth <= 960;
+  }
 
   toggleLeftSideComponentState() {
     if (this.leftSideComponentState()) {

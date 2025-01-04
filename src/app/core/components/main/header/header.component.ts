@@ -26,7 +26,6 @@ export class HeaderComponent {
   userData$: Observable<any>;
   loggedInUserId: string | null = null;
   logoSrc: string = 'assets/img/logo-long.svg';
-  isBelow960: boolean = false;
   showDevSpaceOnMobile: boolean = false;
 
   constructor(
@@ -35,18 +34,18 @@ export class HeaderComponent {
     public authService: AuthService,
     public cdRef: ChangeDetectorRef,
     public searchService: SearchService,
-    public statefulService: StatefulWindowServiceService
+    public statefulWindowService: StatefulWindowServiceService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
 
     effect(() => {
-      const mode = this.statefulService.currentActiveComponentMobile();
+      const mode = this.statefulWindowService.currentActiveComponentMobile();
       this.updateLogoBasedOnMobileMode(mode);
     });
   }
 
   ngOnInit(): void {
-    this.updateView(window.innerWidth);
+    this.statefulWindowService.updateView(window.innerWidth);
   }
 
   @ViewChild('searchArea', { static: false, read: ElementRef })
@@ -63,15 +62,11 @@ export class HeaderComponent {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
-    this.updateView(event.target.innerWidth);
-  }
-
-  updateView(screenWidth: number): void {
-    this.isBelow960 = screenWidth <= 960;
+    this.statefulWindowService.updateView(event.target.innerWidth);
   }
 
   updateLogoBasedOnMobileMode(mode: 'left' | 'chat' | 'thread'): void {
-    if (this.isBelow960) {
+    if (this.statefulWindowService.isBelow960) {
       switch (mode) {
         case 'left':
           this.logoSrc = 'assets/img/logo-long.svg';

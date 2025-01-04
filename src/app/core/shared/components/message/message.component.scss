@@ -257,4 +257,23 @@ section {
   .msg-wrapper {
     gap: 20px;
   }
+
+  .thread-amount {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 350px) {
+  section {
+    padding: 0;
+  }
+
+  .msg-wrapper {
+    gap: 10px;
+  }
+
+  .msg-text-own-message,
+  .msg-text {
+    padding: 10px;
+  }
 }

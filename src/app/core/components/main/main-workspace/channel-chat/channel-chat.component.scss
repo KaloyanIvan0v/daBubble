@@ -200,16 +200,31 @@ app-input-box {
 
   section {
     padding-bottom: 0;
+    height: calc(100vh - 120px);
+  }
+
+  .channel-members-view {
+    right: 45px;
   }
 }
 
 @media (max-width: 550px) {
   .header {
     height: 60px;
+    padding: 25px 15px;
 
     .font24-700 {
       font-size: 20px;
     }
+  }
+
+  section {
+    height: calc(100vh - 100px);
+  }
+
+  .channel-members-view {
+    right: 15px;
+    top: 60px;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, effect } from '@angular/core';
+import { Component, HostListener, OnDestroy, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
@@ -11,6 +11,7 @@ import { InputBoxComponent } from 'src/app/core/shared/components/input-box/inpu
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 
 @Component({
   selector: 'app-channel-chat',
@@ -52,7 +53,8 @@ export class ChannelChatComponent implements OnDestroy {
 
   constructor(
     private workspaceService: WorkspaceService,
-    private firebaseService: FirebaseServicesService
+    private firebaseService: FirebaseServicesService,
+    public statefulWindowService: StatefulWindowServiceService
   ) {
     effect(() => {
       this.channelId = this.workspaceService.currentActiveUnitId();
@@ -63,6 +65,15 @@ export class ChannelChatComponent implements OnDestroy {
         console.warn('No valid channelId available.');
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.statefulWindowService.updateView(window.innerWidth);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    this.statefulWindowService.updateView(event.target.innerWidth);
   }
 
   messageToEditHandler($event: Message): void {
@@ -137,7 +148,11 @@ export class ChannelChatComponent implements OnDestroy {
   }
 
   openAddUserToChannelPopUp() {
-    this.workspaceService.addUserToChannelPopUp.set(true);
+    if (this.statefulWindowService.isBelow960) {
+      this.workspaceService.channelMembersPopUp.set(true);
+    } else {
+      this.workspaceService.addUserToChannelPopUp.set(true);
+    }
   }
 
   openChannelUsersViewPopUp() {
