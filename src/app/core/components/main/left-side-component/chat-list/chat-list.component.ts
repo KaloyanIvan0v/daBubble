@@ -56,8 +56,8 @@ export class ChatListComponent implements OnInit {
     return this.authService.getCurrentUserUID();
   }
 
-  private getAllDirectChats(): Observable<DirectMessage[]> {
-    return this.firebaseService.getDirectChats();
+  private getAllDirectChats(): Observable<any> {
+    return this.firebaseService.getChats();
   }
 
   private getChatWithUser(

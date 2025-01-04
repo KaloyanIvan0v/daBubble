@@ -15,7 +15,7 @@ import {
   QuerySnapshot,
   DocumentData,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, Observer, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, Observer, switchMap, map } from 'rxjs';
 import { where, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
@@ -261,16 +261,9 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getCollection('directMessages', true);
   }
 
-  getDirectChats(): Observable<any[]> {
-    const directMessagesCollection = this.getCollectionRef('directMessages');
-    return new Observable<any[]>((observer) => {
-      const unsubscribe = this.setupDirectChatsListener(
-        directMessagesCollection,
-        observer
-      );
-      return () => unsubscribe();
-    });
-  }
+  // getDirectChats(): Observable<Chat[]> {
+  //   return this.getChats().pipe(map((chats: Chat[]) => chats.filter(chat)));
+  // }
 
   private setupDirectChatsListener(
     collectionRef: CollectionReference<DocumentData>,
