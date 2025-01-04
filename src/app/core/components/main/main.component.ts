@@ -95,6 +95,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.firebaseService.clearDataSubjects();
     this.mainService.setUserOffline();
     if (this.popUpStatesSubscription) {
       this.popUpStatesSubscription.unsubscribe();

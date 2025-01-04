@@ -46,6 +46,11 @@ export class FirebaseServicesService implements OnDestroy {
     this.dataSubjects.clear();
   }
 
+  clearDataSubjects(): void {
+    this.dataSubjects.forEach((subject) => subject.next(null));
+    this.dataSubjects.clear();
+  }
+
   public setUserUID(uid: string | null): void {
     this.userUIDSubject.next(uid);
   }
