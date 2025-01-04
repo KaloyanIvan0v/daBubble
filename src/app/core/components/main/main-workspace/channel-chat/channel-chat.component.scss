@@ -206,6 +206,11 @@ app-input-box {
   .channel-members-view {
     right: 45px;
   }
+
+  .edit-channel {
+    top: unset;
+    left: unset;
+  }
 }
 
 @media (max-width: 550px) {

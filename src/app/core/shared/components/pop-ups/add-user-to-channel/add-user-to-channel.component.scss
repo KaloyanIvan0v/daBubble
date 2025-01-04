@@ -160,7 +160,24 @@ section {
 
   .search-results {
     padding: 5px;
-    bottom: 100px;
+    bottom: 90px;
     left: 40px;
+  }
+}
+
+@media (max-width: 550px) {
+  .pop-up-wrapper {
+    width: 360px;
+    padding: 20px;
+  }
+
+  .search-results {
+    width: 250px;
+  }
+}
+
+@media (max-width: 450px) {
+  .pop-up-wrapper {
+    width: 300px;
   }
 }

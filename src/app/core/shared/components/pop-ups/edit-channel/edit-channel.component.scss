@@ -77,3 +77,11 @@ section {
   font-weight: 400;
   color: $purple3;
 }
+
+@media (max-width: 960px) {
+  .pop-up-wrapper {
+    min-height: 100vh;
+    min-width: 100vw;
+    border-radius: unset;
+  }
+}
