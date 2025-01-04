@@ -33,6 +33,12 @@
   }
 }
 
+.user-name {
+  margin: 32px 0px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
 .photos-container {
   @include dFlex($fd: row);
 

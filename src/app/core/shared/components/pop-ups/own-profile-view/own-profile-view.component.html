@@ -7,16 +7,6 @@
     </div>
     <div class="user-img">
       <img [src]="userData.photoURL" alt="avatar" />
-      <div
-        class="edit-img-overlay"
-        (click)="openEditImgPopUp(); $event.stopPropagation()"
-      >
-        <img src="/assets/img/icons/camera.png" alt="edit-photo" />
-        <p>
-          Profilbild <br />
-          Ändern
-        </p>
-      </div>
     </div>
     <div class="user-name-wrapper">
       <div class="df-sb-100">

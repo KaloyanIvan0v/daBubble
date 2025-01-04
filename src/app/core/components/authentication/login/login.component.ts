@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
     event.preventDefault();
 
     if (!this.user.email || !this.user.password) {
-      return; // Don't proceed if email or password is empty
+      return;
     }
 
     try {

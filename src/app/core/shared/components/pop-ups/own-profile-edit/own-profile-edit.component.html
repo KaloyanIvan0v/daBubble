@@ -8,6 +8,16 @@
     <div class="user-img">
       <img [src]="userData.photoURL" alt="avatar" />
     </div>
+    <div class="photos-container">
+      <div class="photos" *ngFor="let photo of photos">
+        <img
+          [src]="photo"
+          class="choose-avatar"
+          alt="choose-avatar"
+          (click)="setUserPhoto(photo)"
+        />
+      </div>
+    </div>
     <div class="edit-section-wrapper">
       <div class="title">
         <img src="/assets/img/icons/account_circle-black.svg" alt="" />

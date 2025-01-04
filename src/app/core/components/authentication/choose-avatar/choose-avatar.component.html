@@ -17,7 +17,7 @@
       class="profile-img-preview"
     />
 
-    <h3>{{ uploadCareService.userData()?.name }}</h3>
+    <div class="user-name">{{ (userData$ | async)?.name }}</div>
 
     <h4 class="list-text">Aus der liste wählen.</h4>
     <div class="photos-container">
@@ -30,7 +30,6 @@
         />
       </div>
     </div>
-
     <p
       *ngIf="uploadCareService.uploadErrorMessage"
       class="error-message"

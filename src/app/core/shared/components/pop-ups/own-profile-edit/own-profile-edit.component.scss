@@ -19,6 +19,23 @@ section {
   z-index: 6;
 }
 
+.photos-container {
+  @include dFlex($fd: row);
+  width: 100%;
+  img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50px;
+    margin-right: 12px;
+
+    &:hover {
+      cursor: pointer;
+      transition: all 0.175s ease;
+      transform: scale(1.1);
+    }
+  }
+}
+
 .header {
   @include dFlex($jc: space-between);
   width: 100%;

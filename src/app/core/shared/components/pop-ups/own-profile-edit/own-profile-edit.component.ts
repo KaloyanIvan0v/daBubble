@@ -16,6 +16,15 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 export class OwnProfileEditComponent {
   userData: User = new User('', '', '', '', [], true);
   sanitizedUrl!: SafeResourceUrl;
+  selectedPhoto: string | null = null;
+  photos: string[] = [
+    'assets/img/profile-img/Elise-Roth.svg',
+    'assets/img/profile-img/Elias-Neumann.svg',
+    'assets/img/profile-img/Frederik-Beck.svg',
+    'assets/img/profile-img/Steffen-Hoffmann.svg',
+    'assets/img/profile-img/Sofia-Mueller.svg',
+    'assets/img/profile-img/Noah-Braun.svg',
+  ];
   constructor(
     public workspaceService: WorkspaceService,
     public firebaseService: FirebaseServicesService,
@@ -54,5 +63,9 @@ export class OwnProfileEditComponent {
     this.firebaseService.updateDoc('users', this.userData.uid, this.userData);
     this.workspaceService.ownProfileEditPopUp.set(false);
     this.workspaceService.updateUser(this.userData);
+  }
+
+  setUserPhoto(photo: string) {
+    this.userData.photoURL = photo;
   }
 }
