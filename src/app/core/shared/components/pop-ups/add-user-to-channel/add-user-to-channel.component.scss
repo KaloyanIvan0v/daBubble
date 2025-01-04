@@ -124,3 +124,43 @@ section {
     );
   }
 }
+
+.user-chip-mobile {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .pop-up-wrapper {
+    width: 398px;
+    padding: 25px;
+    gap: 10px;
+    min-height: unset;
+  }
+
+  .pop-up-input {
+    padding: 11px 12px;
+  }
+
+  .user-chip-desktop {
+    display: none;
+  }
+
+  .user-chip-mobile {
+    display: flex;
+    padding: 0px 10px;
+  }
+
+  .filtered-user {
+    padding: 0px 10px;
+
+    img {
+      width: 40px;
+    }
+  }
+
+  .search-results {
+    padding: 5px;
+    bottom: 100px;
+    left: 40px;
+  }
+}

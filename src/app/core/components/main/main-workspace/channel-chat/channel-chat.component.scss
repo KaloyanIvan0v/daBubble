@@ -222,7 +222,8 @@ app-input-box {
     height: calc(100vh - 100px);
   }
 
-  .channel-members-view {
+  .channel-members-view,
+  .add-user-to-channel {
     right: 15px;
     top: 60px;
   }

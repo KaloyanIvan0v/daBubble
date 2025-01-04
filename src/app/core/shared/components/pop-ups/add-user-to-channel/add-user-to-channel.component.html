@@ -12,7 +12,7 @@
       <div
         #userChip
         id="{{ user?.uid }}"
-        class="user-chip"
+        class="user-chip user-chip-desktop"
         *ngFor="let user of selectedUsers"
       >
         <img src="{{ user?.photoURL }}" alt="" />
@@ -21,6 +21,17 @@
       </div>
     </div>
     <div class="pop-up-input">
+      <div
+        #userChip
+        id="{{ user?.uid }}"
+        class="user-chip user-chip-mobile"
+        *ngFor="let user of selectedUsers"
+      >
+        <img src="{{ user?.photoURL }}" alt="" />
+        <div>{{ user?.name }}</div>
+        <div class="close-chip" (click)="removeUserChip(user)"></div>
+      </div>
+
       <input
         [(ngModel)]="searchText"
         (input)="onSearchTextChange()"
