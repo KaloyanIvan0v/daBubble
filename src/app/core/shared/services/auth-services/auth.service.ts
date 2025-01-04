@@ -143,7 +143,7 @@ export class AuthService {
       { photoURL: photoURL },
       { merge: true }
     );
-    this.currentUser$.next({ ...user, photoURL });
+    //this.currentUser$.next({ ...user, photoURL });
   }
 
   async logoutUser(): Promise<void> {

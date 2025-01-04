@@ -10,10 +10,8 @@
       />
     </div>
     <img
-      *ngIf="!uploadCareService.isUploading"
       [src]="
-        uploadCareService.selectedPhoto ||
-        'assets/img/profile-img/profile-img-placeholder.svg'
+        selectedPhoto ?? 'assets/img/profile-img/profile-img-placeholder.svg'
       "
       alt="profile-img-placeholder"
       class="profile-img-preview"
@@ -28,7 +26,7 @@
           [src]="photo"
           class="choose-avatar"
           alt="choose-avatar"
-          (click)="uploadCareService.selectPhoto(photo)"
+          (click)="setUserPhoto(photo)"
         />
       </div>
     </div>
@@ -44,7 +42,7 @@
       <button
         class="primary-btn"
         type="submit"
-        [disabled]="!canProceed()"
+        [disabled]="!selectedPhoto"
         (click)="signUpSuccess()"
       >
         Weiter

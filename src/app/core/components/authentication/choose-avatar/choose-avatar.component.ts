@@ -1,11 +1,12 @@
 import { UploadCareService } from './../../../shared/services/uploadcare-service/uploadcare.service';
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
 import { SharedModule } from 'src/app/core/shared/shared-module';
 import { SignupComponent } from '../signup/signup.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 
 @Component({
   selector: 'app-choose-avatar',
@@ -17,6 +18,8 @@ import { WorkspaceService } from 'src/app/core/shared/services/workspace-service
 export class ChooseAvatarComponent {
   @Input() signUpComponent!: SignupComponent;
   userData$: Observable<any>;
+
+  selectedPhoto: string | null = null;
 
   photos: string[] = [
     'assets/img/profile-img/Elise-Roth.svg',
@@ -32,7 +35,8 @@ export class ChooseAvatarComponent {
     public uploadCareService: UploadCareService,
     public authUIService: AuthUIService,
     public router: Router,
-    public activatedRoute: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    public AuthService: AuthService
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
@@ -60,5 +64,14 @@ export class ChooseAvatarComponent {
       this.authUIService.showAccountCreated = false;
       this.navigateToDashboard();
     }, 1500);
+  }
+
+  setUserPhoto(photo: string) {
+    this.selectedPhoto = photo;
+    this.AuthService.currentUser$.subscribe((user) => {
+      if (user) {
+        this.AuthService.updateAvatar(user, photo);
+      }
+    });
   }
 }

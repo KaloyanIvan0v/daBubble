@@ -73,7 +73,8 @@ export class MainComponent implements OnInit, OnDestroy {
       this.uploadCareService,
       this.authUIService,
       this.router,
-      this.activatedRoute
+      this.activatedRoute,
+      this.authService
     );
 
     this.signupComponent = new SignupComponent(
