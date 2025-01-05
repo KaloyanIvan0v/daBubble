@@ -50,9 +50,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.removeLoginAnimationAfterDelay();
-
     this.setInitialModeClass();
-
     this.subscribeToRouteChanges();
   }
 
@@ -62,12 +60,27 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     }, 2700);
   }
 
+  /**
+   * Sets the initial mode class based on the deepest child route's data.
+   *
+   * The mode class is determined by the value of the 'modeClass' property in
+   * the deepest child route's snapshot data. If the property is not present
+   * or null, the default mode class of 'login-mode' is used.
+   */
   private setInitialModeClass(): void {
     const childRoute = this.getDeepestChildRoute(this.activatedRoute);
     const modeClass = childRoute?.snapshot.data['modeClass'];
     this.currentModeClass = modeClass || 'login-mode';
   }
 
+  /**
+   * Subscribes to route changes and updates the current mode class accordingly.
+   *
+   * Whenever a route change occurs, it gets the deepest child route and
+   * checks if it has a 'modeClass' property in its snapshot data.
+   * If yes, it updates the current mode class to that value.
+   * If not, it falls back to 'login-mode'.
+   */
   private subscribeToRouteChanges(): void {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -77,6 +90,13 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
         this.currentModeClass = newModeClass || 'login-mode';
       });
   }
+
+  /**
+   * Recursively finds the deepest child route for the given activated route.
+   *
+   * @param route - The starting activated route from which the search begins.
+   * @returns The deepest child route if it exists; otherwise, null.
+   */
 
   private getDeepestChildRoute(route: ActivatedRoute): ActivatedRoute | null {
     let childRoute = route.firstChild;
@@ -90,6 +110,20 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     this.startAnimationSequence();
   }
 
+  /**
+   * Starts the animation sequence for the logo, background fade, and main
+   * logo components when the component is initialized.
+   *
+   * The animation sequence consists of the following steps:
+   *
+   * 1. The logo image slides to the left after 500 milliseconds.
+   * 2. The logo text appears and slides to the left after 900 milliseconds.
+   * 3. The logo container slides to the top of the screen if the screen width
+   *    is less than or equal to 650 pixels or to its target position otherwise
+   *    after 2000 milliseconds.
+   * 4. The background fade animation starts after 2000 milliseconds.
+   * 5. The main logo appears after 2600 milliseconds.
+   */
   private startAnimationSequence(): void {
     const screenWidth = window.innerWidth;
 

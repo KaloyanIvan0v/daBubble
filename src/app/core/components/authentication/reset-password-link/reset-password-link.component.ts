@@ -30,29 +30,39 @@ export class ResetPasswordLinkComponent {
   passwordsMatch: boolean = false;
   errorMessage: string = '';
   successMessage: string = '';
-  oobCode: string = ''; // The password reset code from the URL
+  oobCode: string = '';
   codeVerified = false;
   resetPasswordSubmitted = false;
 
+  /**
+   * Lifecycle hook for when the component is initialized. Verifies the password
+   * reset code if it is present in the query parameters.
+   */
   ngOnInit() {
-    // Get the 'oobCode' from the URL query parameters
     this.activatedRoute.queryParams.subscribe((params) => {
       this.oobCode = params['oobCode'];
       if (this.oobCode) {
-        this.verifyResetCode(this.oobCode); // Verify the reset code
+        this.verifyResetCode(this.oobCode);
       }
     });
   }
 
-  // Verify if the reset code is valid
+  /**
+   * Verifies the password reset code and sets the component's state accordingly.
+   * If the code is valid, the component's `codeVerified` property is set to true.
+   * If the code is invalid or expired, the component's `errorMessage` property
+   * is set to an appropriate error message and the `codeVerified` property is
+   * set to false.
+   * @param code The password reset code to verify.
+   */
   async verifyResetCode(code: string) {
     try {
       const auth = getAuth();
-      await verifyPasswordResetCode(auth, code); // Firebase will verify the code
-      this.codeVerified = true; // Code is valid, allow the user to reset password
+      await verifyPasswordResetCode(auth, code);
+      this.codeVerified = true;
     } catch (error) {
       console.error('Invalid or expired reset code:', error);
-      this.codeVerified = false; // The code is invalid or expired
+      this.codeVerified = false;
       this.errorMessage = 'The reset code is invalid or has expired.';
     }
   }
@@ -61,30 +71,30 @@ export class ResetPasswordLinkComponent {
     this.passwordsMatch = this.user.password === this.user.confirmPassword;
   }
 
-  // Handle the password reset process after the user enters the new password
+  /**
+   * Submits the form and resets the user's password if the passwords match and
+   * the reset code is valid. If the passwords do not match or the reset code is
+   * invalid or expired, an error message is displayed.
+   * @returns A Promise that resolves if the password reset is successful and
+   * rejects if the password reset fails.
+   */
   async onSubmit(): Promise<void> {
     if (this.passwordsMatch && this.user.password) {
       if (!this.oobCode || !this.codeVerified) {
         this.errorMessage = 'Invalid or expired reset code.';
         return;
       }
-
       try {
-        const auth = getAuth(); // Firebase Auth instance
-
-        // Reset the password using Firebase's confirmPasswordReset function
+        const auth = getAuth();
         await confirmPasswordReset(auth, this.oobCode, this.user.password);
         this.resetPasswordSubmitted = true;
-
         this.successMessage = 'Your password has been successfully reset.';
-        this.errorMessage = ''; // Reset any error message
-
-        // Redirect to login page after successful password reset
+        this.errorMessage = '';
         this.navigateToLogin();
       } catch (error) {
         console.error('Error resetting password:', error);
         this.errorMessage = 'Error resetting password. Please try again.';
-        this.successMessage = ''; // Reset any success message
+        this.successMessage = '';
       }
     } else {
       this.errorMessage = 'Please ensure passwords match and are valid.';

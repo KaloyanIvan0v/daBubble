@@ -11,7 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   standalone: true,
   imports: [SharedModule],
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss'], // Corrected 'styleUrl' to 'styleUrls'
+  styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
   user = {
@@ -32,12 +32,10 @@ export class SignupComponent implements OnInit {
     public router: Router,
     public activatedRoute: ActivatedRoute
   ) {
-    // Assign the Observable from the service
     this.userData$ = this.workspaceService.loggedInUserData;
   }
 
   ngOnInit() {
-    // Subscribe to currentUser$ for real-time updates on auth state
     this.authService.observeAuthState((user) => {
       if (user) {
         console.log('User logged in, UID:', user.uid);
@@ -47,6 +45,11 @@ export class SignupComponent implements OnInit {
     });
   }
 
+  /**
+   * Handles the registration process. If the registration is successful, it navigates
+   * the user to the 'choose-avatar' page. If the registration fails, it sets the
+   * isEmailAlreadyUsed flag to true if the error is 'auth/email-already-in-use'.
+   */
   onSubmit(): void {
     this.authService
       .register(this.user.email, this.user.name, this.user.password)

@@ -31,6 +31,11 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  /**
+   * Handles the login process. If the login is successful, it redirects the user
+   * to the dashboard. If the login fails, it sets the loginError flag to true.
+   * @param event the event that triggered the login process
+   */
   async onLogin(event: Event) {
     event.preventDefault();
 
@@ -54,10 +59,21 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  /**
+   * Checks the current authentication status of the user.
+   * @returns a promise that resolves to true if the user is authenticated,
+   * false otherwise
+   */
   async checkAuthStatus(): Promise<boolean> {
     return await this.authService.isAuthenticated;
   }
 
+  /**
+   * Logs in as a guest user. This is a convenience function for
+   * demonstration purposes only. In a real application, you would
+   * not want to hard-code credentials like this.
+   * @param event the event that triggered the login process
+   */
   async guestLogin(event: Event) {
     event.preventDefault();
     try {

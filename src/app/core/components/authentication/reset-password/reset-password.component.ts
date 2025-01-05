@@ -24,6 +24,10 @@ export class ResetPasswordComponent {
 
   resetLinkSent = false;
 
+  /**
+   * Resets the password for the user with the given email
+   * @returns Promise that resolves if the password reset email is sent successfully
+   */
   async onResetPassword() {
     if (!this.user.email) return;
 
