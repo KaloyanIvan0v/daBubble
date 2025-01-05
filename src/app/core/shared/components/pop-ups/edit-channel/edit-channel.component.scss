@@ -122,8 +122,6 @@ section {
   border-radius: 50px;
   padding: 3px;
   cursor: pointer;
-  right: 40px;
-  position: fixed;
 }
 
 @media (max-width: 1400px) {
@@ -146,10 +144,24 @@ section {
 }
 
 @media (max-width: 960px) {
+  section {
+    height: 100vh;
+    overflow-y: auto;
+  }
+
   .pop-up-wrapper {
     min-height: 100vh;
     min-width: 100vw;
     border-radius: unset;
+    box-shadow: none;
+
+    .primary-btn {
+      margin-bottom: 30px;
+    }
+  }
+
+  .pop-up-shadow {
+    background: white;
   }
 
   .member-list {
