@@ -212,6 +212,14 @@ app-input-box {
     left: 0;
     position: fixed;
   }
+
+  .add-user-to-channel {
+    right: unset;
+    top: unset;
+    max-width: unset;
+    bottom: -20px;
+    left: 0;
+  }
 }
 
 @media (max-width: 550px) {
@@ -228,8 +236,7 @@ app-input-box {
     height: calc(100vh - 100px);
   }
 
-  .channel-members-view,
-  .add-user-to-channel {
+  .channel-members-view {
     right: 15px;
     top: 60px;
   }

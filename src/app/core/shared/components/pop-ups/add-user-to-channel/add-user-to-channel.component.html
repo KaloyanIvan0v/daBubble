@@ -1,5 +1,7 @@
 <section *ngIf="popUpVisible">
   <div class="pop-up-wrapper">
+    <div class="close-overlay" (click)="closePopUp()"></div>
+
     <div class="tittle-closse">
       <div class="font24-700">Leute hinzufügen</div>
       <div class="close-button" (click)="closePopUp()"></div>
