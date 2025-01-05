@@ -15,14 +15,24 @@
           class="purple3-btn"
           (click)="toggleEditName()"
         >
-          Bearbeiten
+          <span class="edit-text">Bearbeiten</span>
         </div>
+        <img
+          class="edit-btn"
+          [src]="
+            editNameActive
+              ? 'assets/img/buttons/check_circle-black.svg'
+              : 'assets/img/buttons/edit-black.svg'
+          "
+          alt="edit-img"
+          (click)="toggleEditName()"
+        />
         <div
           (click)="toggleEditName(); saveChanges()"
           *ngIf="editNameActive"
           class="purple3-btn"
         >
-          Speichern
+          <span class="edit-text">Speichern</span>
         </div>
       </div>
       <div
@@ -51,14 +61,25 @@
           class="purple3-btn"
           (click)="toggleEditDescription()"
         >
-          Bearbeiten
+          <span class="edit-text">Bearbeiten</span>
         </div>
+        <img
+          class="edit-btn"
+          [src]="
+            editNameActive
+              ? 'assets/img/buttons/check_circle-black.svg'
+              : 'assets/img/buttons/edit-black.svg'
+          "
+          alt="edit-img"
+          (click)="toggleEditDescription()"
+        />
+
         <div
           (click)="toggleEditDescription(); saveChanges()"
           *ngIf="editDescriptionActive"
           class="purple3-btn"
         >
-          Speichern
+          <span class="edit-text">Speichern</span>
         </div>
       </div>
 

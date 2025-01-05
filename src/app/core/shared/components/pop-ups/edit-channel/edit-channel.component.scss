@@ -116,6 +116,16 @@ section {
   border-radius: 50%;
 }
 
+.edit-btn {
+  display: block;
+  background-color: #eceefe;
+  border-radius: 50px;
+  padding: 3px;
+  cursor: pointer;
+  right: 60px;
+  position: fixed;
+}
+
 @media (max-width: 960px) {
   .pop-up-wrapper {
     min-height: 100vh;
@@ -125,5 +135,9 @@ section {
 
   .member-list {
     display: flex;
+  }
+
+  .edit-text {
+    display: none;
   }
 }
