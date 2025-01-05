@@ -241,7 +241,7 @@ section {
 
 @media (max-width: 550px) {
   section {
-    padding: 0 10px;
+    padding: 10px 5px 10px 15px;
   }
 
   .img-wrapper {
@@ -264,10 +264,6 @@ section {
 }
 
 @media (max-width: 350px) {
-  section {
-    padding: 0;
-  }
-
   .msg-wrapper {
     gap: 10px;
   }

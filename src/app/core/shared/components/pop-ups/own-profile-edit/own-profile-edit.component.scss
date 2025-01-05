@@ -117,12 +117,18 @@ section {
       margin-right: 15px;
     }
   }
+
+  .photos-container {
+    img {
+      width: 45px;
+      height: 45px;
+    }
+  }
 }
 
 @media (max-width: 450px) {
   .pop-up-wrapper {
     width: 370px;
-    height: 650px;
     justify-content: flex-start;
     padding: 35px 20px;
     gap: 30px;
@@ -152,6 +158,29 @@ section {
   .pop-up-wrapper {
     width: 330px;
     padding: 30px 15px;
+
+    .font24-700 {
+      font-size: 21px;
+    }
+  }
+
+  .photos-container {
+    .photos {
+      width: 45px;
+      height: 45px;
+    }
+
+    img {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  .user-img {
+    img {
+      width: 170px;
+      height: 170px;
+    }
   }
 }
 
