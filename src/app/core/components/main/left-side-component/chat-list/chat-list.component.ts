@@ -82,27 +82,44 @@ export class ChatListComponent implements OnInit {
     chat: DirectMessage,
     currentUserId: string | null
   ): Observable<{ chat: DirectMessage; user: User | null }> {
-    const otherUserId = chat.uid.find((uid) => uid !== currentUserId);
+    // 1) Prüfen, ob es einen "anderen" User gibt
+    let otherUserId = chat.uid.find((uid) => uid !== currentUserId);
+
+    // 2) Wenn otherUserId nicht gefunden wurde, könnte es sein,
+    //    dass der User mit sich selbst chattet (beide UIDs sind gleich).
+    if (!otherUserId) {
+      // Prüfen, ob alle UIDs dem aktuellen User entsprechen
+      const allAreCurrentUser = chat.uid.every((uid) => uid === currentUserId);
+      if (allAreCurrentUser && currentUserId) {
+        // Dann haben wir es mit einem "Self-Chat" zu tun
+        otherUserId = currentUserId;
+      }
+    }
+
+    // 3) Wenn otherUserId nach dieser Logik immer noch undefined ist,
+    //    geben wir ein Objekt mit `user: null` zurück.
     if (!otherUserId) {
       return of({ chat, user: null });
     }
+
+    // Ansonsten laden wir den User ganz normal aus Firebase
     return this.firebaseService
       .getUser(otherUserId)
       .pipe(map((user) => ({ chat, user })));
   }
 
-/**
- * Takes an array of DirectMessage objects and the currently logged in user's ID,
- * and returns an array of observables. Each observable resolves to an object containing
- * a chat and the user involved in that chat who is not the currently logged in user.
- * If a chat is only between the logged in user and one other user, the user field in
- * the returned object will contain the other user's data. If the chat has more than
- * two users, the user field will be null.
- *
- * @param chats An array of DirectMessage objects representing the chats.
- * @param currentUserId The ID of the currently logged in user.
- * @returns An array of observables, each resolving to an object with a chat and a user.
- */
+  /**
+   * Takes an array of DirectMessage objects and the currently logged in user's ID,
+   * and returns an array of observables. Each observable resolves to an object containing
+   * a chat and the user involved in that chat who is not the currently logged in user.
+   * If a chat is only between the logged in user and one other user, the user field in
+   * the returned object will contain the other user's data. If the chat has more than
+   * two users, the user field will be null.
+   *
+   * @param chats An array of DirectMessage objects representing the chats.
+   * @param currentUserId The ID of the currently logged in user.
+   * @returns An array of observables, each resolving to an object with a chat and a user.
+   */
 
   private getAllChatsWithUserObservables(
     chats: DirectMessage[],
