@@ -1,4 +1,4 @@
-<section>
+<section *ngIf="messages$ | async as messages">
   <div class="header">
     <div class="header-content">
       <div class="header-left" (click)="openEditChannelPopUp()">

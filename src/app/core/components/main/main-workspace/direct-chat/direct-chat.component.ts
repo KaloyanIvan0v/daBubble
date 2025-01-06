@@ -36,6 +36,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     '/assets/img/profile-img/profile-img-placeholder.svg'
   );
   messages$: Observable<Message[]> = of([]);
+
   messageToEdit: Message | undefined = undefined;
   usersUid: string[] = [];
   private destroy$ = new Subject<void>();

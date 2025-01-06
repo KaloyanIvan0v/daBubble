@@ -1,4 +1,4 @@
-<section>
+<section *ngIf="messages$ | async as messages">
   <!-- Header -->
   <div class="header">
     <div
@@ -19,36 +19,39 @@
   </div>
 
   <!-- Chat Container -->
-  <ng-container *ngIf="messages$ | async as messages">
-    <app-chat
-      class="chat-container"
-      [messages]="messages"
-      (messageToEdit)="messageToEditHandler($event)"
-    ></app-chat>
 
-    <!-- Receiver Info When No Messages -->
-    <div class="receiver-info-container" *ngIf="messages.length === 0">
-      <div
-        class="receiver-info"
+  <app-chat
+    *ngIf="messages.length > 0"
+    class="chat-container"
+    [messages]="messages"
+    (messageToEdit)="messageToEditHandler($event)"
+  ></app-chat>
+
+  <!-- Receiver Info When No Messages -->
+  <div
+    class="receiver-info-container"
+    *ngIf="(messages$ | async)?.length === 0"
+  >
+    <div
+      class="receiver-info"
+      (click)="receiverId && openProfileView(receiverId)"
+    >
+      <div class="user-img">
+        <img [src]="receiverPhotoURL$ | async" alt="user-img" />
+      </div>
+      <div class="user-name">{{ receiverName$ | async }}</div>
+    </div>
+    <div class="user-text">
+      Diese Unterhaltung findet nur zwischen
+      <span
+        class="user-text-name"
         (click)="receiverId && openProfileView(receiverId)"
       >
-        <div class="user-img">
-          <img [src]="receiverPhotoURL$ | async" alt="user-img" />
-        </div>
-        <div class="user-name">{{ receiverName$ | async }}</div>
-      </div>
-      <div class="user-text">
-        Diese Unterhaltung findet nur zwischen
-        <span
-          class="user-text-name"
-          (click)="receiverId && openProfileView(receiverId)"
-        >
-          &#64;{{ receiverName$ | async }}
-        </span>
-        und dir statt.
-      </div>
+        &#64;{{ receiverName$ | async }}
+      </span>
+      und dir statt.
     </div>
-  </ng-container>
+  </div>
 
   <!-- Input Box for Sending Messages -->
   <app-input-box

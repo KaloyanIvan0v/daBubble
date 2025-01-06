@@ -19,7 +19,7 @@ import { MessageComponent } from '../message/message.component';
   standalone: true,
   imports: [CommonModule, FirebaseDatePipe, MessageComponent],
   templateUrl: './chat.component.html',
-  styleUrl: './chat.component.scss',
+  styleUrls: ['./chat.component.scss'],
 })
 export class ChatComponent {
   @Input() messages: Message[] = [];
@@ -48,7 +48,7 @@ export class ChatComponent {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['messages'] && this.firstScrollDone) {
+    if (changes['messages']) {
       setTimeout(() => {
         this.checkForNewMessages();
       }, 200);
@@ -70,10 +70,7 @@ export class ChatComponent {
 
   private checkForNewMessages(): void {
     if (this.lastMessageLength !== this.messages.length) {
-      setTimeout(() => {
-        this.setMessageToLastMessageToScroll();
-        this.scrollToMessageIfNeeded(true);
-      }, 200);
+      this.scrollToBottom(true);
       this.lastMessageLength = this.messages.length;
     }
   }
@@ -108,5 +105,14 @@ export class ChatComponent {
 
   setEditMessage($event: Message) {
     this.messageToEdit.emit($event);
+  }
+
+  private scrollToBottom(smooth: boolean = true): void {
+    if (!this.messageContainer) return;
+    const container = this.messageContainer.nativeElement as HTMLElement;
+    container.scroll({
+      top: container.scrollHeight,
+      behavior: smooth ? 'smooth' : 'auto',
+    });
   }
 }
