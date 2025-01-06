@@ -104,7 +104,6 @@ export class AuthService {
     try {
       const result = await signInWithPopup(this.auth, provider);
       const user = result.user;
-
       await this.handleGoogleSignInResult(user, result);
     } catch (error) {
       console.error('Error signing in with Google:', error);
@@ -129,7 +128,8 @@ export class AuthService {
           user.displayName || '',
           user.email
         );
-        this.navigateToAvatarSelection();
+        this.userStateChanged.next();
+        await this.router.navigate(['/authentication/choose-avatar']);
       }
     } else {
       this.userStateChanged.next();
@@ -194,11 +194,5 @@ export class AuthService {
 
   getAuthState(): Observable<User | null> {
     return authState(this.auth);
-  }
-
-  navigateToAvatarSelection() {
-    this.router.navigate(['choose-avatar'], {
-      relativeTo: this.activatedRoute,
-    });
   }
 }
