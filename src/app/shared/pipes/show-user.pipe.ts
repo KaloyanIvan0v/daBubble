@@ -16,11 +16,25 @@ export class ShowUserPipe implements PipeTransform {
   transform(uid: string): Observable<SafeHtml> {
     return this.firebase.getUser(uid).pipe(
       map((user: User) => {
+        console.log('User:', user);
+
+        const imageUrl =
+          user && user.photoURL && user.photoURL.trim() !== ''
+            ? user.photoURL
+            : 'assets/img/profile-img/profile-img-placeholder.svg';
+
+        const userName = user && user.name ? user.name : 'unknown user';
+
         const html = `
           <div class="pipe-user-details">
-            <img src="${user.photoURL}" alt="${user.name}" style="width:30px;height:30px;border-radius:50%;" />
-            <span style="margin-left:8px;">${user.name}</span>
-          </div>`;
+            <img
+              src="${imageUrl}"
+              alt="${userName}"
+              style="width:30px; height:30px; border-radius:50%;"
+            />
+            <span style="margin-left:8px;">${userName}</span>
+          </div>
+        `;
         return this.sanitizer.bypassSecurityTrustHtml(html);
       })
     );
