@@ -213,8 +213,46 @@ export class NewChatComponent implements OnInit, OnDestroy {
   }
 
   onUserSelected($event: User): void {
-    if (this.chatExists($event.uid)) this.openChat($event.uid);
-    else this.processNewChat($event);
+    const userUid = $event.uid;
+
+    if (userUid === this.currentLoggedInUser!.uid) {
+      this.handleSelfChat(userUid);
+    } else {
+      if (this.chatExists(userUid)) {
+        this.openChat(userUid);
+      } else {
+        this.processNewChat($event);
+      }
+    }
+  }
+
+  private async handleSelfChat(myUid: string): Promise<void> {
+    const selfChatId = this.generateChatId(myUid, myUid);
+
+    const selfChatExists = this.chats.some(
+      (chat: any) => chat.id === selfChatId
+    );
+
+    if (selfChatExists) {
+      this.navigateToChat(selfChatId);
+    } else {
+      await this.createSelfChat(myUid, selfChatId);
+      this.navigateToChat(selfChatId);
+    }
+  }
+
+  private async createSelfChat(myUid: string, chatId: string): Promise<void> {
+    const sData = this.buildSenderData();
+    const chatData = {
+      uid: [myUid, myUid],
+      id: chatId,
+      timestamp: new Date(),
+      sender: { ...sData },
+      receiver: { ...sData },
+    };
+
+    const docRef = this.firebaseService.getDocRef('directMessages', chatId);
+    await setDoc(docRef, chatData);
   }
 
   private processNewChat($event: User): void {
@@ -250,13 +288,23 @@ export class NewChatComponent implements OnInit, OnDestroy {
   }
 
   chatExists(userUid: string): boolean {
-    return !!this.chats.find((chat: any) =>
-      chat.receiver.uid.includes(userUid)
-    );
+    return this.chats.some((chat: any) => {
+      return (
+        (chat.sender.uid === this.currentLoggedInUser!.uid &&
+          chat.receiver.uid === userUid) ||
+        (chat.receiver.uid === this.currentLoggedInUser!.uid &&
+          chat.sender.uid === userUid)
+      );
+    });
   }
 
   getChatIdByUserId(userUid: string): any {
-    return this.chats.find((chat: any) => chat.receiver.uid.includes(userUid));
+    return this.chats.find((chat: any) => {
+      return (
+        chat.uid.includes(this.currentLoggedInUser!.uid) &&
+        chat.uid.includes(userUid)
+      );
+    });
   }
 
   private logActiveChannel(): void {
