@@ -51,6 +51,9 @@
           [ngClass]="{ active: item.chat.id === currentActiveUnitId }"
         >
           {{ item.user?.name || "Unknown User" }}
+          <ng-container *ngIf="item.user?.uid === loggedInUserId"
+            >(Du)</ng-container
+          >
         </div>
       </div>
     </div>

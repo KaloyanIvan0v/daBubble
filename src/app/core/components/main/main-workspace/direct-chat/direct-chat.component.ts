@@ -269,10 +269,11 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   private extractReceiverIdFromChatData(
     chatData: DirectMessage | null
   ): string | null {
-    if (chatData?.uid && Array.isArray(chatData.uid)) {
-      return chatData.uid.find((uid) => uid !== this.currentUserUid) || null;
+    if (!chatData?.uid || !Array.isArray(chatData.uid)) {
+      return null;
     }
-    return null;
+    const receiverId = chatData.uid.find((uid) => uid !== this.currentUserUid);
+    return receiverId ?? this.currentUserUid;
   }
 
   /**

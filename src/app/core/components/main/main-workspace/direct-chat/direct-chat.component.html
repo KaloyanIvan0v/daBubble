@@ -21,7 +21,6 @@
   <!-- Chat Container -->
 
   <app-chat
-    *ngIf="messages.length > 0"
     class="chat-container"
     [messages]="messages"
     (messageToEdit)="messageToEditHandler($event)"
