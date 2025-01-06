@@ -16,8 +16,6 @@ export class ShowUserPipe implements PipeTransform {
   transform(uid: string): Observable<SafeHtml> {
     return this.firebase.getUser(uid).pipe(
       map((user: User) => {
-        console.log('User:', user);
-
         const imageUrl =
           user && user.photoURL && user.photoURL.trim() !== ''
             ? user.photoURL

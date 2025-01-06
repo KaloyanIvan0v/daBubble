@@ -1,3 +1,5 @@
+import { RightSideContainerComponent } from './../../../components/main/right-side-container/right-side-container.component';
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { inject, Injectable, signal } from '@angular/core';
 import {
@@ -36,7 +38,8 @@ export class AuthService {
     private auth: Auth,
     public authUIService: AuthUIService,
     private router: Router,
-    public activatedRoute: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    private StatefulWindowServiceService: StatefulWindowServiceService
   ) {
     this.initAuthState();
 
@@ -149,9 +152,9 @@ export class AuthService {
   async logoutUser(): Promise<void> {
     this.authStatusChanged.set(false);
     this.currentUser$.next(null);
-
     await this.auth.signOut();
     this.router.navigate(['authentication', 'login']);
+    this.StatefulWindowServiceService.rightSideComponentState.set(false);
   }
 
   async resetPassword(email: string): Promise<void> {

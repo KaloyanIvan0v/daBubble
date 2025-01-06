@@ -14,7 +14,8 @@ export class ThreadService {
   );
   constructor() {}
 
-  openThread(message: Message) {
+  openThread(message: Message | undefined) {
+    if (!message) return;
     this.currentThreadPath.next(
       message.location + '/' + message.id + '/messages'
     );

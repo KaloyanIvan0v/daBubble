@@ -14,6 +14,8 @@ import {
   setDoc,
   QuerySnapshot,
   DocumentData,
+  collectionGroup,
+  collectionData,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, Observer, switchMap, map } from 'rxjs';
 import { where, getDoc } from 'firebase/firestore';
@@ -37,6 +39,11 @@ export class FirebaseServicesService implements OnDestroy {
     this.authService.getCurrentUserUID().then((uid) => {
       this.userUIDSubject.next(uid);
     });
+  }
+
+  getAllMessages(): Observable<Message[]> {
+    const messagesQuery = collectionGroup(this.firestore, 'messages');
+    return collectionData(messagesQuery, { idField: 'id' });
   }
 
   ngOnDestroy(): void {
