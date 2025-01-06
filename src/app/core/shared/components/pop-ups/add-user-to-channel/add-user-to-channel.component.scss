@@ -166,7 +166,7 @@ section {
   }
 
   .filtered-user {
-    padding: 0px 10px;
+    padding: 3px 10px;
 
     img {
       width: 40px;
@@ -175,8 +175,14 @@ section {
 
   .search-results {
     padding: 5px;
-    bottom: 90px;
+    position: fixed;
+    bottom: 110px;
     left: 40px;
+    max-height: 100px;
+  }
+
+  .scroll-content {
+    max-height: 90px;
   }
 }
 
