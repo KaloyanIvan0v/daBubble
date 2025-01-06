@@ -18,9 +18,16 @@ export class LeftSideComponentComponent {
     public workspaceService: WorkspaceService,
     private statefulWindowService: StatefulWindowServiceService
   ) {}
+
   navigateToNewChat() {
     this.router.navigate(['dashboard', 'new-chat']);
   }
+
+  /**
+   * Opens a new chat by navigating to the new-chat page and setting the
+   * current active unit ID to 'newMessage'. If the screen width is
+   * smaller than 960px, it opens the chat in mobile view.
+   */
 
   openNewChat() {
     this.navigateToNewChat();

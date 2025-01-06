@@ -51,6 +51,12 @@ export class ChannelChatComponent implements OnDestroy {
     return `/channels/${this.channelId}/messages`;
   }
 
+  /**
+   * Constructs a new ChannelChatComponent.
+   * @param workspaceService The service which manages the workspace state.
+   * @param firebaseService The service which handles the Firebase operations.
+   * @param statefulWindowService The service which handles the pop-up states.
+   */
   constructor(
     private workspaceService: WorkspaceService,
     private firebaseService: FirebaseServicesService,
@@ -72,6 +78,10 @@ export class ChannelChatComponent implements OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
+  /**
+   * Handles the window resize event and updates the pop-up states based on the new window width.
+   * @param event The event object of the window resize event.
+   */
   onResize(event: any): void {
     this.statefulWindowService.updateView(event.target.innerWidth);
   }
@@ -79,6 +89,11 @@ export class ChannelChatComponent implements OnDestroy {
   messageToEditHandler($event: Message): void {
     this.messageToEdit = $event;
   }
+
+  /**
+   * Subscribes to the message stream for a specific channel and updates the messages list.
+   * @param channelId The ID of the channel for which to subscribe to messages.
+   */
 
   private subscribeToMessages(channelId: string): void {
     this.messages$ = this.firebaseService.getMessages('channels', channelId);
@@ -103,6 +118,12 @@ export class ChannelChatComponent implements OnDestroy {
     this.channelUsers = [];
   }
 
+  /**
+   * Subscribes to the channel data stream for a specific channel and updates the channel data.
+   * Logs an error message if there is an issue loading the channel.
+   * @param channelId The ID of the channel to subscribe to.
+   */
+
   private subscribeToChannel(channelId: string): void {
     this.channelSubscription = this.firebaseService
       .getChannel(channelId)
@@ -113,6 +134,12 @@ export class ChannelChatComponent implements OnDestroy {
       });
   }
 
+  /**
+   * Handles the channel data by updating the relevant component properties.
+   * Sets the channel data, name, and user amount, then loads the users of the channel.
+   * @param channel The channel data to be handled.
+   */
+
   private handleChannelData(channel: Channel): void {
     if (channel) {
       this.channelData = channel;
@@ -122,6 +149,11 @@ export class ChannelChatComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Loads the users of the channel and updates the channel users list.
+   * Fetches the user documents from the database, filters out any null values, and
+   * assigns the result to the channelUsers property.
+   */
   async loadUsers() {
     const channelUids = this.channelData.uid;
     this.setUserUids(channelUids);
@@ -132,6 +164,11 @@ export class ChannelChatComponent implements OnDestroy {
     this.channelUsers = users.filter((user) => user != null);
   }
 
+  /**
+   * Sets the usersUid property to the given uids array.
+   * The usersUid property is used by the user-list component to determine which users to display.
+   * @param uids The array of user IDs to set as the usersUid property value.
+   */
   setUserUids(uids: string[]) {
     this.usersUid = uids;
   }
@@ -147,6 +184,10 @@ export class ChannelChatComponent implements OnDestroy {
     this.workspaceService.editChannelPopUp.set(true);
   }
 
+  /**
+   * Opens the add user to channel pop-up, based on the window size.
+   * If the window is below 960px, opens the channel members view pop-up instead.
+   */
   openAddUserToChannelPopUp() {
     if (this.statefulWindowService.isBelow960) {
       this.workspaceService.channelMembersPopUp.set(true);

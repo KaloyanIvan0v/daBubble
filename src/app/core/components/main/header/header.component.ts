@@ -44,6 +44,11 @@ export class HeaderComponent {
     });
   }
 
+  /**
+   * When the component is initialized, update the window width with the
+   * stateful window service. This is necessary to ensure the correct
+   * display of the mobile mode.
+   */
   ngOnInit(): void {
     this.statefulWindowService.updateView(window.innerWidth);
   }
@@ -60,11 +65,26 @@ export class HeaderComponent {
     }
   }
 
+  /**
+   * Updates the state of left and right side components based on the window size
+   * @param event the window resize event
+   */
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
     this.statefulWindowService.updateView(event.target.innerWidth);
   }
 
+  /**
+   * Updates the logo source and visibility of the "DevSpace" text based on the current mobile view mode.
+   *
+   * @param mode - The current active component mode on mobile, which can be 'left', 'chat', or 'thread'.
+   *
+   * If the view is below 960 pixels, the logo and DevSpace visibility are updated according to the mode:
+   * - 'left' mode sets the logo to the long version and hides the "DevSpace" text.
+   * - Other modes set the logo to the workspace version and display the "DevSpace" text.
+   *
+   * If the view is above 960 pixels, the logo is set to the long version and the "DevSpace" text is hidden.
+   */
   updateLogoBasedOnMobileMode(mode: 'left' | 'chat' | 'thread'): void {
     if (this.statefulWindowService.isBelow960) {
       switch (mode) {
@@ -82,6 +102,16 @@ export class HeaderComponent {
     }
   }
 
+  /**
+   * Opens the user menu popup based on the current window size.
+   *
+   * If the window is above 960px, the desktop user menu popup is opened.
+   * If the window is below 960px, the mobile user menu popup is opened.
+   *
+   * @remarks
+   * Detects changes with the change detector ref to ensure the popup is
+   * properly displayed.
+   */
   openPopUp() {
     if (window.innerWidth > 960) {
       this.workspaceService.userMenuPopUp.set(true);
@@ -90,14 +120,6 @@ export class HeaderComponent {
       this.workspaceService.mobileUserMenuPopUp.set(true);
       this.workspaceService.userMenuPopUp.set(false);
     }
-
-    // Trigger Angular's change detection
     this.cdRef.detectChanges();
-
-    // Log the state after ensuring the value is updated
-    console.log(
-      'MobileUserMenu visibility:',
-      this.workspaceService.mobileUserMenuPopUp()
-    );
   }
 }

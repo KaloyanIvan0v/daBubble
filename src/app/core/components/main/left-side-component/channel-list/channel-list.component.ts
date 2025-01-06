@@ -26,6 +26,10 @@ export class ChannelListComponent {
     private statefulWindowService: StatefulWindowServiceService
   ) {}
 
+  /**
+   * Gets the currently active unit ID from the workspace service.
+   * @returns The currently active unit ID.
+   */
   get currentActiveUnitId() {
     return this.workspaceService.currentActiveUnitId();
   }
@@ -38,6 +42,12 @@ export class ChannelListComponent {
     this.workspaceService.addChannelPopUp.set(true);
   }
 
+  /**
+   * Initializes the component by subscribing to the channel data from the Firebase service.
+   * Updates the channels array with the received data or logs an error if one occurs during
+   * the subscription process.
+   */
+
   ngOnInit(): void {
     this.subscription = this.firebaseService.getChannels().subscribe({
       next: (channels) => (this.channels = channels),
@@ -49,6 +59,11 @@ export class ChannelListComponent {
     this.subscription?.unsubscribe();
   }
 
+  /**
+   * Navigate to the channel-chat page and set the currentActiveUnitId.
+   * Additionally, if the screen width is smaller than 960px, open the chat on mobile devices.
+   * @param currentActiveUnitId The id of the channel to be navigated to.
+   */
   navigateToChannelChat(currentActiveUnitId: string) {
     this.setCurrentActiveUnitId(currentActiveUnitId);
     this.router.navigate(['dashboard', 'channel-chat']);
@@ -56,6 +71,12 @@ export class ChannelListComponent {
       this.statefulWindowService.openChatOnMobile();
     }
   }
+
+  /**
+   * Sets the current active unit ID in the workspace service.
+   * This ID is used to identify the currently active channel or unit.
+   * @param currentActiveUnitId - The ID of the channel to be set as the current active unit.
+   */
 
   setCurrentActiveUnitId(currentActiveUnitId: string) {
     this.workspaceService.currentActiveUnitId.set(currentActiveUnitId);

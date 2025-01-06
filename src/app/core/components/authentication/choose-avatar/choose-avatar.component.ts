@@ -41,6 +41,11 @@ export class ChooseAvatarComponent {
     this.userData$ = this.workspaceService.loggedInUserData;
   }
 
+  /**
+   * Checks if the user can proceed to the next step in the registration process.
+   * This is the case if either a photo has been selected or a photo has been uploaded.
+   * @returns {boolean} Whether the user can proceed to the next step.
+   */
   canProceed(): boolean {
     return (
       this.uploadCareService.selectedPhoto !== null ||
@@ -57,6 +62,11 @@ export class ChooseAvatarComponent {
     this.router.navigate(['/dashboard']);
   }
 
+  /**
+   * Called when the user successfully signs up. Sets the showAccountCreated flag
+   * to true, waits for 1.5 seconds, then sets it back to false and navigates to
+   * the dashboard.
+   */
   signUpSuccess() {
     this.authUIService.showAccountCreated = true;
 
@@ -66,6 +76,10 @@ export class ChooseAvatarComponent {
     }, 1500);
   }
 
+  /**
+   * Sets the selected photo for the user and updates the user's avatar.
+   * @param photo The selected photo URL.
+   */
   setUserPhoto(photo: string) {
     this.selectedPhoto = photo;
     this.AuthService.currentUser$.subscribe((user) => {
