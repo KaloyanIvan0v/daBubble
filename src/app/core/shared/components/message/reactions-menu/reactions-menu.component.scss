@@ -73,9 +73,13 @@ section {
 
 .emoji-picker {
   position: absolute;
-  left: 0;
+  left: -50px;
   top: 50px;
   z-index: 3;
+
+  &.left-zero {
+    left: 0;
+  }
 }
 
 .reaction-emoji {

@@ -103,6 +103,7 @@
   </div>
   <app-reactions-menu
     *ngIf="usersUid !== []"
+    [loggedInUserId]="loggedInUserId ?? ''"
     [channelUsersUid]="usersUid"
     (messageToEdit)="setEditMessage($event)"
     [showThread]="showThread"

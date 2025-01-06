@@ -23,6 +23,7 @@ import { StatefulWindowServiceService } from '../../../services/stateful-window-
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ReactionsMenuComponent implements OnInit {
+  @Input() loggedInUserId: string = '';
   @Input() message!: Message;
   @Input() lastTwoReactions: string[] = [];
   @Input() ownMessage: boolean = false;
