@@ -180,6 +180,7 @@ export class MessageComponent implements OnInit, OnDestroy {
     this.threadService.openThread(this.message);
     this.statefulWindowService.openRightSideComponentState();
     this.threadService.channelUsersUid.next(this.usersUid);
+    this.statefulWindowService.setMobileViewMode('thread');
   }
 
   cancelEdit() {

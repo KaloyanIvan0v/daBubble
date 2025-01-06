@@ -47,6 +47,7 @@
       *ngIf="messages$ | async as messages"
       class="chat-container"
       [messages]="messages"
+      [showThread]="false"
       (messageToEdit)="messageToEditHandler($event)"
     ></app-chat>
   </div>

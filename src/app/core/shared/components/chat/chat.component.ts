@@ -23,6 +23,7 @@ import { MessageComponent } from '../message/message.component';
 })
 export class ChatComponent {
   @Input() messages: Message[] = [];
+  @Input() showThread: boolean = true;
   messageToScrollTo: string | null = null;
   @Output() messageToEdit: EventEmitter<Message> = new EventEmitter();
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
