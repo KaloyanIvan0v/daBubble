@@ -89,14 +89,26 @@ export class AuthService {
       this.firebaseAuth,
       email,
       password
-    ).then(async (response) => {
-      const user: User = response.user;
-      await updateProfile(user, { displayName: name });
-      await this.saveUserDataToFirestore(user, name, email);
-      this.currentUser$.next(user);
-      this.userStateChanged.next();
-    });
+    ).then((response) =>
+      this.handleUserRegistration(response.user, name, email)
+    );
+
     return from(promise);
+  }
+
+  private async handleUserRegistration(
+    user: User,
+    name: string,
+    email: string
+  ): Promise<void> {
+    await updateProfile(user, { displayName: name });
+    await this.saveUserDataToFirestore(user, name, email);
+    this.updateUserState(user);
+  }
+
+  private updateUserState(user: User): void {
+    this.currentUser$.next(user);
+    this.userStateChanged.next();
   }
 
   async googleSignIn(): Promise<void> {
@@ -120,22 +132,34 @@ export class AuthService {
     user: User,
     result: any
   ): Promise<void> {
-    const isNewUser = getAdditionalUserInfo(result)?.isNewUser;
+    const isNewUser = this.isNewUser(result);
     if (isNewUser) {
-      if (user.email) {
-        await this.saveUserDataToFirestore(
-          user,
-          user.displayName || '',
-          user.email
-        );
-        this.userStateChanged.next();
-        await this.router.navigate(['/authentication/choose-avatar']);
-      }
+      await this.handleNewUser(user);
     } else {
-      this.userStateChanged.next();
-      this.router.navigate(['/dashboard']);
+      this.handleExistingUser();
     }
     this.currentUser$.next(user);
+  }
+
+  private isNewUser(result: any): boolean {
+    return getAdditionalUserInfo(result)?.isNewUser ?? false;
+  }
+
+  private async handleNewUser(user: User): Promise<void> {
+    if (user.email) {
+      await this.saveUserDataToFirestore(
+        user,
+        user.displayName || '',
+        user.email
+      );
+      this.userStateChanged.next();
+      await this.router.navigate(['/authentication/choose-avatar']);
+    }
+  }
+
+  private handleExistingUser(): void {
+    this.userStateChanged.next();
+    this.router.navigate(['/dashboard']);
   }
 
   async updateAvatar(user: User, photoURL: string): Promise<void> {
@@ -146,7 +170,6 @@ export class AuthService {
       { photoURL: photoURL },
       { merge: true }
     );
-    //this.currentUser$.next({ ...user, photoURL });
   }
 
   async logoutUser(): Promise<void> {
