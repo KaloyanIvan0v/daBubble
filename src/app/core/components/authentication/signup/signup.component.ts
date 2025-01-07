@@ -54,21 +54,22 @@ export class SignupComponent implements OnInit {
     this.authService
       .register(this.user.email, this.user.name, this.user.password)
       .subscribe({
-        next: (registeredUser) => {
-          this.isEmailAlreadyUsed = false;
-
-          this.workspaceService.updateLoggedInUserData(registeredUser);
-
-          this.router.navigate(['choose-avatar'], {
-            relativeTo: this.activatedRoute.parent,
-          });
-        },
-        error: (err) => {
-          if (err.code === 'auth/email-already-in-use') {
-            this.isEmailAlreadyUsed = true;
-          }
-        },
+        next: (registeredUser) =>
+          this.handleSuccessfulRegistration(registeredUser),
+        error: (err) => this.handleRegistrationError(err),
       });
+  }
+
+  private handleSuccessfulRegistration(registeredUser: any): void {
+    this.isEmailAlreadyUsed = false;
+    this.workspaceService.updateLoggedInUserData(registeredUser);
+    this.navigateToChooseAvatar();
+  }
+
+  private handleRegistrationError(err: any): void {
+    if (err.code === 'auth/email-already-in-use') {
+      this.isEmailAlreadyUsed = true;
+    }
   }
 
   checkEmailAlreadyUsed(email: string): void {
@@ -79,5 +80,11 @@ export class SignupComponent implements OnInit {
 
   navigateToLogin() {
     this.router.navigate(['/authentication/login']);
+  }
+
+  navigateToChooseAvatar() {
+    this.router.navigate(['choose-avatar'], {
+      relativeTo: this.activatedRoute.parent,
+    });
   }
 }
