@@ -56,13 +56,22 @@ export class EmojiPickerService {
     message: Message
   ): void {
     const userIndex = reaction.authors.indexOf(currentUserId);
+
     if (userIndex === -1) {
       reaction.authors.push(currentUserId);
     } else {
-      reaction.authors.splice(userIndex, 1);
-      if (reaction.authors.length === 0) {
-        this.removeReaction(reaction, message);
-      }
+      this.removeUserFromReaction(reaction, userIndex, message);
+    }
+  }
+
+  private removeUserFromReaction(
+    reaction: Reaction,
+    userIndex: number,
+    message: Message
+  ): void {
+    reaction.authors.splice(userIndex, 1);
+    if (reaction.authors.length === 0) {
+      this.removeReaction(reaction, message);
     }
   }
 
