@@ -71,34 +71,39 @@ export class ResetPasswordLinkComponent {
     this.passwordsMatch = this.user.password === this.user.confirmPassword;
   }
 
-  /**
-   * Submits the form and resets the user's password if the passwords match and
-   * the reset code is valid. If the passwords do not match or the reset code is
-   * invalid or expired, an error message is displayed.
-   * @returns A Promise that resolves if the password reset is successful and
-   * rejects if the password reset fails.
-   */
   async onSubmit(): Promise<void> {
     if (this.passwordsMatch && this.user.password) {
       if (!this.oobCode || !this.codeVerified) {
         this.errorMessage = 'Invalid or expired reset code.';
         return;
       }
-      try {
-        const auth = getAuth();
-        await confirmPasswordReset(auth, this.oobCode, this.user.password);
-        this.resetPasswordSubmitted = true;
-        this.successMessage = 'Your password has been successfully reset.';
-        this.errorMessage = '';
-        this.navigateToLogin();
-      } catch (error) {
-        console.error('Error resetting password:', error);
-        this.errorMessage = 'Error resetting password. Please try again.';
-        this.successMessage = '';
-      }
+      await this.processPasswordReset();
     } else {
       this.errorMessage = 'Please ensure passwords match and are valid.';
     }
+  }
+
+  private async processPasswordReset(): Promise<void> {
+    try {
+      const auth = getAuth();
+      await confirmPasswordReset(auth, this.oobCode, this.user.password);
+      this.handleSuccessfulReset();
+    } catch (error) {
+      this.handleResetError(error);
+    }
+  }
+
+  private handleSuccessfulReset(): void {
+    this.resetPasswordSubmitted = true;
+    this.successMessage = 'Your password has been successfully reset.';
+    this.errorMessage = '';
+    this.navigateToLogin();
+  }
+
+  private handleResetError(error: any): void {
+    console.error('Error resetting password:', error);
+    this.errorMessage = 'Error resetting password. Please try again.';
+    this.successMessage = '';
   }
 
   navigateToResetPassword() {
