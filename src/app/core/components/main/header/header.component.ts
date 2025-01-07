@@ -1,4 +1,3 @@
-import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 import {
   ChangeDetectorRef,
   Component,
@@ -7,13 +6,14 @@ import {
   ViewChild,
   effect,
 } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { Observable } from 'rxjs';
 import { SearchService } from 'src/app/core/shared/services/search-service/search.service';
 import { SearchInputComponent } from 'src/app/core/shared/components/search-input/search-input.component';
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 
 @Component({
   selector: 'app-header',

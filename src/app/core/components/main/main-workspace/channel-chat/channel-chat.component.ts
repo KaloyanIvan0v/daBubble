@@ -1,17 +1,24 @@
-import { Component, HostListener, OnDestroy, effect } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  effect,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { Observable, Subscription } from 'rxjs';
+import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 import { AddUserToChannelComponent } from 'src/app/core/shared/components/pop-ups/add-user-to-channel/add-user-to-channel.component';
 import { ChannelMembersViewComponent } from 'src/app/core/shared/components/pop-ups/channel-members-view/channel-members-view.component';
 import { EditChannelComponent } from 'src/app/core/shared/components/pop-ups/edit-channel/edit-channel.component';
 import { InputBoxComponent } from 'src/app/core/shared/components/input-box/input-box.component';
+import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
+
+import { Subscription, Observable } from 'rxjs';
 import { Channel } from 'src/app/core/shared/models/channel.class';
 import { Message } from 'src/app/core/shared/models/message.class';
-import { ChatComponent } from 'src/app/core/shared/components/chat/chat.component';
-import { StatefulWindowServiceService } from 'src/app/core/shared/services/stateful-window-service/stateful-window-service.service';
 
 @Component({
   selector: 'app-channel-chat',
@@ -28,167 +35,166 @@ import { StatefulWindowServiceService } from 'src/app/core/shared/services/state
   templateUrl: './channel-chat.component.html',
   styleUrls: ['./channel-chat.component.scss'],
 })
-export class ChannelChatComponent implements OnDestroy {
+export class ChannelChatComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   private channelSubscription?: Subscription;
   private messagesSubscription?: Subscription;
-
-  channelData!: Channel;
-  channelName: string = '';
-  channelId: string = '';
-  userAmount: number = 0;
-  channelUsers: any[] = [];
-  usersUid: string[] = [];
-  popUpStates: { [key: string]: boolean } = {};
-
   private popUpStatesSubscription?: Subscription;
-  messages$!: Observable<Message[]>;
-  messages: Message[] = [];
-  lastRenderedMessage: Message | null = null;
-  messageToEdit: Message | undefined = undefined;
 
-  get messagePath(): string {
-    return `/channels/${this.channelId}/messages`;
-  }
+  public channelData!: Channel;
+  public channelName: string = '';
+  public channelId: string = '';
+  public userAmount: number = 0;
+  public channelUsers: any[] = [];
+  public usersUid: string[] = [];
+  public popUpStates: { [key: string]: boolean } = {};
+  public messages$!: Observable<Message[]>;
+  public messages: Message[] = [];
+  public lastRenderedMessage: Message | null = null;
+  public messageToEdit: Message | undefined = undefined;
 
-  /**
-   * Constructs a new ChannelChatComponent.
-   * @param workspaceService The service which manages the workspace state.
-   * @param firebaseService The service which handles the Firebase operations.
-   * @param statefulWindowService The service which handles the pop-up states.
-   */
   constructor(
     private workspaceService: WorkspaceService,
     private firebaseService: FirebaseServicesService,
     public statefulWindowService: StatefulWindowServiceService
   ) {
-    effect(() => {
-      this.channelId = this.workspaceService.currentActiveUnitId();
-      if (this.channelId) {
-        this.workspaceService.setActiveChannelId(this.channelId);
-        this.loadChannelData(this.channelId);
-      } else {
-        console.warn('No valid channelId available.');
-      }
-    });
+    effect(() => this.handleChannelEffect());
   }
 
+  /**
+   * Called after the component's data-bound properties have been initialized.
+   */
   ngOnInit(): void {
     this.statefulWindowService.updateView(window.innerWidth);
   }
 
-  @HostListener('window:resize', ['$event'])
   /**
-   * Handles the window resize event and updates the pop-up states based on the new window width.
-   * @param event The event object of the window resize event.
+   * Called once the component is about to be destroyed; unsubscribes from active subscriptions.
    */
+  ngOnDestroy(): void {
+    this.unsubscribeAll();
+  }
+
+  /**
+   * Handles window resize events to update pop-up states.
+   * @param event Window resize event.
+   */
+  @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
     this.statefulWindowService.updateView(event.target.innerWidth);
   }
 
-  messageToEditHandler($event: Message): void {
-    this.messageToEdit = $event;
+  /**
+   * Reacts to changes in the active channel ID and triggers loading of channel data.
+   */
+  private handleChannelEffect(): void {
+    this.channelId = this.workspaceService.currentActiveUnitId();
+    if (this.channelId) {
+      this.workspaceService.setActiveChannelId(this.channelId);
+      this.loadChannelData(this.channelId);
+    } else {
+      console.warn('No valid channelId available.');
+    }
   }
 
   /**
-   * Subscribes to the message stream for a specific channel and updates the messages list.
-   * @param channelId The ID of the channel for which to subscribe to messages.
+   * Loads channel data and messages by unsubscribing from previous subscriptions and resetting local data.
+   * @param channelId The channel ID to load data for.
    */
-
-  private subscribeToMessages(channelId: string): void {
-    this.messages$ = this.firebaseService.getMessages('channels', channelId);
-    this.messagesSubscription = this.messages$.subscribe((messages) => {
-      this.messages = messages;
-    });
-  }
-
-  loadChannelData(channelId: string): void {
+  public loadChannelData(channelId: string): void {
     this.unsubscribeFromPrevious();
     this.resetChannelData();
     this.subscribeToChannel(channelId);
     this.subscribeToMessages(channelId);
   }
 
-  private unsubscribeFromPrevious(): void {
-    this.channelSubscription?.unsubscribe();
-    this.messagesSubscription?.unsubscribe();
-  }
-
-  private resetChannelData(): void {
-    this.channelUsers = [];
-  }
-
   /**
-   * Subscribes to the channel data stream for a specific channel and updates the channel data.
-   * Logs an error message if there is an issue loading the channel.
-   * @param channelId The ID of the channel to subscribe to.
+   * Subscribes to channel data using the provided channel ID.
+   * @param channelId The ID of the channel.
    */
-
   private subscribeToChannel(channelId: string): void {
     this.channelSubscription = this.firebaseService
       .getChannel(channelId)
       .subscribe({
         next: (channel) => this.handleChannelData(channel),
-        error: (error) =>
-          console.error('Fehler beim Laden des Channels:', error),
+        error: (error) => console.error('Error loading the channel:', error),
       });
   }
 
   /**
-   * Handles the channel data by updating the relevant component properties.
-   * Sets the channel data, name, and user amount, then loads the users of the channel.
-   * @param channel The channel data to be handled.
+   * Handles incoming channel data and updates component properties accordingly.
+   * @param channel The retrieved channel data.
    */
-
-  private handleChannelData(channel: Channel): void {
-    if (channel) {
-      this.channelData = channel;
-      this.channelName = channel.name;
-      this.userAmount = channel.uid.length;
-      this.loadUsers();
-    }
+  private handleChannelData(channel: Channel | null): void {
+    if (!channel) return;
+    this.channelData = channel;
+    this.channelName = channel.name;
+    this.userAmount = channel.uid.length;
+    this.loadUsers();
   }
 
   /**
-   * Loads the users of the channel and updates the channel users list.
-   * Fetches the user documents from the database, filters out any null values, and
-   * assigns the result to the channelUsers property.
+   * Loads and stores the users belonging to the current channel.
    */
-  async loadUsers() {
+  private async loadUsers(): Promise<void> {
     const channelUids = this.channelData.uid;
     this.setUserUids(channelUids);
     const userPromises = channelUids.map((uid) =>
       this.firebaseService.getDocOnce('users', uid)
     );
-    const users = await Promise.all(userPromises);
-    this.channelUsers = users.filter((user) => user != null);
+    const users = (await Promise.all(userPromises)).filter(Boolean);
+    this.channelUsers = users;
   }
 
   /**
-   * Sets the usersUid property to the given uids array.
-   * The usersUid property is used by the user-list component to determine which users to display.
-   * @param uids The array of user IDs to set as the usersUid property value.
+   * Stores the provided user UIDs for rendering in other components.
+   * @param uids Array of user UIDs.
    */
-  setUserUids(uids: string[]) {
+  public setUserUids(uids: string[]): void {
     this.usersUid = uids;
   }
 
-  ngOnDestroy(): void {
-    this.channelSubscription?.unsubscribe();
-    this.messagesSubscription?.unsubscribe();
-    this.subscriptions.unsubscribe();
-    this.popUpStatesSubscription?.unsubscribe();
+  /**
+   * Resets channel data such as user and message arrays.
+   */
+  private resetChannelData(): void {
+    this.channelUsers = [];
+    this.messages = [];
   }
 
-  openEditChannelPopUp() {
+  /**
+   * Subscribes to the message stream for the specified channel.
+   * @param channelId The ID of the channel.
+   */
+  private subscribeToMessages(channelId: string): void {
+    this.messages$ = this.firebaseService.getMessages('channels', channelId);
+    this.messagesSubscription = this.messages$.subscribe(
+      (messages: Message[]) => {
+        this.messages = messages;
+      }
+    );
+  }
+
+  /**
+   * Sets a message to be edited.
+   * @param message The message to edit.
+   */
+  public messageToEditHandler(message: Message): void {
+    this.messageToEdit = message;
+  }
+
+  /**
+   * Opens the pop-up for editing channel details.
+   */
+  public openEditChannelPopUp(): void {
     this.workspaceService.editChannelPopUp.set(true);
   }
 
   /**
-   * Opens the add user to channel pop-up, based on the window size.
-   * If the window is below 960px, opens the channel members view pop-up instead.
+   * Opens the pop-up for adding a user to the channel;
+   * if the viewport is narrow, opens the channel members view instead.
    */
-  openAddUserToChannelPopUp() {
+  public openAddUserToChannelPopUp(): void {
     if (this.statefulWindowService.isBelow960) {
       this.workspaceService.channelMembersPopUp.set(true);
     } else {
@@ -196,7 +202,34 @@ export class ChannelChatComponent implements OnDestroy {
     }
   }
 
-  openChannelUsersViewPopUp() {
+  /**
+   * Opens the pop-up displaying the channel's user list.
+   */
+  public openChannelUsersViewPopUp(): void {
     this.workspaceService.channelMembersPopUp.set(true);
+  }
+
+  /**
+   * Unsubscribes from channel and message subscriptions.
+   */
+  private unsubscribeFromPrevious(): void {
+    this.channelSubscription?.unsubscribe();
+    this.messagesSubscription?.unsubscribe();
+  }
+
+  /**
+   * Unsubscribes from all active subscriptions, called when the component is destroyed.
+   */
+  private unsubscribeAll(): void {
+    this.unsubscribeFromPrevious();
+    this.subscriptions.unsubscribe();
+    this.popUpStatesSubscription?.unsubscribe();
+  }
+
+  /**
+   * Returns the Firestore path for messages within the current channel.
+   */
+  public get messagePath(): string {
+    return `/channels/${this.channelId}/messages`;
   }
 }

@@ -33,13 +33,19 @@ export class ChatListComponent implements OnInit {
   ) {}
 
   /**
-   * This lifecycle hook is called after the component's view has been
-   * initialized. During this lifecycle hook, the component gets the
-   * logged in user's ID and fetches all direct chats for this user.
-   * It then combines all direct chats with their respective users
-   * and assigns the result to the "chatsWithUsers$" observable.
+   * Lifecycle hook that is called after the component's view has been initialized.
+   * Here, we simply call the refactored method that loads all relevant data.
    */
   ngOnInit(): void {
+    this.loadChatsWithUsers();
+  }
+
+  /**
+   * Retrieves the currently logged-in user's ID, fetches all direct chats,
+   * and combines them with their respective user information.
+   * The result is then assigned to the `chatsWithUsers$` observable.
+   */
+  private loadChatsWithUsers(): void {
     this.getLoggedInUserID().then((uid) => {
       this.loggedInUserId = uid;
       this.chatsWithUsers$ = this.getAllDirectChats().pipe(
@@ -59,53 +65,78 @@ export class ChatListComponent implements OnInit {
     this.destroy$.complete();
   }
 
+  /**
+   * Returns a promise that resolves to the currently logged-in user's ID.
+   * @returns A promise that resolves to the user's ID or null if not logged in.
+   */
   private getLoggedInUserID(): Promise<string | null> {
     return this.authService.getCurrentUserUID();
   }
 
+  /**
+   * Retrieves all direct chats from the Firebase service. The returned
+   * observable emits an array of DirectMessage objects, each representing
+   * a direct chat.
+   * @returns An observable that emits an array of DirectMessage objects.
+   */
   private getAllDirectChats(): Observable<any> {
     return this.firebaseService.getChats();
   }
 
   /**
-   * Takes a DirectMessage and the currently logged in user's ID and
-   * returns an observable that resolves to a chat with the user
-   * that is not the currently logged in user. If the chat is only
-   * between the currently logged in user and one other user, the
-   * returned observable will be of type { chat: DirectMessage; user: User }.
-   * If the chat has more than two users, the returned observable will
-   * be of type { chat: DirectMessage; user: null }.
+   * Finds the ID of the other user in the chat, excluding the current user.
+   * @param chat The DirectMessage to analyze.
+   * @param currentUserId The ID of the currently logged in user.
+   * @returns The ID of the other user or null if not found.
+   */
+  private findOtherUserId(
+    chat: DirectMessage,
+    currentUserId: string | null
+  ): string | null {
+    return chat.uid.find((uid) => uid !== currentUserId) || null;
+  }
+
+  /**
+   * Checks if all users in the chat are the currently logged-in user.
+   * @param chat The DirectMessage to analyze.
+   * @param currentUserId The ID of the currently logged in user.
+   * @returns True if all users are the current user, otherwise false.
+   */
+  private allUsersAreCurrentUser(
+    chat: DirectMessage,
+    currentUserId: string | null
+  ): boolean {
+    return chat.uid.every((uid) => uid === currentUserId);
+  }
+
+  /**
+   * Fetches a user from the Firebase service by ID.
+   * @param userId The ID of the user to fetch.
+   * @returns An observable of the User object.
+   */
+  private fetchUser(userId: string): Observable<User> {
+    return this.firebaseService.getUser(userId);
+  }
+
+  /**
+   * Main function to get the chat with the other user.
    * @param chat The DirectMessage to get the other user from.
    * @param currentUserId The ID of the currently logged in user.
+   * @returns An observable resolving to a chat and the other user (or null).
    */
   private getChatWithUser(
     chat: DirectMessage,
     currentUserId: string | null
   ): Observable<{ chat: DirectMessage; user: User | null }> {
-    // 1) Prüfen, ob es einen "anderen" User gibt
-    let otherUserId = chat.uid.find((uid) => uid !== currentUserId);
+    let otherUserId = this.findOtherUserId(chat, currentUserId);
 
-    // 2) Wenn otherUserId nicht gefunden wurde, könnte es sein,
-    //    dass der User mit sich selbst chattet (beide UIDs sind gleich).
-    if (!otherUserId) {
-      // Prüfen, ob alle UIDs dem aktuellen User entsprechen
-      const allAreCurrentUser = chat.uid.every((uid) => uid === currentUserId);
-      if (allAreCurrentUser && currentUserId) {
-        // Dann haben wir es mit einem "Self-Chat" zu tun
-        otherUserId = currentUserId;
-      }
+    if (!otherUserId && this.allUsersAreCurrentUser(chat, currentUserId)) {
+      otherUserId = currentUserId;
     }
-
-    // 3) Wenn otherUserId nach dieser Logik immer noch undefined ist,
-    //    geben wir ein Objekt mit `user: null` zurück.
     if (!otherUserId) {
       return of({ chat, user: null });
     }
-
-    // Ansonsten laden wir den User ganz normal aus Firebase
-    return this.firebaseService
-      .getUser(otherUserId)
-      .pipe(map((user) => ({ chat, user })));
+    return this.fetchUser(otherUserId).pipe(map((user) => ({ chat, user })));
   }
 
   /**
@@ -159,14 +190,27 @@ export class ChatListComponent implements OnInit {
     }
   }
 
+  /**
+   * Sets the currently active unit ID in the workspace service to the given chat ID.
+   * This is used to keep track of which chat is currently selected in the chat list.
+   * @param chatId The ID of the chat to set as the currently active unit ID.
+   */
   setCurrentActiveUnitId(chatId: string): void {
     this.workspaceService.currentActiveUnitId.set(chatId);
   }
 
+  /**
+   * Toggles the chat list open or closed. If the chat list is open,
+   * it will be closed, and vice versa.
+   */
   toggleChatList(): void {
     this.chatListOpen = !this.chatListOpen;
   }
 
+  /**
+   * Gets the currently active unit ID from the workspace service.
+   * @returns The currently active unit ID.
+   */
   get currentActiveUnitId() {
     return this.workspaceService.currentActiveUnitId();
   }

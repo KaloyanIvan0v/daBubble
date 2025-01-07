@@ -36,7 +36,6 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     '/assets/img/profile-img/profile-img-placeholder.svg'
   );
   messages$: Observable<Message[]> = of([]);
-
   messageToEdit: Message | undefined = undefined;
   usersUid: string[] = [];
   private destroy$ = new Subject<void>();
@@ -48,35 +47,34 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     private workspaceService: WorkspaceService
   ) {}
 
+  /** Initializes component logic. */
   ngOnInit(): void {
     this.initializeComponent();
   }
 
+  /** Cleans up subscriptions. */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  /*************  ✨ Codeium Command ⭐  *************/
   /**
-   * Sets the message to edit in the component
-   * @param message Message to be edited
+   * Sets a message to be edited.
+   * @param message The message to edit.
    */
-  /******  1162038d-b0aa-4a1f-9c8f-946c715bc51a  *******/
   messageToEditHandler(message: Message): void {
     this.messageToEdit = message;
   }
 
+  /**
+   * Stores the given user UID in a local array.
+   * @param uid The user's UID.
+   */
   setUsersUid(uid: string): void {
     this.usersUid = [uid];
   }
 
-  /**
-   * Initializes the component by setting up the subscriptions for getting
-   * the current user's UID and chat params, and then getting the messages for
-   * the chat. The messages are then stored in the component and can be accessed
-   * via the messages$ observable.
-   */
+  /** Fetches current user UID, route params, and initializes messages. */
   private initializeComponent(): void {
     this.getCurrentUserUidAndParams$()
       .pipe(
@@ -86,15 +84,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
       .subscribe((messages) => (this.messages$ = of(messages)));
   }
 
-  /**
-   * A function that returns an observable that resolves to a void.
-   * This function is used to get the current user's UID and the chat params
-   * from the URL. It first gets the current user's UID using the auth service,
-   * and then gets the chat params from the URL. It then assigns the current
-   * user's UID to the component's property and the chat ID to the component's
-   * property. Finally, it calls the initializeReceiverData function to
-   * initialize the receiver data.
-   */
+  /** Returns an observable that fetches current user UID and reads route params. */
   private getCurrentUserUidAndParams$(): Observable<void> {
     return from(this.authService.getCurrentUserUID()).pipe(
       switchMap((uid) => {
@@ -108,12 +98,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Returns an observable that resolves to an array of messages for the
-   * current chat. If there is an error fetching the messages, it will log
-   * the error to the console and return an empty array.
-   * @returns Observable that resolves to an array of messages
-   */
+  /** Returns an observable that retrieves messages for the current chat. */
   private getMessagesForChat$(): Observable<Message[]> {
     return this.firebaseService.getMessages('directMessages', this.chatId).pipe(
       catchError((error) => {
@@ -123,15 +108,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Initializes the receiver data. This function gets the chat data stream
-   * and pipes it to the getReceiverDataStream function. It then assigns the
-   * result to the receiverData$ observable. It then calls the
-   * setReceiverNameStream and setReceiverPhotoStream functions to set the
-   * receiver name and receiver photo streams, respectively. Finally, it
-   * calls the subscribeToReceiverData function to subscribe to the receiver
-   * data stream.
-   */
+  /** Prepares receiver data: name, photo, and user details. */
   private initializeReceiverData(): void {
     const chatData$ = this.getChatDataStream();
     const receiverData$ = this.getReceiverDataStream(chatData$);
@@ -140,13 +117,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     this.subscribeToReceiverData(receiverData$);
   }
 
-  /**
-   * Returns an observable that resolves to the chat data for the current chat,
-   * or null if the chat does not exist. This function is used to initialize the
-   * receiver data.
-   * @returns Observable that resolves to the chat data for the current chat,
-   * or null if the chat does not exist.
-   */
+  /** Fetches chat data from route params. */
   private getChatDataStream(): Observable<DirectMessage | null> {
     return this.route.params.pipe(
       switchMap((params) => this.getChatData(params['chatId']))
@@ -154,13 +125,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns an observable that resolves to the receiver data for the current chat,
-   * or null if the chat does not exist. This function is used to initialize the
-   * receiver data.
-   * @param chatData$ An observable that resolves to the chat data for the current
-   * chat, or null if the chat does not exist.
-   * @returns Observable that resolves to the receiver data for the current chat,
-   * or null if the chat does not exist.
+   * Extracts receiver data from chat information.
+   * @param chatData$ Observable of the DirectMessage object.
    */
   private getReceiverDataStream(
     chatData$: Observable<DirectMessage | null>
@@ -171,11 +137,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Sets the receiverName$ observable stream to emit the name of the receiver
-   * extracted from the provided receiver data observable. Defaults to 'Unknown User'
-   * in case the user data is null or an error occurs.
-   * @param receiverData$ An observable that emits user data, from which the receiver's
-   * name is extracted.
+   * Maps the receiver's name from the user data stream.
+   * @param receiverData$ Observable of user data.
    */
   private setReceiverNameStream(receiverData$: Observable<User>): void {
     this.receiverName$ = receiverData$.pipe(
@@ -185,11 +148,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Sets the receiverPhotoURL$ observable stream to emit the photo URL of the
-   * receiver extracted from the provided receiver data observable. Defaults to
-   * a placeholder image in case the user data is null or an error occurs.
-   * @param receiverData$ An observable that emits user data, from which the
-   * receiver's photo URL is extracted.
+   * Maps the receiver's photo URL from the user data stream.
+   * @param receiverData$ Observable of user data.
    */
   private setReceiverPhotoStream(receiverData$: Observable<User>): void {
     this.receiverPhotoURL$ = receiverData$.pipe(
@@ -204,12 +164,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Subscribes to the receiver data observable and updates the component's state with the
-   * UID of the received user. If an error occurs while fetching the receiver data, it logs
-   * the error to the console. The subscription is automatically unsubscribed when the component
-   * is destroyed.
-   * @param receiverData$ An observable emitting user data, which is subscribed to in order
-   * to update the user's UID.
+   * Subscribes to receiver data and extracts user UID.
+   * @param receiverData$ Observable of user data.
    */
   private subscribeToReceiverData(receiverData$: Observable<User>): void {
     receiverData$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -221,12 +177,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Retrieves chat data for a given chat ID from the 'directMessages' collection.
-   * Sets the component's chatId property to the provided chat ID and returns an
-   * observable that emits the corresponding DirectMessage object. In case of an
-   * error during data retrieval, logs the error and returns an observable emitting null.
-   * @param chatId The ID of the chat to fetch data for.
-   * @returns An observable that emits a DirectMessage object or null in case of an error.
+   * Fetches a specific chat document from the 'directMessages' collection.
+   * @param chatId The ID of the chat to retrieve.
    */
   private getChatData(chatId: string): Observable<DirectMessage | null> {
     this.chatId = chatId;
@@ -241,15 +193,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Returns an observable that resolves to the user data of the receiver for the
-   * provided chat data, or the default user if the chat data is null or the receiver's
-   * ID is not found in the chat data. Subscribes to the user data observable and
-   * updates the component's state with the received user's UID. If an error occurs
-   * while fetching the user data, it logs the error to the console and returns an
-   * observable emitting the default user.
-   * @param chatData The chat data to extract the receiver's ID from.
-   * @returns An observable that emits the user data of the receiver or the default
-   * user in case of an error.
+   * Determines the receiver's UID from the chat data.
+   * @param chatData The current chat data.
    */
   private getReceiverData(chatData: DirectMessage | null): Observable<User> {
     const receiverId = this.extractReceiverIdFromChatData(chatData);
@@ -259,12 +204,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Takes a DirectMessage object and returns the ID of the receiver of the chat.
-   * The receiver is the user in the chat that is not the currently logged in user.
-   * If the chat data is null or the receiver's ID is not found in the chat data,
-   * returns null.
-   * @param chatData The chat data to extract the receiver's ID from.
-   * @returns The ID of the receiver or null if not found.
+   * Finds which UID in the chat data belongs to the receiver.
+   * @param chatData The chat data containing both user UIDs.
    */
   private extractReceiverIdFromChatData(
     chatData: DirectMessage | null
@@ -277,12 +218,8 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Takes a receiver ID and returns an observable that resolves to the user data of that receiver.
-   * Subscribes to the user data observable and updates the component's state with the received user.
-   * If an error occurs while fetching the user data, it logs the error to the console and returns an
-   * observable emitting the default user.
-   * @param receiverId The ID of the receiver to fetch the user data for.
-   * @returns An observable that emits the user data of the receiver or the default user in case of an error.
+   * Retrieves the receiver's user data from Firebase.
+   * @param receiverId The UID of the receiver.
    */
   private getReceiverDataFromFirebase$(receiverId: string): Observable<User> {
     this.receiverId = receiverId;
@@ -295,6 +232,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** Returns a default user object. */
   private getDefaultUser(): User {
     return {
       name: 'Unknown User',
@@ -302,11 +240,16 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     } as User;
   }
 
+  /**
+   * Opens the user profile pop-up.
+   * @param uid The UID of the user whose profile is viewed.
+   */
   openProfileView(uid: string): void {
     this.workspaceService.currentActiveUserId.set(uid);
     this.workspaceService.profileViewPopUp.set(true);
   }
 
+  /** Returns the Firestore path for messages of the current chat. */
   get messagePath(): string {
     return `/directMessages/${this.chatId}/messages`;
   }

@@ -19,6 +19,9 @@ export class LeftSideComponentComponent {
     private statefulWindowService: StatefulWindowServiceService
   ) {}
 
+  /**
+   * Navigate to the new-chat page.
+   */
   navigateToNewChat() {
     this.router.navigate(['dashboard', 'new-chat']);
   }
