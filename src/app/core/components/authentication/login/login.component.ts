@@ -31,11 +31,6 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  /**
-   * Handles the login process. If the login is successful, it redirects the user
-   * to the dashboard. If the login fails, it sets the loginError flag to true.
-   * @param event the event that triggered the login process
-   */
   async onLogin(event: Event) {
     event.preventDefault();
 
@@ -43,20 +38,25 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    await this.processLogin(this.user.email, this.user.password);
+  }
+
+  private async processLogin(email: string, password: string) {
     try {
-      const user = await this.authService.login(
-        this.user.email,
-        this.user.password
-      );
+      const user = await this.authService.login(email, password);
       if (user) {
-        const uid = await this.authService.getCurrentUserUID();
-        this.firebaseService.setUserUID(uid);
-        this.router.navigate(['/dashboard']);
+        await this.handleSuccessfulLogin();
         this.loginError = false;
       }
     } catch (error) {
       this.loginError = true;
     }
+  }
+
+  private async handleSuccessfulLogin() {
+    const uid = await this.authService.getCurrentUserUID();
+    this.firebaseService.setUserUID(uid);
+    this.router.navigate(['/dashboard']);
   }
 
   /**
