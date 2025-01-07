@@ -109,46 +109,36 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.startAnimationSequence();
   }
-
-  /**
-   * Starts the animation sequence for the logo, background fade, and main
-   * logo components when the component is initialized.
-   *
-   * The animation sequence consists of the following steps:
-   *
-   * 1. The logo image slides to the left after 500 milliseconds.
-   * 2. The logo text appears and slides to the left after 900 milliseconds.
-   * 3. The logo container slides to the top of the screen if the screen width
-   *    is less than or equal to 650 pixels or to its target position otherwise
-   *    after 2000 milliseconds.
-   * 4. The background fade animation starts after 2000 milliseconds.
-   * 5. The main logo appears after 2600 milliseconds.
-   */
   private startAnimationSequence(): void {
-    const screenWidth = window.innerWidth;
+    this.animateLogoImage();
+    this.animateLogoText();
+    this.animateLogoContainerAndBackground();
+    this.animateMainLogo();
+  }
 
+  private animateLogoImage(): void {
     setTimeout(() => {
       this.renderer.addClass(this.logoImage.nativeElement, 'move-left-target');
     }, 500);
+  }
 
+  private animateLogoText(): void {
     setTimeout(() => {
       this.renderer.removeClass(this.logoText.nativeElement, 'd-none');
       this.renderer.addClass(this.logoText.nativeElement, 'text-slide-in');
     }, 900);
+  }
 
+  private animateLogoContainerAndBackground(): void {
+    const screenWidth = window.innerWidth;
+    const targetClass = screenWidth <= 650 ? 'move-to-top' : 'move-to-target';
     setTimeout(() => {
-      if (screenWidth <= 650) {
-        this.renderer.addClass(this.logoContainer.nativeElement, 'move-to-top');
-      } else {
-        this.renderer.addClass(
-          this.logoContainer.nativeElement,
-          'move-to-target'
-        );
-      }
-
+      this.renderer.addClass(this.logoContainer.nativeElement, targetClass);
       this.renderer.addClass(this.backgroundFade.nativeElement, 'opacity-fade');
     }, 2000);
+  }
 
+  private animateMainLogo(): void {
     setTimeout(() => {
       this.renderer.removeClass(this.mainLogo.nativeElement, 'd-none');
     }, 2600);
