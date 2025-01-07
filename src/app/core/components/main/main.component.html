@@ -1,32 +1,42 @@
 <section>
   <div class="inner-section">
     <app-header></app-header>
+
     <div class="main-container">
-      <button
-        (click)="toggleWorkspace(); changeText()"
-        class="workspace-menu-btn"
-      >
+      <!--
+        Button that triggers toggling of the workspace menu
+        and dynamically switches icon classes based on showLeftSide().
+      -->
+      <button (click)="toggleWorkspace()" class="workspace-menu-btn">
         <div>{{ workspaceButtonText }}</div>
         <div
           [ngClass]="{
-            'workspace-open-img': !leftSideComponentOpen,
-            'workspace-close-img': leftSideComponentOpen,
+            'workspace-open-img': !showLeftSide(),
+            'workspace-close-img': showLeftSide()
           }"
         ></div>
       </button>
+
+      <!-- Left side panel (e.g., channels, navigation) -->
       <app-left-side-component
         class="left-side-component"
         *ngIf="showLeftSide()"
       ></app-left-side-component>
+
+      <!-- Main workspace/chat area -->
       <app-main-workspace
         class="main-workspace"
         *ngIf="showChat()"
       ></app-main-workspace>
+
+      <!-- Right side thread or extra context panel -->
       <app-right-side-container
         class="right-side-component"
         *ngIf="showThread()"
       ></app-right-side-container>
     </div>
+
+    <!-- Pop-up components for various user and channel management features -->
     <app-user-menu class="pop-up-user-menu"></app-user-menu>
     <app-mobile-user-menu
       class="pop-up-mobile-user-menu"
