@@ -13,10 +13,23 @@ export class StatefulWindowServiceService {
   endWidth = 960;
   isBelow960: boolean = false;
 
+  /**
+   * Updates the state of the service based on the provided screen width.
+   * Sets 'isBelow960' to true if the screen width is less than or equal to 960 pixels,
+   * otherwise sets it to false.
+   *
+   * @param screenWidth - The current width of the screen in pixels.
+   */
+
   updateView(screenWidth: number): void {
     this.isBelow960 = screenWidth <= 960;
   }
 
+  /**
+   * Toggles the state of the left side component.
+   * If the component is currently open, it will be closed,
+   * otherwise it will be opened.
+   */
   toggleLeftSideComponentState() {
     if (this.leftSideComponentState()) {
       {
@@ -26,6 +39,12 @@ export class StatefulWindowServiceService {
       this.openLeftSideComponentState();
     }
   }
+
+  /**
+   * Opens the left side component. If the window's inner width is between
+   * `startWidth` and `endWidth`, it opens the left side and closes the right side.
+   * Otherwise, it simply sets the left side component state to open.
+   */
 
   openLeftSideComponentState() {
     if (
@@ -42,10 +61,20 @@ export class StatefulWindowServiceService {
     this.leftSideComponentState.set(false);
   }
 
+  /**
+   * Toggles the state of the right side component.
+   * If the component is currently open, it will be closed,
+   * otherwise it will be opened.
+   */
   toggleRightSideComponentState() {
     this.rightSideComponentState.update((state) => !state);
   }
 
+  /**
+   * Opens the right side component. If the window's inner width is between
+   * `startWidth` and `endWidth`, it opens the right side and closes the left side.
+   * Otherwise, it simply sets the right side component state to open.
+   */
   openRightSideComponentState() {
     if (
       window.innerWidth < this.startWidth &&

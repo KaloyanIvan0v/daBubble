@@ -31,6 +31,13 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  /**
+   * Handles the login process when the user submits the login form.
+   * The method first prevents the default form submission behavior and
+   * checks if the email and password are valid. If the values are valid,
+   * it calls the `processLogin` method to log in the user.
+   * @param event The event that triggered the login process.
+   */
   async onLogin(event: Event) {
     event.preventDefault();
 
@@ -40,6 +47,15 @@ export class LoginComponent implements OnInit {
 
     await this.processLogin(this.user.email, this.user.password);
   }
+
+/**
+ * Attempts to log in a user with the provided email and password.
+ * If the login is successful, it handles post-login actions and resets
+ * the login error state. If the login fails, sets the login error state.
+ *
+ * @param email - The email address of the user attempting to log in.
+ * @param password - The password of the user attempting to log in.
+ */
 
   private async processLogin(email: string, password: string) {
     try {
@@ -53,6 +69,11 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles the post-login actions after a successful login.
+   * This involves getting the current user's UID, setting it in the
+   * Firebase service, and then navigating to the dashboard.
+   */
   private async handleSuccessfulLogin() {
     const uid = await this.authService.getCurrentUserUID();
     this.firebaseService.setUserUID(uid);

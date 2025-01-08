@@ -67,10 +67,23 @@ export class ResetPasswordLinkComponent {
     }
   }
 
+  /**
+   * Checks if the password and confirmPassword fields in the user object match.
+   * Updates the passwordsMatch property to true if they match, otherwise false.
+   */
+
   checkPasswordsMatch(): void {
     this.passwordsMatch = this.user.password === this.user.confirmPassword;
   }
 
+  /**
+   * Handles the submission of the form. If the passwords match and the user
+   * has entered a valid password, it calls the processPasswordReset method.
+   * If the passwords do not match or the user has not entered a valid password,
+   * it sets the errorMessage property to an appropriate error message.
+   * If the code is invalid or expired, it sets the errorMessage property to
+   * 'Invalid or expired reset code.'.
+   */
   async onSubmit(): Promise<void> {
     if (this.passwordsMatch && this.user.password) {
       if (!this.oobCode || !this.codeVerified) {
@@ -93,12 +106,24 @@ export class ResetPasswordLinkComponent {
     }
   }
 
+  /**
+   * Handles the successful reset of the user's password. Sets the component's
+   * state to indicate that the reset was successful and navigates the user to
+   * the login page.
+   */
   private handleSuccessfulReset(): void {
     this.resetPasswordSubmitted = true;
     this.successMessage = 'Your password has been successfully reset.';
     this.errorMessage = '';
     this.navigateToLogin();
   }
+
+  /**
+   * Handles errors that occur during the password reset process. Logs the error
+   * to the console and sets the errorMessage property to an appropriate message.
+   * Clears the successMessage property.
+   * @param {any} error - The error encountered during the password reset.
+   */
 
   private handleResetError(error: any): void {
     console.error('Error resetting password:', error);

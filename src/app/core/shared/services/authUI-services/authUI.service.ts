@@ -20,10 +20,18 @@ export class AuthUIService {
     confirmPassword: false,
   };
 
+  /**
+   * Set the focused state of the input to true.
+   * @param inputType The type of the input field, e.g. 'name', 'email', etc.
+   */
   onFocus(inputType: string): void {
     this.focused[inputType] = true;
   }
 
+  /**
+   * Set the focused state of the input to false.
+   * @param inputType The type of the input field, e.g. 'name', 'email', etc.
+   */
   onBlur(inputType: string): void {
     this.focused[inputType] = false;
   }

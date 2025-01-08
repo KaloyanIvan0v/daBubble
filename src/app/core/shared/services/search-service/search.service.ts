@@ -111,6 +111,13 @@ export class SearchService {
     this.selectedChannelName = null;
   }
 
+  /**
+   * Ensures that a direct chat with the specified chat ID exists in the Firestore.
+   * If the chat does not exist, it creates a new direct message chat.
+   * @param chatId The ID of the chat to check or create.
+   * @param result The user data used to create a new chat if it doesn't exist.
+   */
+
   private async ensureDirectChatExists(
     chatId: string,
     result: any
@@ -124,6 +131,12 @@ export class SearchService {
     }
   }
 
+  /**
+   * Creates a new direct message chat in the Firestore database.
+   * @param chatId The ID of the chat to create.
+   * @param result The user data used to create a new chat.
+   * @returns A promise that resolves when the chat is created.
+   */
   private async createDirectMessageChat(
     chatId: string,
     result: any
@@ -140,6 +153,14 @@ export class SearchService {
     );
   }
 
+  /**
+   * Builds a direct message chat data object for the Firestore database.
+   * @param chatId The ID of the chat to create.
+   * @param senderId The UID of the chat sender.
+   * @param receiverId The UID of the chat receiver.
+   * @param result The user data used to create a new chat.
+   * @returns An object containing the chat data.
+   */
   private buildChatData(
     chatId: string,
     senderId: string,
@@ -159,11 +180,23 @@ export class SearchService {
     };
   }
 
+  /**
+   * Generates a unique string for identifying a chat between two users.
+   * @param senderId The UID of the sender.
+   * @param receiverId The UID of the receiver.
+   * @returns A string in the format of "senderId_receiverId" or "receiverId_senderId".
+   */
   private generateChatId(senderId: string, receiverId: string): string {
     return senderId < receiverId
       ? `${senderId}_${receiverId}`
       : `${receiverId}_${senderId}`;
   }
+
+  /**
+   * Navigates to the direct chat page for a given chat ID.
+   * Opens the chat in mobile view if the screen width is less than 960 pixels.
+   * @param chatId The ID of the chat to navigate to.
+   */
 
   navigateToDirectChat(chatId: string): void {
     this.router.navigate(['dashboard', 'direct-chat', chatId]);
@@ -172,12 +205,23 @@ export class SearchService {
     }
   }
 
+  /**
+   * Navigates to the channel chat page for a given channel ID.
+   * Opens the chat in mobile view if the screen width is less than 960 pixels.
+   * @param channelId The ID of the channel to navigate to.
+   */
   navigateToChannelChat(channelId: string): void {
     this.router.navigate(['dashboard', 'channel-chat', channelId]);
     if (window.innerWidth < 960) {
       this.statefulWindowService.openChatOnMobile();
     }
   }
+
+  /**
+   * Filters out the logged-in user from the provided results.
+   * @param results An array of result objects, each potentially representing a user.
+   * @returns A filtered array excluding the logged-in user if present in the results.
+   */
 
   public filterOutLoggedInUser(results: any[]): any[] {
     if (!this.loggedInUserId) return results;

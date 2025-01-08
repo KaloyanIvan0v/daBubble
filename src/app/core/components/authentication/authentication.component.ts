@@ -109,6 +109,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.startAnimationSequence();
   }
+
   private startAnimationSequence(): void {
     this.animateLogoImage();
     this.animateLogoText();
@@ -116,18 +117,36 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     this.animateMainLogo();
   }
 
+  /**
+   * Animates the logo image element by adding the 'move-left-target' class
+   * after a delay of 500ms. This causes the logo image to slide out of view.
+   */
   private animateLogoImage(): void {
     setTimeout(() => {
       this.renderer.addClass(this.logoImage.nativeElement, 'move-left-target');
     }, 500);
   }
 
+  /**
+   * Animates the logo text element by removing the 'd-none' class after a
+   * delay of 900ms. This causes the logo text to slide into view.
+   */
   private animateLogoText(): void {
     setTimeout(() => {
       this.renderer.removeClass(this.logoText.nativeElement, 'd-none');
       this.renderer.addClass(this.logoText.nativeElement, 'text-slide-in');
     }, 900);
   }
+
+  /**
+   * Animates the logo container and background elements based on screen width.
+   *
+   * If the screen width is 650 pixels or less, the 'move-to-top' class is added
+   * to the logo container to move it to the top. Otherwise, the 'move-to-target'
+   * class is added to move it to a target position. Additionally, the 'opacity-fade'
+   * class is added to the background element to create a fading effect. This
+   * animation is triggered after a delay of 2000ms.
+   */
 
   private animateLogoContainerAndBackground(): void {
     const screenWidth = window.innerWidth;
@@ -138,6 +157,10 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     }, 2000);
   }
 
+  /**
+   * Animates the main logo element by removing the 'd-none' class after a delay
+   * of 2600ms. This causes the main logo to slide into view.
+   */
   private animateMainLogo(): void {
     setTimeout(() => {
       this.renderer.removeClass(this.mainLogo.nativeElement, 'd-none');

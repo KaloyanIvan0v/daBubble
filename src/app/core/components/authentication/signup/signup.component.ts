@@ -60,18 +60,37 @@ export class SignupComponent implements OnInit {
       });
   }
 
+  /**
+   * Handles the successful registration process. It resets the
+   * isEmailAlreadyUsed flag, updates the logged in user data, and navigates
+   * to the 'choose-avatar' page.
+   *
+   * @param registeredUser The registered user data that was returned
+   * from the registration process.
+   */
   private handleSuccessfulRegistration(registeredUser: any): void {
     this.isEmailAlreadyUsed = false;
     this.workspaceService.updateLoggedInUserData(registeredUser);
     this.navigateToChooseAvatar();
   }
 
+  /**
+   * Handles the registration error. If the error is 'auth/email-already-in-use',
+   * it sets the isEmailAlreadyUsed flag to true.
+   *
+   * @param err The error that was returned from the registration process.
+   */
   private handleRegistrationError(err: any): void {
     if (err.code === 'auth/email-already-in-use') {
       this.isEmailAlreadyUsed = true;
     }
   }
 
+  /**
+   * Checks if the given email is already used.
+   * If the email is valid, it resets the isEmailAlreadyUsed flag to false.
+   * @param email The email to check.
+   */
   checkEmailAlreadyUsed(email: string): void {
     if (email) {
       this.isEmailAlreadyUsed = false;

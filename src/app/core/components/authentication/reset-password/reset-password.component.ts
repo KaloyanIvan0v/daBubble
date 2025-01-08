@@ -44,6 +44,13 @@ export class ResetPasswordComponent {
     this.router.navigate(['/authentication/login']);
   }
 
+  /**
+   * Displays a temporary "email sent" success message to the user.
+   * Sets the `showEmailSent` property of `authUIService` to true,
+   * then automatically hides the message after 1.5 seconds by setting
+   * the property back to false.
+   */
+
   emailSentSuccess() {
     this.authUIService.showEmailSent = true;
 
