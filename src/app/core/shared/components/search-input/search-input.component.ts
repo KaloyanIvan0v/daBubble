@@ -31,12 +31,12 @@ export class SearchInputComponent implements OnInit, OnDestroy {
     private threadService: ThreadService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadAllMessages();
   }
 
   /**
-   * Loads all messages once.
+   * Loads all messages from the Firebase service and subscribes to updates.
    */
   private loadAllMessages(): void {
     const sub = this.firebaseService.getAllMessages().subscribe((messages) => {
@@ -47,38 +47,53 @@ export class SearchInputComponent implements OnInit, OnDestroy {
 
   /**
    * Handles search input events by filtering and sorting messages.
+   * @param {Event} event - The search input event.
    */
-  onSearch(event: Event) {
-    const inputText = (event.target as HTMLInputElement).value
-      .trim()
-      .toLowerCase();
+  onSearch(event: Event): void {
+    const inputText = this.getInputText(event);
     this.filteredMessages = inputText
       ? this.filterAndSortMessages(inputText)
       : [];
   }
 
   /**
+   * Extracts and processes the input text from the search event.
+   * @param {Event} event - The search input event.
+   * @returns {string} - The processed input text.
+   */
+  private getInputText(event: Event): string {
+    return (event.target as HTMLInputElement).value.trim().toLowerCase();
+  }
+
+  /**
    * Filters and sorts existing messages based on the given query.
    * Messages starting with the query string get higher priority.
+   * @param {string} query - The search query string.
+   * @returns {Message[]} - The filtered and sorted messages.
    */
   private filterAndSortMessages(query: string): Message[] {
     return this.allMessages
       .filter((msg) => msg.value.text.toLowerCase().includes(query))
-      .sort((a, b) => {
-        const aText = a.value.text.toLowerCase();
-        const bText = b.value.text.toLowerCase();
-
-        // Give priority to messages that start with the query string
-        const aStarts = aText.startsWith(query) ? 0 : 1;
-        const bStarts = bText.startsWith(query) ? 0 : 1;
-        return aStarts - bStarts;
-      });
+      .sort((a, b) => this.compareMessages(a, b, query));
   }
 
   /**
-   * Clears the current search and empties the input field.
+   * Compares two messages to prioritize those that start with the query string.
+   * @param {Message} a - The first message.
+   * @param {Message} b - The second message.
+   * @param {string} query - The search query string.
+   * @returns {number} - Comparison result for sorting.
    */
-  clearSearch() {
+  private compareMessages(a: Message, b: Message, query: string): number {
+    const aStarts = a.value.text.toLowerCase().startsWith(query) ? 0 : 1;
+    const bStarts = b.value.text.toLowerCase().startsWith(query) ? 0 : 1;
+    return aStarts - bStarts;
+  }
+
+  /**
+   * Clears the current search results and empties the input field.
+   */
+  clearSearch(): void {
     this.filteredMessages = [];
     this.clearInput();
   }
@@ -86,7 +101,7 @@ export class SearchInputComponent implements OnInit, OnDestroy {
   /**
    * Empties the search input field if it exists.
    */
-  private clearInput() {
+  private clearInput(): void {
     const input = document.querySelector('input') as HTMLInputElement;
     if (input) {
       input.value = '';
@@ -95,56 +110,105 @@ export class SearchInputComponent implements OnInit, OnDestroy {
 
   /**
    * Opens a specific message in its channel/chat and closes the search.
+   * @param {Message} message - The message to open.
    */
-  openMessage(message: Message) {
+  openMessage(message: Message): void {
     this.clearSearch();
     this.navigateToMessage(message);
   }
 
   /**
    * Navigates to the appropriate route (channel or direct chat) based on the message path.
+   * @param {Message} message - The message to navigate to.
    */
-  private navigateToMessage(message: Message) {
-    const [, collectionName, spaceId] = message.location.split('/');
-    const messageId = message.id;
-    const routeType =
-      collectionName === 'channels' ? 'channel-chat' : 'direct-chat';
-
+  private navigateToMessage(message: Message): void {
+    const { routeType, spaceId } = this.getRouteInfo(message.location);
     this.router.navigate(['dashboard', routeType, spaceId], {
-      queryParams: { messageId },
+      queryParams: { messageId: message.id },
     });
     this.workspaceService.currentActiveUnitId.set(spaceId);
     this.handleMobileNavigation(message);
   }
 
-  handleMobileNavigation(message: Message) {
+  /**
+   * Extracts routing information from the message location.
+   * @param {string} location - The location string from the message.
+   * @returns {{ routeType: string; spaceId: string }} - The routing type and space ID.
+   */
+  private getRouteInfo(location: string): {
+    routeType: string;
+    spaceId: string;
+  } {
+    const [, collectionName, spaceId] = location.split('/');
+    const routeType =
+      collectionName === 'channels' ? 'channel-chat' : 'direct-chat';
+    return { routeType, spaceId };
+  }
+
+  /**
+   * Handles mobile-specific navigation logic based on the message.
+   * @param {Message} message - The message to navigate to.
+   */
+  private handleMobileNavigation(message: Message): void {
     if (this.isThread(message.location)) {
-      this.threadService.openThread(this.getOriginMessage(message.location));
-      this.statefulWindowService.currentActiveComponentMobile.set('thread');
-      this.statefulWindowService.openRightSideComponentState();
+      this.openThread(message.location);
     } else {
-      this.statefulWindowService.currentActiveComponentMobile.set('chat');
+      this.setActiveComponent('chat');
     }
   }
 
-  getOriginMessage(threadPath: string) {
+  /**
+   * Opens a thread based on the message location.
+   * @param {string} location - The location string from the message.
+   */
+  private openThread(location: string): void {
+    const originMessage = this.getOriginMessage(location);
+    this.threadService.openThread(originMessage);
+    this.setActiveComponent('thread');
+    this.statefulWindowService.openRightSideComponentState();
+  }
+
+  /**
+   * Sets the active component for mobile navigation.
+   * @param {string} component - The component to set as active.
+   */
+  private setActiveComponent(component: 'chat' | 'left' | 'thread'): void {
+    this.statefulWindowService.currentActiveComponentMobile.set(component);
+  }
+
+  /**
+   * Retrieves the origin message based on the thread path.
+   * @param {string} threadPath - The thread path string.
+   * @returns {Message | undefined} - The origin message, if found.
+   */
+  private getOriginMessage(threadPath: string): Message | undefined {
+    const originPath = this.getOriginMessagePath(threadPath);
     return this.allMessages.find(
-      (msg) =>
-        msg.thread.originMessagePath === this.getOriginMessagePath(threadPath)
+      (msg) => msg.thread.originMessagePath === originPath
     );
   }
 
-  getOriginMessagePath(threadPath: string) {
+  /**
+   * Extracts the origin message path from the thread path.
+   * @param {string} threadPath - The thread path string.
+   * @returns {string} - The origin message path.
+   */
+  private getOriginMessagePath(threadPath: string): string {
     return threadPath.split('/').slice(0, 5).join('/');
   }
 
-  isThread(msgPath: string): boolean {
-    const pathLength = msgPath.split('/').length;
-    return pathLength > 4;
+  /**
+   * Determines if the message path corresponds to a thread.
+   * @param {string} msgPath - The message path string.
+   * @returns {boolean} - True if it's a thread, otherwise false.
+   */
+  private isThread(msgPath: string): boolean {
+    return msgPath.split('/').length > 4;
   }
 
   /**
    * Utility to check if the current viewport is mobile-sized.
+   * @returns {boolean} - True if the viewport is mobile-sized, otherwise false.
    */
   isMobile(): boolean {
     return window.innerWidth < 960;
