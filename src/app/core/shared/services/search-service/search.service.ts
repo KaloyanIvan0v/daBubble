@@ -44,7 +44,6 @@ export class SearchService {
       console.error('Sender ID is null');
       return;
     }
-
     if (result.type === 'channel') {
       await this.handleChannelChat(result);
     } else if (result.type === 'user') {
@@ -56,38 +55,39 @@ export class SearchService {
 
   private async handleChannelChat(result: any): Promise<void> {
     const channelId = result.id;
-    if (!channelId) {
-      console.error('Channel ID is undefined or invalid:', result);
-      return;
-    }
+    if (!channelId)
+      return console.error('Channel ID is undefined or invalid:', result);
 
     try {
       const channelExists = await this.firebaseService.checkDocExists(
         'channels',
         channelId
       );
-      if (!channelExists) {
-        this.navigateToNewChatWithPrefill(result.name);
-        return;
-      }
+      if (!channelExists) return this.navigateToNewChatWithPrefill(result.name);
 
-      const channelData = await this.firebaseService.getDocOnce(
-        'channels',
-        channelId
-      );
-      const isMember =
-        channelData &&
-        Array.isArray(channelData.uid) &&
-        channelData.uid.includes(this.loggedInUserId);
-
-      if (isMember) {
-        this.navigateToChannelChat(channelId);
-      } else {
-        this.navigateToNewChatWithPrefill(result.name);
-      }
+      const isMember = await this.isUserMemberOfChannel(channelId);
+      this.navigateToChat(isMember, channelId, result.name);
     } catch (error) {
       console.error('Error checking channel existence or membership:', error);
     }
+  }
+
+  private async isUserMemberOfChannel(channelId: string): Promise<boolean> {
+    const channelData = await this.firebaseService.getDocOnce(
+      'channels',
+      channelId
+    );
+    return channelData?.uid?.includes(this.loggedInUserId) ?? false;
+  }
+
+  private navigateToChat(
+    isMember: boolean,
+    channelId: string,
+    name: string
+  ): void {
+    isMember
+      ? this.navigateToChannelChat(channelId)
+      : this.navigateToNewChatWithPrefill(name);
   }
 
   private navigateToNewChatWithPrefill(channelName: string): void {
@@ -177,43 +177,6 @@ export class SearchService {
     if (window.innerWidth < 960) {
       this.statefulWindowService.openChatOnMobile();
     }
-  }
-
-  onKeyDown(event: KeyboardEvent, context: 'header' | 'newChat'): void {
-    const { results, selectedIndex } = this.getContextData(context);
-    if (!results.length) return;
-    let newIndex = selectedIndex;
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      newIndex = (selectedIndex + 1) % results.length;
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      newIndex = (selectedIndex - 1 + results.length) % results.length;
-    } else if (event.key === 'Enter' && selectedIndex >= 0) {
-      event.preventDefault();
-      this.onSelectResult(results[selectedIndex]);
-    }
-    this.setContextIndex(context, newIndex);
-  }
-
-  private getContextData(context: 'header' | 'newChat'): {
-    results: any[];
-    selectedIndex: number;
-  } {
-    return context === 'header'
-      ? {
-          results: this.headerSearchResults,
-          selectedIndex: this.headerSelectedIndex,
-        }
-      : {
-          results: this.newChatSearchResults,
-          selectedIndex: this.newChatSelectedIndex,
-        };
-  }
-
-  private setContextIndex(context: 'header' | 'newChat', index: number): void {
-    if (context === 'header') this.headerSelectedIndex = index;
-    else this.newChatSelectedIndex = index;
   }
 
   public filterOutLoggedInUser(results: any[]): any[] {
