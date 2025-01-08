@@ -77,7 +77,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
     if (changes['messagePath'] || changes['receiverId'] || changes['space']) {
       this.initializePlaceholder();
     }
-    if (changes['usersUid']) {
+    if (changes['usersUid'] && this.usersUid[0] !== undefined) {
       this.loadUsers(this.usersUid);
     }
   }
