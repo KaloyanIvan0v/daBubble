@@ -74,13 +74,13 @@ export class MessageComponent implements OnInit, OnDestroy {
    * Initializes user ID, author data, thread messages, and user UIDs.
    */
   ngOnInit() {
+    this.configSpaceUids();
     this.authService.getCurrentUserUID().then((uid) => {
       this.loggedInUserId = uid;
       this.setLastTwoReactions();
     });
     this.setAuthor();
     this.setThreadMessagesLength();
-    this.configSpaceUids();
   }
 
   /**
@@ -135,6 +135,7 @@ export class MessageComponent implements OnInit, OnDestroy {
       .getChannel(channelId)
       .pipe(first())
       .subscribe((channel) => {
+        if (!channel) return;
         this.usersUid = channel.uid;
       });
   }
