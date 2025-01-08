@@ -11,37 +11,62 @@ import { Thread } from 'src/app/core/shared/models/thread.class';
   providedIn: 'root',
 })
 export class MainService {
+  // Inject FirebaseServicesService and AuthService using Angular's inject function
   private firestore: FirebaseServicesService = inject(FirebaseServicesService);
   private authService: AuthService = inject(AuthService);
+
+  // Define a reactive signal for the active mobile unit ID
   activeMobileUnitId = signal('');
 
   constructor() {}
 
   /**
-   * Sends a message to a specified path or directly to a receiver.
-   * @param messagePath - The path where the message will be sent.
-   * @param inputMessage - The input data containing the message and imports.
-   * @param receiverId - The ID of the receiver, if any.
+   * Sends a message to a specified path, either as a direct message or a channel message.
+   * @param messagePath - The path where the message should be sent.
+   * @param inputMessage - The input data containing the message text and any imports.
+   * @param receiverId - The ID of the receiver if it's a direct message; otherwise, null.
    */
   async sendMessage(
     messagePath: string,
     inputMessage: InputBoxData,
     receiverId: string | null
   ) {
-    const { collection, docId } = this.parseMessagePath(messagePath);
+    // Extract the collection and document ID from the message path
+    const collection = messagePath.split('/')[0];
+    const docId = messagePath.split('/')[1];
+
+    // Generate a unique ID for the new message
     const id = this.firestore.getUniqueId();
+
+    // Get the current user's UID
     const userId = await this.authService.getCurrentUserUID();
-    const name = await this.getSpaceName(messagePath);
 
-    const message: Message = this.constructMessage(
-      id,
-      userId ?? '',
-      messagePath,
-      inputMessage,
-      name,
-      receiverId
-    );
+    // Retrieve the space name based on the message path
+    const name: string = await this.getSpaceName(messagePath);
 
+    // Create a plain object for the input message
+    const plainInputMessage = {
+      text: inputMessage.message,
+      imports: inputMessage.imports,
+    };
+    console.log(name);
+
+    // Construct the Message object with all required properties
+    const message: Message = {
+      id: id,
+      author: userId!,
+      time: new Date(Date.now()),
+      location: messagePath,
+      value: plainInputMessage,
+      thread: JSON.parse(
+        JSON.stringify(new Thread(messagePath + '/' + id, name))
+      ),
+      space: name,
+      reactions: [],
+      receiverId: receiverId || '',
+    };
+
+    // Send the message to the appropriate path
     await this.sendMessageToPath(
       userId ?? '',
       receiverId,
@@ -52,59 +77,12 @@ export class MainService {
   }
 
   /**
-   * Parses the message path into collection and document ID.
-   * @param messagePath - The full message path.
-   * @returns An object containing the collection and document ID.
-   */
-  private parseMessagePath(messagePath: string): {
-    collection: string;
-    docId: string;
-  } {
-    const parts = messagePath.split('/');
-    return { collection: parts[0], docId: parts[1] };
-  }
-
-  /**
-   * Constructs a Message object based on provided parameters.
-   * @param id - Unique ID for the message.
-   * @param userId - ID of the message author.
-   * @param messagePath - Path where the message is located.
-   * @param inputMessage - Input data containing message details.
-   * @param name - Name of the space.
-   * @param receiverId - ID of the receiver, if any.
-   * @returns A Message object.
-   */
-  private constructMessage(
-    id: string,
-    userId: string,
-    messagePath: string,
-    inputMessage: InputBoxData,
-    name: string,
-    receiverId: string | null
-  ): Message {
-    return {
-      id,
-      author: userId!,
-      time: new Date(),
-      location: messagePath,
-      value: {
-        text: inputMessage.message,
-        imports: inputMessage.imports,
-      },
-      thread: new Thread(`${messagePath}/${id}`, name),
-      space: name,
-      reactions: [],
-      receiverId: receiverId || '',
-    };
-  }
-
-  /**
-   * Sends a message to the appropriate path based on receiver ID.
-   * @param userId - ID of the message sender.
-   * @param receiverId - ID of the receiver, if any.
-   * @param messagePath - Original message path.
-   * @param id - Unique ID for the message.
-   * @param message - The Message object to send.
+   * Determines the correct path and sends the message either as a direct message or a channel message.
+   * @param userId - The ID of the user sending the message.
+   * @param receiverId - The ID of the receiver if it's a direct message.
+   * @param messagePath - The base path where the message should be sent.
+   * @param id - The unique ID of the message.
+   * @param message - The Message object to be sent.
    */
   private async sendMessageToPath(
     userId: string,
@@ -113,112 +91,112 @@ export class MainService {
     id: string,
     message: Message
   ): Promise<void> {
-    const path = receiverId
-      ? this.getDirectMessagePath(userId, receiverId, id)
-      : `${messagePath}/${id}`;
+    if (receiverId) {
+      // If there's a receiver ID, construct the direct message path
+      const sortedUserIds = [userId, receiverId].sort();
+      const directMessagePath = `directMessages/${sortedUserIds.join(
+        '_'
+      )}/messages`;
+      console.log('Direct message path:', directMessagePath);
 
-    console.log(`${receiverId ? 'Direct' : 'Channel'} message path:`, path);
-    await this.firestore.sendMessage(path, message);
+      // Send the message to the direct message path
+      await this.firestore.sendMessage(directMessagePath + '/' + id, message);
+    } else {
+      // If no receiver ID, send the message to the channel path
+      console.log('Channel message path:', messagePath);
+      await this.firestore.sendMessage(messagePath + '/' + id, message);
+    }
   }
 
   /**
-   * Constructs the direct message path based on user IDs.
-   * @param userId - ID of the sender.
-   * @param receiverId - ID of the receiver.
-   * @param id - Unique ID for the message.
-   * @returns The direct message path.
-   */
-  private getDirectMessagePath(
-    userId: string,
-    receiverId: string,
-    id: string
-  ): string {
-    const sortedUserIds = [userId, receiverId].sort();
-    return `directMessages/${sortedUserIds.join('_')}/messages/${id}`;
-  }
-
-  /**
-   * Updates an existing message in the database.
-   * @param message - The Message object to update.
+   * Updates an existing message in the Firestore database.
+   * @param message - The Message object containing updated data.
    */
   async updateMessage(message: Message) {
-    const editedMessage = { ...message, reactions: [...message.reactions] };
+    // Create a deep copy of the message with necessary fields
+    const editedMessage: Message = {
+      id: message.id,
+      author: message.author!,
+      time: message.time,
+      location: message.location,
+      value: message.value,
+      thread: message.thread,
+      space: message.space,
+      reactions: JSON.parse(JSON.stringify(message.reactions)),
+      receiverId: message.receiverId || '',
+    };
+
+    // Update the message in Firestore using the message's location and ID
     await this.firestore.updateMessage(
-      `${message.location}/${message.id}`,
+      message.location + '/' + message.id,
       editedMessage
     );
   }
 
   /**
-   * Retrieves the name of the space based on the message path.
+   * Retrieves the name of the space (e.g., channel) based on the message path.
    * @param messagePath - The path of the message.
-   * @returns The name of the space.
+   * @returns A promise that resolves to the name of the space.
    */
   async getSpaceName(messagePath: string): Promise<string> {
-    const { collection, docId } = this.extractCollectionAndDocId(messagePath);
+    // Extract collection and document ID from the message path
+    let collection = messagePath.split('/')[1];
+    let docId = messagePath.split('/')[2];
+
     if (collection === 'channels') {
-      return await this.fetchChannelName(docId);
+      // If the collection is 'channels', fetch the channel document
+      const doc = this.firestore.getChannel(docId);
+
+      // Extract the name from the channel document or return an empty string
+      const name = await firstValueFrom(
+        doc.pipe(map((doc) => doc?.name ?? ''))
+      );
+      return name;
+    } else {
+      // If not a channel, return an empty string
+      return '';
     }
-    return '';
   }
 
   /**
-   * Extracts collection and document ID from the message path.
-   * @param messagePath - The full message path.
-   * @returns An object containing collection and document ID.
-   */
-  private extractCollectionAndDocId(messagePath: string): {
-    collection: string;
-    docId: string;
-  } {
-    const parts = messagePath.split('/');
-    return { collection: parts[1], docId: parts[2] };
-  }
-
-  /**
-   * Fetches the channel name from the database.
-   * @param docId - Document ID of the channel.
-   * @returns The channel name.
-   */
-  private async fetchChannelName(docId: string): Promise<string> {
-    const doc = this.firestore.getChannel(docId);
-    return await firstValueFrom(doc.pipe(map((d) => d?.name ?? '')));
-  }
-
-  /**
-   * Sets the current user status to online.
+   * Sets the current user’s status to online in the Firestore database.
    */
   async setUserOnline() {
+    // Get the current user's UID
     const uid = await this.authService.getCurrentUserUID();
     if (uid) {
-      this.updateUserStatus(uid, true);
+      // Fetch the user document from Firestore
+      this.firestore
+        .getUser(uid)
+        .pipe(first())
+        .subscribe((user) => {
+          if (user) {
+            // Update the user's status to online
+            user.status = true;
+            this.firestore.updateUser(user.uid, user);
+          }
+        });
     }
   }
 
   /**
-   * Sets the current user status to offline.
+   * Sets the current user’s status to offline in the Firestore database.
    */
   async setUserOffline() {
+    // Get the current user's UID
     const uid = await this.authService.getCurrentUserUID();
     if (uid) {
-      this.updateUserStatus(uid, false);
+      // Fetch the user document from Firestore
+      this.firestore
+        .getUser(uid)
+        .pipe(first())
+        .subscribe((user) => {
+          if (user) {
+            // Update the user's status to offline
+            user.status = false;
+            this.firestore.updateUser(user.uid, user);
+          }
+        });
     }
-  }
-
-  /**
-   * Updates the user's online status in the database.
-   * @param uid - User ID.
-   * @param status - Online status to set.
-   */
-  private updateUserStatus(uid: string, status: boolean) {
-    this.firestore
-      .getUser(uid)
-      .pipe(first())
-      .subscribe((user) => {
-        if (user) {
-          user.status = status;
-          this.firestore.updateUser(user.uid, user);
-        }
-      });
   }
 }
