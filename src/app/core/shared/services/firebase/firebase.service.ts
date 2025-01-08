@@ -273,44 +273,6 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getCollection('directMessages', true);
   }
 
-  // getDirectChats(): Observable<Chat[]> {
-  //   return this.getChats().pipe(map((chats: Chat[]) => chats.filter(chat)));
-  // }
-
-  private setupDirectChatsListener(
-    collectionRef: CollectionReference<DocumentData>,
-    observer: Observer<any>
-  ): () => void {
-    return onSnapshot(
-      collectionRef,
-      (snapshot) => this.handleSnapshot(snapshot, observer),
-      (error) => this.handleSnapshotError(error, observer)
-    );
-  }
-
-  private async handleSnapshot(
-    snapshot: QuerySnapshot<DocumentData>,
-    observer: Observer<any>
-  ): Promise<void> {
-    const chats = await this.processChatSnapshots(snapshot);
-    observer.next(chats);
-  }
-
-  private handleSnapshotError(error: Error, observer: Observer<any>): void {
-    console.error(`Error fetching direct messages: ${error}`);
-    observer.error(error);
-  }
-
-  private async processChatSnapshots(
-    snapshot: QuerySnapshot<DocumentData>
-  ): Promise<any[]> {
-    const chatPromises = snapshot.docs.map(async (doc: any) => {
-      const chat = this.mapDocumentData<any>(doc);
-      return this.resolveUserData(chat);
-    });
-    return Promise.all(chatPromises);
-  }
-
   async addUserToChat(chat: any): Promise<any> {
     return this.resolveUserData(chat);
   }

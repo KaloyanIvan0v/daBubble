@@ -1,5 +1,3 @@
-import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import {
   Component,
   Input,
@@ -7,10 +5,14 @@ import {
   EventEmitter,
   OnChanges,
   SimpleChanges,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
+import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
+import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { User } from 'src/app/core/shared/models/user.class';
 
 @Component({
@@ -18,56 +20,94 @@ import { User } from 'src/app/core/shared/models/user.class';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.scss',
+  styleUrls: ['./user-list.component.scss'],
 })
-export class UserListComponent implements OnChanges {
-  currentUserUid: string | null = null;
+export class UserListComponent implements OnChanges, OnDestroy, OnInit {
   @Input() usersUid: string[] = [];
   @Input() showEmail: boolean = false;
   @Output() selectedUser = new EventEmitter<User>();
-  private subscriptions: Subscription[] = [];
+
+  currentUserUid: string | null = null;
   users: User[] = [];
+  private subscriptions: Subscription[] = [];
 
   constructor(
-    public firebaseService: FirebaseServicesService,
-    public workspaceService: WorkspaceService,
-    public AuthService: AuthService
-  ) {
-    this.setLoggedInUserUid();
+    private firebaseService: FirebaseServicesService,
+    private workspaceService: WorkspaceService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this.initializeCurrentUser();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['usersUid']) {
-      this.fetchUsersByUids(this.usersUid).then((users) => {
-        this.users = users;
-      });
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['usersUid'] && this.usersUid.length > 0) {
+      this.loadUsersByUids(this.usersUid);
     }
   }
 
-  returnUser(user: User) {
+  ngOnDestroy(): void {
+    this.unsubscribeAll();
+  }
+
+  /**
+   * Emits the selected user through the EventEmitter.
+   * @param {User} user - The user to be selected.
+   */
+  returnUser(user: User): void {
     this.selectedUser.emit(user);
   }
 
-  private unsubscribeAll() {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
-  }
-
-  async setLoggedInUserUid() {
-    this.currentUserUid = await this.AuthService.getCurrentUserUID();
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
-  }
-
-  private async fetchUsersByUids(uids: string[]): Promise<any[]> {
-    const users: any[] = [];
-    for (const uid of uids) {
-      const user = await this.firebaseService.getDocOnce('users', uid);
-      if (user) {
-        users.push(user);
-      }
+  /**
+   * Initializes the current logged-in user's UID.
+   */
+  private async initializeCurrentUser(): Promise<void> {
+    try {
+      this.currentUserUid = await this.authService.getCurrentUserUID();
+    } catch (error) {
+      this.handleError('Error fetching current user UID:', error);
     }
-    return users;
+  }
+
+  /**
+   * Loads users based on an array of UIDs.
+   * @param {string[]} uids - An array of user UIDs.
+   */
+  private async loadUsersByUids(uids: string[]): Promise<void> {
+    try {
+      this.users = await this.fetchUsersByUids(uids);
+    } catch (error) {
+      this.handleError('Error fetching users by UIDs:', error);
+    }
+  }
+
+  /**
+   * Fetches user data for the provided UIDs.
+   * @param {string[]} uids - An array of user UIDs.
+   * @returns {Promise<User[]>} - A promise resolving to an array of User objects.
+   */
+  private async fetchUsersByUids(uids: string[]): Promise<User[]> {
+    const userPromises = uids.map((uid) =>
+      this.firebaseService.getDocOnce('users', uid)
+    );
+    const users = await Promise.all(userPromises);
+    return users.filter((user) => user !== null) as User[];
+  }
+
+  /**
+   * Unsubscribes from all active subscriptions to prevent memory leaks.
+   */
+  private unsubscribeAll(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  /**
+   * Handles errors by logging them to the console.
+   * @param {string} message - The error message to log.
+   * @param {any} error - The error object.
+   */
+  private handleError(message: string, error: any): void {
+    console.error(message, error);
   }
 }
