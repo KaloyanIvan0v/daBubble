@@ -6,18 +6,17 @@ import {
   doc,
   addDoc,
   updateDoc,
-  CollectionReference,
-  docData,
   deleteDoc,
   orderBy,
   query,
   setDoc,
-  QuerySnapshot,
-  DocumentData,
   collectionGroup,
-  collectionData,
+  docData,
+  CollectionReference,
+  DocumentData,
+  QuerySnapshot,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, Observer, switchMap, map } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { where, getDoc } from 'firebase/firestore';
 import { AuthService } from '../auth-services/auth.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
@@ -25,244 +24,272 @@ import { Message } from 'src/app/core/shared/models/message.class';
 import { User } from '../../models/user.class';
 import { Chat } from '../../models/chat.class';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class FirebaseServicesService implements OnDestroy {
-  private firestore: Firestore = inject(Firestore);
-  private authService: AuthService = inject(AuthService);
-  private dataSubjects: Map<string, BehaviorSubject<any>> = new Map();
-  private unsubscribeFunctions: Map<string, () => void> = new Map();
-  private userUIDSubject = new BehaviorSubject<string | null>(null);
+  private firestore = inject(Firestore);
+  private authService = inject(AuthService);
+  private dataSubjects = new Map<string, BehaviorSubject<any>>();
+  private unsubscribeFunctions = new Map<string, () => void>();
+  private userUID$ = new BehaviorSubject<string | null>(null);
 
   constructor() {
-    this.authService.getCurrentUserUID().then((uid) => {
-      this.userUIDSubject.next(uid);
-    });
+    this.authService.getCurrentUserUID().then((uid) => this.userUID$.next(uid));
   }
 
-  getAllMessages(): Observable<Message[]> {
-    const messagesQuery = collectionGroup(this.firestore, 'messages');
-    return collectionData(messagesQuery, { idField: 'id' });
-  }
-
+  /**
+   * Cleans up subscriptions and completes all subjects.
+   */
   ngOnDestroy(): void {
     this.dataSubjects.forEach((subject) => subject.complete());
-    this.unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
-    this.unsubscribeFunctions.clear();
+    this.unsubscribeFunctions.forEach((unsub) => unsub());
     this.dataSubjects.clear();
+    this.unsubscribeFunctions.clear();
   }
 
+  /**
+   * Clears all data subjects by setting their value to null.
+   */
   clearDataSubjects(): void {
     this.dataSubjects.forEach((subject) => subject.next(null));
     this.dataSubjects.clear();
   }
 
-  public setUserUID(uid: string | null): void {
-    this.userUIDSubject.next(uid);
+  /**
+   * Sets the current user UID.
+   * @param uid User UID or null.
+   */
+  setUserUID(uid: string | null): void {
+    this.userUID$.next(uid);
   }
 
-  private getCollectionRef(collectionName: string): CollectionReference {
-    return collection(this.firestore, collectionName);
+  /**
+   * Retrieves a collection reference.
+   * @param name Collection name.
+   * @returns CollectionReference<DocumentData>
+   */
+  private getCollectionRef(name: string): CollectionReference<DocumentData> {
+    return collection(this.firestore, name);
   }
 
-  public getDocRef(collectionName: string, docId: string) {
+  /**
+   * Gets a document reference.
+   * @param collectionName Collection name.
+   * @param docId Document ID.
+   * @returns DocumentReference
+   */
+  getDocRef(collectionName: string, docId: string) {
     return doc(this.firestore, collectionName, docId);
   }
 
-  private mapDocumentData<T>(doc: any): T & { id: string } {
-    const data = doc.data() as T;
-    return { ...data, id: doc.id };
+  /**
+   * Maps a Firestore document to a typed object with ID.
+   * @param doc Firestore document.
+   * @returns Mapped object with ID.
+   */
+  private mapDoc<T>(doc: any): T & { id: string } {
+    return { ...(doc.data() as T), id: doc.id };
   }
 
-  private createObservableFromQuery<T>(
-    q: any,
-    errorMsg: string
-  ): Observable<T> {
-    return new Observable<T>((observer) => {
-      const unsubscribe = onSnapshot(
+  /**
+   * Creates an observable from a Firestore query.
+   * @param q Firestore query.
+   * @param errorMsg Error message on failure.
+   * @returns Observable of array of T.
+   */
+  private createObservable<T>(q: any, errorMsg: string): Observable<T[]> {
+    return new Observable((observer) =>
+      onSnapshot(
         q,
-        (snapshot: QuerySnapshot) => {
-          const data = snapshot.docs.map((doc) => this.mapDocumentData(doc));
-          observer.next(data as unknown as T);
-        },
+        (snapshot: QuerySnapshot) =>
+          observer.next(snapshot.docs.map((doc) => this.mapDoc<T>(doc))),
         (error) => observer.error(`${errorMsg}: ${error}`)
-      );
-      return () => unsubscribe();
-    });
+      )
+    );
   }
 
+  /**
+   * Retrieves all messages using a collection group query.
+   * @returns Observable of Message array.
+   */
+  getAllMessages(): Observable<Message[]> {
+    return this.createObservable<Message>(
+      collectionGroup(this.firestore, 'messages'),
+      'Error fetching messages'
+    );
+  }
+
+  /**
+   * Retrieves ordered messages from a specified path.
+   * @param path Firestore path.
+   * @returns Observable of Message array.
+   */
   private getOrderedMessages(path: string): Observable<Message[]> {
-    const messagesCollectionRef = collection(this.firestore, path);
-    const q = query(messagesCollectionRef, orderBy('time'));
-    return new Observable<Message[]>((observer) => {
-      const unsubscribe = onSnapshot(
-        q,
-        (snapshot: QuerySnapshot) => {
-          const data = snapshot.docs.map((doc) => this.mapDocumentData(doc));
-          observer.next(data as Message[]);
-        },
-        (error) => observer.error(`Error fetching messages: ${error}`)
-      );
-      return () => unsubscribe();
-    });
+    const q = query(collection(this.firestore, path), orderBy('time'));
+    return this.createObservable<Message>(q, 'Error fetching ordered messages');
   }
 
-  getMessages(collectionName: string, docId: string): Observable<Message[]> {
-    const path = `${collectionName}/${docId}/messages`;
-    return this.getOrderedMessages(path);
+  /**
+   * Gets messages from a specific collection and document.
+   * @param collection Collection name.
+   * @param docId Document ID.
+   * @returns Observable of Message array.
+   */
+  getMessages(collection: string, docId: string): Observable<Message[]> {
+    return this.getOrderedMessages(`${collection}/${docId}/messages`);
   }
 
   getThreadMessages(threadPath: string): Observable<Message[]> {
     return this.getOrderedMessages(threadPath);
   }
 
-  async sendMessage(messagePath: string, message: Message) {
-    const messageDocRef = doc(this.firestore, messagePath);
-    await setDoc(messageDocRef, message);
+  /**
+   * Sends a message by setting a document at the specified path.
+   * @param path Firestore path.
+   * @param message Message object.
+   */
+  async sendMessage(path: string, message: Message): Promise<void> {
+    await setDoc(doc(this.firestore, path), message);
   }
 
+  /**
+   * Sends a thread message within a specific message thread.
+   * @param collection Collection name.
+   * @param docId Document ID.
+   * @param messageId Message ID.
+   * @param threadMsg Thread message object.
+   */
   async sendThreadMessage(
-    collectionName: string,
+    collection: string,
     docId: string,
     messageId: string,
-    threadMessage: Message
-  ) {
-    const threadMessageDocRef = doc(
-      this.firestore,
-      `${collectionName}/${docId}/messages/${messageId}/thread/messages/${threadMessage.id}`
-    );
-    await setDoc(threadMessageDocRef, threadMessage);
-  }
-
-  async updateMessage(
-    messagePath: string,
-    data: Partial<Message>
+    threadMsg: Message
   ): Promise<void> {
-    const messageDocRef = doc(this.firestore, messagePath);
-    return updateDoc(messageDocRef, data);
+    const path = `${collection}/${docId}/messages/${messageId}/thread/messages/${threadMsg.id}`;
+    await setDoc(doc(this.firestore, path), threadMsg);
   }
 
+  /**
+   * Updates a message with partial data.
+   * @param path Firestore path.
+   * @param data Partial message data.
+   */
+  async updateMessage(path: string, data: Partial<Message>): Promise<void> {
+    await updateDoc(doc(this.firestore, path), data);
+  }
+
+  /**
+   * Deletes a message from a specific collection and document.
+   * @param collection Collection name.
+   * @param docId Document ID.
+   * @param messageId Message ID.
+   */
   async deleteMessage(
-    collectionName: string,
+    collection: string,
     docId: string,
     messageId: string
   ): Promise<void> {
-    const messageDocRef = doc(
-      this.firestore,
-      `${collectionName}/${docId}/messages/${messageId}`
+    await deleteDoc(
+      doc(this.firestore, `${collection}/${docId}/messages/${messageId}`)
     );
-    return deleteDoc(messageDocRef);
   }
 
-  getCollection<T>(
-    collectionName: string,
-    uidAccess: boolean
-  ): Observable<T[]> {
-    const refCollection = this.getCollectionRef(collectionName);
-    return this.userUIDSubject.pipe(
+  /**
+   * Retrieves a collection with optional UID-based access.
+   * @param name Collection name.
+   * @param uidAccess Whether to filter by UID.
+   * @returns Observable of array of T.
+   */
+  getCollection<T>(name: string, uidAccess: boolean): Observable<T[]> {
+    return this.userUID$.pipe(
       switchMap((uid) => {
-        const userSpecificQuery =
+        const q =
           uidAccess && uid
-            ? query(refCollection, where('uid', 'array-contains', uid))
-            : refCollection;
-        return this.createCollectionObservable<T>(
-          userSpecificQuery,
-          collectionName
-        );
+            ? query(
+                this.getCollectionRef(name),
+                where('uid', 'array-contains', uid)
+              )
+            : this.getCollectionRef(name);
+        return this.createObservable<T>(q, `Error fetching collection ${name}`);
       })
     );
   }
 
-  private createCollectionObservable<T>(
-    userSpecificQuery: any,
-    collectionName: string
-  ): Observable<T[]> {
-    return new Observable<T[]>((observer) => {
+  /**
+   * Retrieves a single document as an observable.
+   * @param collection Collection name.
+   * @param docId Document ID.
+   * @returns Observable of T.
+   */
+  getDoc<T>(collection: string, docId: string): Observable<T> {
+    const key = `${collection}-${docId}`;
+    if (!this.dataSubjects.has(key)) {
+      const subject = new BehaviorSubject<T | null>(null);
+      this.dataSubjects.set(key, subject);
       const unsubscribe = onSnapshot(
-        userSpecificQuery,
-        (snapshot: QuerySnapshot<DocumentData>) => {
-          const data = snapshot.docs.map((doc) => this.mapDocumentData<T>(doc));
-          observer.next(data);
-        },
-        (error) =>
-          observer.error(
-            `Error fetching collection ${collectionName}: ${error}`
-          )
+        this.getDocRef(collection, docId),
+        (docSnap) =>
+          subject.next(docSnap.exists() ? this.mapDoc<T>(docSnap) : null),
+        (error) => subject.error(`Error fetching ${docId}: ${error}`)
       );
-      return () => unsubscribe();
-    });
-  }
-
-  getDoc<T>(collectionName: string, docId: string): Observable<T> {
-    const cacheKey = `${collectionName}-${docId}`;
-    if (!this.dataSubjects.has(cacheKey)) {
-      this.createDocSubject<T>(collectionName, docId, cacheKey);
+      this.unsubscribeFunctions.set(key, unsubscribe);
     }
-    return this.dataSubjects.get(cacheKey)!.asObservable();
+    return this.dataSubjects.get(key)!.asObservable();
   }
 
-  private createDocSubject<T>(
-    collectionName: string,
-    docId: string,
-    cacheKey: string
-  ): void {
-    const subject = new BehaviorSubject<T | null>(null);
-    this.dataSubjects.set(cacheKey, subject);
-
-    const docRef = this.getDocRef(collectionName, docId);
-    const unsubscribe = onSnapshot(
-      docRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = this.mapDocumentData<T>(snapshot);
-          subject.next(data);
-        } else {
-          subject.next(null);
-        }
-      },
-      (error) => subject.error(`Error fetching document ${docId}: ${error}`)
-    );
-
-    this.unsubscribeFunctions.set(cacheKey, unsubscribe);
-  }
-
-  async getDocOnce(collectionName: string, docId: string): Promise<any> {
+  /**
+   * Retrieves a document once without subscribing.
+   * @param collection Collection name.
+   * @param docId Document ID.
+   * @returns Promise resolving to document data or undefined.
+   */
+  async getDocOnce(collection: string, docId: string): Promise<any> {
     try {
-      const docRef = doc(this.firestore, `${collectionName}/${docId}`);
-      const docSnap = await getDoc(docRef);
-      return docSnap.exists() ? docSnap.data() : undefined;
+      const snap = await getDoc(this.getDocRef(collection, docId));
+      return snap.exists() ? snap.data() : undefined;
     } catch (error) {
-      console.error('Error getting document:', error);
+      console.error('GetDocOnce error:', error);
       return undefined;
     }
   }
 
-  async addDoc<T extends { [x: string]: any }>(
-    collectionName: string,
+  /**
+   * Adds a new document to a collection.
+   * @param collection Collection name.
+   * @param data Data to add.
+   * @returns Promise resolving to new document ID.
+   */
+  async addDoc<T extends Record<string, any>>(
+    collection: string,
     data: T
   ): Promise<string> {
-    const collectionRef = this.getCollectionRef(collectionName);
-    const docRef = await addDoc(collectionRef, data);
-    return docRef.id;
+    return (await addDoc(this.getCollectionRef(collection), data)).id;
   }
 
+  /**
+   * Updates an existing document with partial data.
+   * @param collection Collection name.
+   * @param docId Document ID.
+   * @param data Partial data to update.
+   */
   async updateDoc<T>(
-    collectionName: string,
+    collection: string,
     docId: string,
     data: Partial<T>
   ): Promise<void> {
-    const docRef = this.getDocRef(collectionName, docId);
-    return updateDoc(docRef, data);
+    await updateDoc(this.getDocRef(collection, docId), data);
   }
 
-  getUsers(): Observable<any> {
-    return this.getCollection('users', false);
+  getUsers(): Observable<User[]> {
+    return this.getCollection<User>('users', false);
   }
 
-  updateUser(uid: string, data: Partial<User>) {
-    const userDocRef = doc(this.firestore, `users/${uid}`);
-    updateDoc(userDocRef, data);
+  /**
+   * Updates a user's data.
+   * @param uid User UID.
+   * @param data Partial user data.
+   */
+  updateUser(uid: string, data: Partial<User>): void {
+    updateDoc(this.getDocRef('users', uid), data);
   }
 
   getChannels(): Observable<Channel[]> {
@@ -270,32 +297,32 @@ export class FirebaseServicesService implements OnDestroy {
   }
 
   getChats(): Observable<Chat[]> {
-    return this.getCollection('directMessages', true);
+    return this.getCollection<Chat>('directMessages', true);
   }
 
+  /**
+   * Adds a user to a chat.
+   * @param chat Chat object.
+   * @returns Promise resolving to updated chat.
+   */
   async addUserToChat(chat: any): Promise<any> {
-    return this.resolveUserData(chat);
-  }
-
-  private async resolveUserData(chat: any): Promise<any> {
-    if (chat.receiver) {
-      return { ...chat, user: chat.receiver };
-    }
-
+    if (chat.receiver) return { ...chat, user: chat.receiver };
     if (chat.recipientUid) {
       try {
-        const userData = await this.getUser(chat.recipientUid).toPromise();
-        return { ...chat, user: userData || this.getFallbackUserData() };
-      } catch (error) {
-        console.error('Error retrieving user data for chat:', error);
-        return { ...chat, user: this.getFallbackUserData() };
+        const user = await this.getUser(chat.recipientUid).toPromise();
+        return { ...chat, user: user || this.fallbackUser() };
+      } catch {
+        return { ...chat, user: this.fallbackUser() };
       }
     }
-
-    return { ...chat, user: this.getFallbackUserData() };
+    return { ...chat, user: this.fallbackUser() };
   }
 
-  private getFallbackUserData(): any {
+  /**
+   * Provides a fallback user object.
+   * @returns Fallback User.
+   */
+  private fallbackUser() {
     return {
       name: 'Unknown User',
       photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
@@ -306,35 +333,59 @@ export class FirebaseServicesService implements OnDestroy {
     return this.getDoc<User>('users', uid);
   }
 
+  /**
+   * Retrieves a channel by ID.
+   * @param channelId Channel ID.
+   * @returns Observable of Channel.
+   */
   getChannel(channelId: string): Observable<Channel> {
     return this.getDoc<Channel>('channels', channelId);
   }
 
-  getChat(id: string): Observable<any> {
-    return this.getDoc('chats', id);
+  getChat(id: string): Observable<Chat> {
+    return this.getDoc<Chat>('chats', id);
   }
 
-  getUniqueId() {
-    const id = doc(collection(this.firestore, 'dummyCollection')).id;
-    return id;
+  /**
+   * Generates a unique ID.
+   * @returns Unique string ID.
+   */
+  getUniqueId(): string {
+    return doc(collection(this.firestore, 'dummyCollection')).id;
   }
 
+  /**
+   * Retrieves a user by UID with ID field.
+   * @param uid User UID.
+   * @returns Observable of User.
+   */
   getUserByUid(uid: string): Observable<User> {
-    const userDocRef = doc(this.firestore, `users/${uid}`);
-    return docData(userDocRef, { idField: 'uid' }) as Observable<User>;
+    return docData(this.getDocRef('users', uid), {
+      idField: 'uid',
+    }) as Observable<User>;
   }
 
-  async checkDocExists(
-    collectionName: string,
-    docId: string
-  ): Promise<boolean> {
-    const docRef = this.getDocRef(collectionName, docId);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists();
+  /**
+   * Checks if a document exists.
+   * @param collection Collection name.
+   * @param docId Document ID.
+   * @returns Promise resolving to boolean.
+   */
+  async checkDocExists(collection: string, docId: string): Promise<boolean> {
+    try {
+      const snap = await getDoc(this.getDocRef(collection, docId));
+      return snap.exists();
+    } catch {
+      return false;
+    }
   }
 
-  isEmail(qText: string): boolean {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]*$/;
-    return emailPattern.test(qText);
+  /**
+   * Validates if a string is an email.
+   * @param text Input string.
+   * @returns True if valid email, else false.
+   */
+  isEmail(text: string): boolean {
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(text);
   }
 }

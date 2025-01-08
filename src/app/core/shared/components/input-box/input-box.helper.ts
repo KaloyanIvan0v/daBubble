@@ -186,7 +186,7 @@ export class InputBoxHelper {
       .getUsers()
       .pipe(first())
       .toPromise();
-    return users.map((user: User) => user.uid);
+    return users!.map((user: User) => user.uid);
   }
 
   /**
