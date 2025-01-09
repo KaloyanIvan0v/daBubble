@@ -33,7 +33,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   receiverId: string | null = null;
   receiverName$: Observable<string> = of('Name Placeholder');
   receiverPhotoURL$: Observable<string> = of(
-    '/assets/img/profile-img/profile-img-placeholder.svg'
+    'assets/img/profile-img/profile-img-placeholder.svg'
   );
   messages$: Observable<Message[]> = of([]);
   messageToEdit: Message | undefined = undefined;
@@ -155,11 +155,9 @@ export class DirectChatComponent implements OnInit, OnDestroy {
     this.receiverPhotoURL$ = receiverData$.pipe(
       map(
         (u) =>
-          u?.photoURL || '/assets/img/profile-img/profile-img-placeholder.svg'
+          u?.photoURL || 'assets/img/profile-img/profile-img-placeholder.svg'
       ),
-      catchError(() =>
-        of('/assets/img/profile-img/profile-img-placeholder.svg')
-      )
+      catchError(() => of('assets/img/profile-img/profile-img-placeholder.svg'))
     );
   }
 
@@ -236,7 +234,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   private getDefaultUser(): User {
     return {
       name: 'Unknown User',
-      photoURL: '/assets/img/profile-img/profile-img-placeholder.svg',
+      photoURL: 'assets/img/profile-img/profile-img-placeholder.svg',
     } as User;
   }
 

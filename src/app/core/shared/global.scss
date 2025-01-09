@@ -36,7 +36,7 @@ button {
 }
 
 @mixin iconButton($img-path, $hover-img-path) {
-  background-image: url($img-path);
+  background-image: url("../../../#{$img-path}");
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
@@ -44,7 +44,7 @@ button {
   height: 40px;
   border-radius: 50%;
   &:hover {
-    background-image: url($hover-img-path);
+    background-image: url("../../../#{$hover-img-path}");
   }
   mat-icon {
     color: $text-grey;
