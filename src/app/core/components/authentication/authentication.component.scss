@@ -125,7 +125,7 @@ section {
   color: white;
   font-weight: 700;
   animation: opacity-fade 0.1s ease-in-out;
-  margin-left: -170px;
+  margin-left: -190px;
   z-index: -1;
 }
 
@@ -342,10 +342,19 @@ form {
 @keyframes logo-move-left {
   from {
     transform: translateX(0);
+    background-color: $purple1;
+    padding-right: 7%;
   }
   to {
     transform: translateX(-200px);
+    background-color: $purple1;
+    padding-right: 7%;
   }
+}
+
+.background-transparent {
+  background-color: transparent !important;
+  padding-right: 0 !important;
 }
 
 @keyframes logo-move-center {
@@ -358,11 +367,25 @@ form {
 }
 
 @keyframes text-slide-in {
-  from {
+  0% {
     transform: translateX(-50%);
+    opacity: 0;
   }
-  to {
+  25% {
+    transform: translateX(-25%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-20%);
+    opacity: 0.1;
+  }
+  85% {
+    transform: translateX(-10%);
+    opacity: 0.5;
+  }
+  100% {
     transform: translateX(0);
+    opacity: 1;
   }
 }
 

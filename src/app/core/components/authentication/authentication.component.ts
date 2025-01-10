@@ -113,6 +113,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   private startAnimationSequence(): void {
     this.animateLogoImage();
     this.animateLogoText();
+    this.removeLogoBackground();
     this.animateLogoContainerAndBackground();
     this.animateMainLogo();
   }
@@ -125,6 +126,20 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.renderer.addClass(this.logoImage.nativeElement, 'move-left-target');
     }, 500);
+  }
+
+  /**
+   * Adds the 'background-transparent' class to the logo image element
+   * after a delay of 2000ms, making the background transparent.
+   */
+
+  private removeLogoBackground(): void {
+    setTimeout(() => {
+      this.renderer.addClass(
+        this.logoImage.nativeElement,
+        'background-transparent'
+      );
+    }, 2000);
   }
 
   /**
