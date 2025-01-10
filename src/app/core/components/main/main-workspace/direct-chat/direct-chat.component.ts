@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, from, Subject } from 'rxjs';
 import { switchMap, map, takeUntil, catchError } from 'rxjs/operators';

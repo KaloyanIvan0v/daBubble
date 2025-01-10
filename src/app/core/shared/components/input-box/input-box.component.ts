@@ -1,5 +1,3 @@
-// input-box.component.ts
-
 import {
   Component,
   Input,
@@ -11,10 +9,10 @@ import {
   Output,
   EventEmitter,
   signal,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { first } from 'rxjs/operators';
 
 import { Message } from 'src/app/core/shared/models/message.class';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
@@ -32,7 +30,7 @@ import { InputBoxHelper } from './input-box.helper'; // Import der Helper-Klasse
   templateUrl: './input-box.component.html',
   styleUrls: ['./input-box.component.scss'],
 })
-export class InputBoxComponent implements OnChanges, OnInit {
+export class InputBoxComponent implements OnChanges, OnInit, AfterViewInit {
   @Input() messagePath = '';
   @Input() showEmojiPicker = false;
   @Input() receiverId: string | null = null;
@@ -51,6 +49,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
   @ViewChild('messageTextarea')
   messageTextarea!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('mirrorElement') mirrorElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('inputField') inputElement!: ElementRef<HTMLInputElement>;
 
   userListPosition = { bottom: 0, left: 0 };
   inputData = new InputBoxData('', []);
@@ -70,16 +69,25 @@ export class InputBoxComponent implements OnChanges, OnInit {
     this.initializePlaceholder();
   }
 
+  ngAfterViewInit() {
+    this.inputElement.nativeElement.focus();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['messageToEdit']) {
       this.updateInputDataMessage();
     }
     if (changes['messagePath'] || changes['receiverId'] || changes['space']) {
       this.initializePlaceholder();
+      setTimeout(() => this.focusInput(), 200);
     }
     if (changes['usersUid'] && this.usersUid[0] !== undefined) {
       this.loadUsers(this.usersUid);
     }
+  }
+
+  focusInput(): void {
+    this.inputElement.nativeElement.focus();
   }
 
   /**

@@ -20,7 +20,7 @@
       <!-- Left side panel (e.g., channels, navigation) -->
       <app-left-side-component
         class="left-side-component"
-        *ngIf="showLeftSide()"
+        [ngClass]="{ 'width-0': !showLeftSide() }"
       ></app-left-side-component>
 
       <!-- Main workspace/chat area -->
@@ -32,7 +32,7 @@
       <!-- Right side thread or extra context panel -->
       <app-right-side-container
         class="right-side-component"
-        *ngIf="showThread()"
+        [ngClass]="{ 'width-0': !showThread() }"
       ></app-right-side-container>
     </div>
 
