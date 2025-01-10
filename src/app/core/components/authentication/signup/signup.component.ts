@@ -97,6 +97,14 @@ export class SignupComponent implements OnInit {
     }
   }
 
+  /**
+   * Checks if the entered email has an invalid format.
+   */
+  isEmailInvalid() {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return this.user.email && !emailRegex.test(this.user.email);
+  }
+
   navigateToLogin() {
     this.router.navigate(['/authentication/login']);
   }

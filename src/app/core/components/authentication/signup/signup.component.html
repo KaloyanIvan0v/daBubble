@@ -49,7 +49,7 @@
           (blur)="authUIService.onBlur('email')"
         />
       </div>
-      <div *ngIf="email.invalid && email.touched" class="error-message">
+      <div *ngIf="isEmailInvalid()" class="error-message">
         <p>*Diese E-Mail-Adresse ist leider ungültig.</p>
       </div>
 
