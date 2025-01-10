@@ -52,7 +52,6 @@ export class UploadCareService implements OnInit {
     this.authService
       .updateAvatar(currentUser, newAvatarUrl)
       .then(() => {
-        console.log('Avatar updated successfully for current user');
         const updatedUserData = {
           ...this.workspaceService.loggedInUserData.getValue(),
           avatar: newAvatarUrl,
@@ -64,23 +63,18 @@ export class UploadCareService implements OnInit {
 
   saveAvatar() {
     if (this.selectedPhoto) {
-      console.log('Saving avatar with photoURL:', this.selectedPhoto);
-
       if (this.signUpComponent?.user) {
         this.signUpComponent.user.photoURL = this.selectedPhoto;
       } else if (this.currentUser) {
         this.authService
           .updateAvatar(this.currentUser, this.newAvatarUrl ?? '')
-          .then(() => {
-            console.log('Avatar updated successfully!');
-          })
+          .then(() => {})
           .catch((error) => console.error('Error updating avatar:', error));
       }
     }
   }
 
   selectPhoto(photo: string) {
-    console.log('Selected photo:', photo);
     this.selectedPhoto = photo;
     this.isUploadedPhoto = false;
     this.uploadedPhotoName = null;

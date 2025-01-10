@@ -49,7 +49,6 @@ export class MainService {
       text: inputMessage.message,
       imports: inputMessage.imports,
     };
-    console.log(name);
 
     // Construct the Message object with all required properties
     const message: Message = {
@@ -97,13 +96,11 @@ export class MainService {
       const directMessagePath = `directMessages/${sortedUserIds.join(
         '_'
       )}/messages`;
-      console.log('Direct message path:', directMessagePath);
 
       // Send the message to the direct message path
       await this.firestore.sendMessage(directMessagePath + '/' + id, message);
     } else {
       // If no receiver ID, send the message to the channel path
-      console.log('Channel message path:', messagePath);
       await this.firestore.sendMessage(messagePath + '/' + id, message);
     }
   }

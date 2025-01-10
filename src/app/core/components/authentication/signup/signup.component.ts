@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { SharedModule } from '../../../shared/shared-module';
 import { Observable } from 'rxjs';
 import { AuthUIService } from '../../../shared/services/authUI-services/authUI.service';
@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent {
   user = {
     name: '',
     email: '',
@@ -33,16 +33,6 @@ export class SignupComponent implements OnInit {
     public activatedRoute: ActivatedRoute
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
-  }
-
-  ngOnInit() {
-    this.authService.observeAuthState((user) => {
-      if (user) {
-        console.log('User logged in, UID:', user.uid);
-      } else {
-        console.log('No user logged in');
-      }
-    });
   }
 
   /**

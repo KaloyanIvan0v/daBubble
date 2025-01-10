@@ -78,9 +78,6 @@ export class NewChatComponent implements OnInit, OnDestroy {
   ) {
     this.userData$ = this.workspaceService.loggedInUserData;
     const channelId = this.workspaceService.getActiveChannelId();
-    channelId
-      ? console.log('Retrieved Channel ID:', channelId)
-      : console.warn('No Channel ID available.');
   }
 
   /**
