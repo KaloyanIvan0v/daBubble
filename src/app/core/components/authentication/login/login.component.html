@@ -17,6 +17,7 @@
           id="email"
           name="email"
           [(ngModel)]="user.email"
+          (input)="onInputChange()"
           required
           email
           #email="ngModel"
@@ -25,7 +26,7 @@
           (blur)="authUIService.onBlur('email')"
         />
       </div>
-      <div *ngIf="email.invalid && email.touched" class="error-message">
+      <div *ngIf="user.email && isEmailInvalid()" class="error-message">
         <p>*Diese E-Mail-Adresse ist leider ungültig.</p>
       </div>
 
@@ -40,6 +41,7 @@
           id="password"
           name="password"
           [(ngModel)]="user.password"
+          (input)="onInputChange()"
           required
           minlength="6"
           #password="ngModel"

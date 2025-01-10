@@ -45,17 +45,19 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    this.loginError = false;
+
     await this.processLogin(this.user.email, this.user.password);
   }
 
-/**
- * Attempts to log in a user with the provided email and password.
- * If the login is successful, it handles post-login actions and resets
- * the login error state. If the login fails, sets the login error state.
- *
- * @param email - The email address of the user attempting to log in.
- * @param password - The password of the user attempting to log in.
- */
+  /**
+   * Attempts to log in a user with the provided email and password.
+   * If the login is successful, it handles post-login actions and resets
+   * the login error state. If the login fails, sets the login error state.
+   *
+   * @param email - The email address of the user attempting to log in.
+   * @param password - The password of the user attempting to log in.
+   */
 
   private async processLogin(email: string, password: string) {
     try {
@@ -107,6 +109,22 @@ export class LoginComponent implements OnInit {
     } catch (error) {
       console.error('Login failed:', error);
     }
+  }
+
+  /**
+   * Checks if the entered email has an invalid format.
+   */
+  isEmailInvalid() {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return this.user.email && !emailRegex.test(this.user.email);
+  }
+
+  /**
+   * Resets the login error when the user starts typing.
+   * Triggered by changes to email or password fields.
+   */
+  onInputChange() {
+    this.loginError = false;
   }
 
   navigateToResetPassword() {
