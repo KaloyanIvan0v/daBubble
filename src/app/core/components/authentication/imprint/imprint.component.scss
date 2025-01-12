@@ -1,0 +1,54 @@
+@import "global.scss";
+
+section {
+  padding: 15%;
+  font-family: nunito;
+}
+
+h1,
+h2 {
+  color: $purple1;
+  margin-bottom: 10px;
+  font-family: nunito;
+}
+
+h2 {
+  margin-top: 5%;
+}
+
+.back-arrow-img {
+  position: absolute;
+  left: 32px;
+  top: 45px;
+
+  @include iconButtonWithHoverBackground(
+    "/assets/img/buttons/arrow_back-thin.svg",
+    "/assets/img/buttons/arrow_back-bold.svg"
+  );
+}
+
+@media (max-width: 650px) {
+  h1 {
+    font-size: 45px;
+  }
+
+  .back-arrow-img {
+    left: 15px;
+    top: 20px;
+  }
+}
+
+@media (max-width: 450px) {
+  h1 {
+    font-size: 40px;
+  }
+
+  h2 {
+    font-size: 25px;
+  }
+
+  h1,
+  h2 {
+    margin-bottom: 5px;
+  }
+}

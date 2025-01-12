@@ -4,11 +4,9 @@ h2 {
   margin-block-start: 0;
   margin-block-end: 0;
   font-size: 46px;
-  font-weight: 700;
   line-height: 55.2px;
   color: $purple1;
   margin-top: 50px;
-  text-align: center;
 }
 
 h3 {
@@ -28,7 +26,7 @@ h4 {
   margin-top: 30px;
 }
 
-section {
+.authentication {
   min-height: 100vh;
   background-color: $bg-color;
 }
@@ -83,7 +81,6 @@ section {
   transform: translate(-50%, -50%);
   width: 606px;
   height: 769px;
-
   background-color: white;
   border-radius: 30px;
 }
@@ -152,6 +149,11 @@ section {
 .reset-link-mode {
   height: 423px;
   width: 692px;
+}
+
+.imprint-mode {
+  height: 469px;
+  width: 676px;
 }
 
 form {
@@ -277,6 +279,34 @@ form {
   }
 }
 
+.bottom-links {
+  position: fixed;
+  bottom: 100px;
+  width: 100%;
+  @include dFlex();
+
+  .imprint {
+    margin-right: 2%;
+  }
+
+  span {
+    color: $purple2;
+    cursor: pointer;
+    padding: 5px 10px 5px 10px;
+    &:hover {
+      border: 1px solid $purple1;
+      color: $purple1;
+      font-weight: 500;
+      border-radius: 50px;
+    }
+  }
+}
+
+.background-transparent {
+  background-color: transparent !important;
+  padding-right: 0 !important;
+}
+
 .move-to-target {
   animation: moving-to-target 0.7s ease-in-out forwards;
 }
@@ -350,11 +380,6 @@ form {
     background-color: $purple1;
     padding-right: 7%;
   }
-}
-
-.background-transparent {
-  background-color: transparent !important;
-  padding-right: 0 !important;
 }
 
 @keyframes logo-move-center {
@@ -442,13 +467,14 @@ form {
 }
 
 @media (max-width: 800px) {
-  .reset-link-mode {
+  .reset-link-mode,
+  .reset-password-mode {
     height: 40%;
     width: 85%;
   }
 
-  .reset-password-mode {
-    height: 40%;
+  .imprint-mode {
+    height: 55%;
     width: 85%;
   }
 
@@ -620,6 +646,10 @@ form {
       height: auto;
       margin-right: 10px;
     }
+  }
+
+  .bottom-links {
+    display: none;
   }
 }
 

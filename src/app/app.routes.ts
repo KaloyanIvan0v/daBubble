@@ -10,6 +10,7 @@ import { ResetPasswordLinkComponent } from './core/components/authentication/res
 import { DirectChatComponent } from './core/components/main/main-workspace/direct-chat/direct-chat.component';
 import { ChannelChatComponent } from './core/components/main/main-workspace/channel-chat/channel-chat.component';
 import { ChooseAvatarComponent } from './core/components/authentication/choose-avatar/choose-avatar.component';
+import { ImprintComponent } from './core/components/authentication/imprint/imprint.component';
 
 export const routes: Routes = [
   {
@@ -45,6 +46,11 @@ export const routes: Routes = [
         path: 'reset-password-link',
         component: ResetPasswordLinkComponent,
         data: { modeClass: 'reset-link-mode' },
+      },
+      {
+        path: 'imprint',
+        component: ImprintComponent,
+        data: { modeClass: 'imprint-mode' },
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       { path: '**', redirectTo: 'login' },

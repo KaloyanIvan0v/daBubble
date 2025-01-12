@@ -201,4 +201,10 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
       relativeTo: this.activatedRoute,
     });
   }
+
+  navigateToImprint() {
+    this.router.navigate(['imprint'], {
+      relativeTo: this.activatedRoute,
+    });
+  }
 }

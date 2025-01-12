@@ -55,4 +55,10 @@
   <div class="auth-wrapper" [ngClass]="currentModeClass">
     <router-outlet></router-outlet>
   </div>
+  <div class="bottom-links" *ngIf="currentModeClass === 'login-mode'">
+    <div class="imprint" (click)="navigateToImprint()">
+      <span>Impressum</span>
+    </div>
+    <div class="privacy-policy"><span>Datenschutz</span></div>
+  </div>
 </section>

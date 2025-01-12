@@ -62,10 +62,12 @@
 
 .link-text {
   padding: 5px 10px 5px 10px;
+  color: $purple2;
   &:hover {
     border-radius: 50px;
     background-color: $bg-color;
     font-weight: 500;
+    color: $purple1;
   }
 }
 
