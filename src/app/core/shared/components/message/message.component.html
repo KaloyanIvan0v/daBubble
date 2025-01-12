@@ -1,119 +1,125 @@
 <section>
-  <div
-    *ngIf="author$ | async as author"
-    [ngClass]="{
-      'fd-reverse': message.author === loggedInUserId,
-      'purple-border': editActive
-    }"
-    (mouseleave)="closeEmojiPicker()"
-    class="msg-wrapper"
-  >
-    <div *ngIf="editActive" class="cancel-edit" (click)="cancelEdit()">
-      Cancel edit
-    </div>
-    <div class="img-wrapper">
-      <img
-        referrerpolicy="no-referrer"
-        [src]="
-          ((author$ | async)?.photoURL || '') === ''
-            ? 'assets/img/profile-img/profile-img-placeholder.svg'
-            : (author$ | async)?.photoURL
-        "
-        alt=""
-      />
-    </div>
+  <div class="expand-hover-wrapper">
     <div
-      class="msg-content"
-      [ngClass]="{ 'ai-end': message.author === loggedInUserId }"
+      *ngIf="author$ | async as author"
+      [ngClass]="{
+        'fd-reverse': message.author === loggedInUserId,
+        'purple-border': editActive
+      }"
+      (mouseleave)="closeEmojiPicker()"
+      class="msg-wrapper"
     >
-      <div
-        class="name-date-wrapper"
-        [ngClass]="{ 'fd-reverse jc-end': message.author === loggedInUserId }"
-      >
-        <div class="author-name" (click)="openAuthorProfile(author.uid)">
-          {{ (author$ | async)?.name }}
-        </div>
-        <div class="msg-date">{{ message.time | firebaseTime }} Uhr</div>
+      <div *ngIf="editActive" class="cancel-edit" (click)="cancelEdit()">
+        Cancel edit
+      </div>
+      <div class="img-wrapper">
+        <img
+          referrerpolicy="no-referrer"
+          [src]="
+            ((author$ | async)?.photoURL || '') === ''
+              ? 'assets/img/profile-img/profile-img-placeholder.svg'
+              : (author$ | async)?.photoURL
+          "
+          alt=""
+        />
       </div>
       <div
-        [ngClass]="
-          message.author === loggedInUserId
-            ? 'msg-text-own-message'
-            : 'msg-text'
-        "
+        class="msg-content"
+        [ngClass]="{ 'ai-end': message.author === loggedInUserId }"
       >
-        {{ message.value.text }}
-      </div>
-      <div *ngIf="threadMessages.length > 0 && showThread" class="thread-view">
-        <div class="thread-amount" (click)="openThread()">
-          {{ threadMessages.length }}
-          <ng-container *ngIf="threadMessages.length > 1">
-            Antworten</ng-container
-          >
-          <ng-container *ngIf="threadMessages.length === 1">
-            Antwort</ng-container
-          >
-        </div>
-        <div *ngIf="lastThreadMessage" class="last-thread-response">
-          Letzte Antwort {{ lastThreadMessage.time | firebaseTime }}
-        </div>
-      </div>
-      <div class="reactions-view" *ngIf="message.reactions.length >= 1">
         <div
-          *ngFor="let reaction of message.reactions"
-          class="reaction"
-          (click)="onEmojiSelected(reaction.value)"
+          class="name-date-wrapper"
+          [ngClass]="{ 'fd-reverse jc-end': message.author === loggedInUserId }"
         >
-          <div class="emoji">{{ reaction.value }}</div>
-          <div class="amount">{{ reaction.authors.length }}</div>
-          <div class="reaction-authors">
-            <div class="reaction-authors-emoji">{{ reaction.value }}</div>
-            <ng-container *ngIf="reaction.authors.length > 0">
-              <ng-container
-                *ngIf="
-                  getAuthorName(reaction.authors[0]) | async as firstAuthorName
-                "
-              >
-                <div class="reaction-author-name">
-                  {{ firstAuthorName }}
-                  <div class="more-users" *ngIf="reaction.authors.length > 1">
-                    +{{ reaction.authors.length - 1 }}
-                  </div>
-                </div>
-              </ng-container>
-            </ng-container>
-            <div *ngIf="reaction.authors.length < 2" class="font16-400 dfc">
-              hat reagiert
-            </div>
-            <div *ngIf="reaction.authors.length >= 2" class="font16-400 dfc">
-              haben reagiert
-            </div>
+          <div class="author-name" (click)="openAuthorProfile(author.uid)">
+            {{ (author$ | async)?.name }}
+          </div>
+          <div class="msg-date">{{ message.time | firebaseTime }} Uhr</div>
+        </div>
+        <div
+          [ngClass]="
+            message.author === loggedInUserId
+              ? 'msg-text-own-message'
+              : 'msg-text'
+          "
+        >
+          {{ message.value.text }}
+        </div>
+        <div
+          *ngIf="threadMessages.length > 0 && showThread"
+          class="thread-view"
+        >
+          <div class="thread-amount" (click)="openThread()">
+            {{ threadMessages.length }}
+            <ng-container *ngIf="threadMessages.length > 1">
+              Antworten</ng-container
+            >
+            <ng-container *ngIf="threadMessages.length === 1">
+              Antwort</ng-container
+            >
+          </div>
+          <div *ngIf="lastThreadMessage" class="last-thread-response">
+            Letzte Antwort {{ lastThreadMessage.time | firebaseTime }}
           </div>
         </div>
-        <div class="add-reaction-btn" (click)="toggleEmojiPicker()">
-          <app-emoji-picker
-            (emojiSelected)="onEmojiSelected($event)"
-            (mouseleave)="showEmojiPicker = false"
-            *ngIf="showEmojiPicker"
-            class="emoji-picker"
-          ></app-emoji-picker>
+        <div class="reactions-view" *ngIf="message.reactions.length >= 1">
+          <div
+            *ngFor="let reaction of message.reactions"
+            class="reaction"
+            (click)="onEmojiSelected(reaction.value)"
+          >
+            <div class="emoji">{{ reaction.value }}</div>
+            <div class="amount">{{ reaction.authors.length }}</div>
+            <div class="reaction-authors">
+              <div class="reaction-authors-emoji">{{ reaction.value }}</div>
+              <ng-container *ngIf="reaction.authors.length > 0">
+                <ng-container
+                  *ngIf="
+                    getAuthorName(reaction.authors[0])
+                      | async as firstAuthorName
+                  "
+                >
+                  <div class="reaction-author-name">
+                    {{ firstAuthorName }}
+                    <div class="more-users" *ngIf="reaction.authors.length > 1">
+                      +{{ reaction.authors.length - 1 }}
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <div *ngIf="reaction.authors.length < 2" class="font16-400 dfc">
+                hat reagiert
+              </div>
+              <div *ngIf="reaction.authors.length >= 2" class="font16-400 dfc">
+                haben reagiert
+              </div>
+            </div>
+          </div>
+          <div class="add-reaction-btn" (click)="toggleEmojiPicker()">
+            <app-emoji-picker
+              (emojiSelected)="onEmojiSelected($event)"
+              (mouseleave)="showEmojiPicker = false"
+              *ngIf="showEmojiPicker"
+              class="emoji-picker"
+            ></app-emoji-picker>
+          </div>
         </div>
       </div>
     </div>
+    <app-reactions-menu
+      *ngIf="usersUid !== []"
+      [loggedInUserId]="loggedInUserId ?? ''"
+      [channelUsersUid]="usersUid"
+      (messageToEdit)="setEditMessage($event)"
+      [showThread]="showThread"
+      [lastTwoReactions]="lastTwoReactions"
+      [message]="message"
+      [ownMessage]="message.author === loggedInUserId"
+      [ngClass]="
+        message.author === loggedInUserId
+          ? 'reactions-menu-own-message'
+          : 'reactions-menu'
+      "
+    ></app-reactions-menu>
   </div>
-  <app-reactions-menu
-    *ngIf="usersUid !== []"
-    [loggedInUserId]="loggedInUserId ?? ''"
-    [channelUsersUid]="usersUid"
-    (messageToEdit)="setEditMessage($event)"
-    [showThread]="showThread"
-    [lastTwoReactions]="lastTwoReactions"
-    [message]="message"
-    [ownMessage]="message.author === loggedInUserId"
-    [ngClass]="
-      message.author === loggedInUserId
-        ? 'reactions-menu-own-message'
-        : 'reactions-menu'
-    "
-  ></app-reactions-menu>
 </section>

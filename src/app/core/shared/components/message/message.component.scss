@@ -2,17 +2,11 @@
 
 section {
   position: relative;
+  padding-top: 20px;
   width: 100%;
   @include dFlex();
-  padding: 30px 45px;
 
   &:hover {
-    background-color: $bg-color;
-
-    .msg-text {
-      background-color: white;
-    }
-
     .reactions-menu,
     .reactions-menu-own-message {
       opacity: 1;
@@ -20,7 +14,20 @@ section {
       transform: translateX(0);
       z-index: 5;
     }
+    .expand-hover-wrapper {
+      background-color: $bg-color;
+    }
+    .msg-text {
+      background-color: white;
+    }
   }
+}
+
+.expand-hover-wrapper {
+  position: relative;
+  width: 100%;
+  @include dFlex();
+  padding: 30px 45px;
 }
 
 .msg-wrapper {
@@ -94,7 +101,7 @@ section {
 .reactions-menu {
   position: absolute;
   right: 20px;
-  top: -33px;
+  top: -26px;
   opacity: 0;
   visibility: hidden;
   transform: translateX(50px);
@@ -104,7 +111,7 @@ section {
 .reactions-menu-own-message {
   position: absolute;
   left: 45px;
-  top: -23px;
+  top: -26px;
   opacity: 0;
   visibility: hidden;
   transform: translateX(50px);
@@ -242,7 +249,7 @@ section {
 
 @media (max-width: 550px) {
   section {
-    padding: 10px 5px 10px 15px;
+    padding: 17px 5px 10px 15px;
   }
 
   .img-wrapper {
