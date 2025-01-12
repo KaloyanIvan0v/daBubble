@@ -6,6 +6,7 @@ import { MainService } from '../../../services/main-service/main.service';
 import { CommonModule } from '@angular/common';
 
 /**
+ * MobileUserMenuComponent handles the display and interactions of the mobile user menu,
  * including user logout and profile popup management.
  */
 @Component({
@@ -28,15 +29,7 @@ export class MobileUserMenuComponent {
     private router: Router,
     public workspaceService: WorkspaceService,
     public mainService: MainService
-  ) {
-    // Sets up an effect to log the visibility state of the mobile user menu.
-    effect(() => {
-      console.log(
-        'MobileUserMenu visibility (effect):',
-        this.workspaceService.mobileUserMenuPopUp()
-      );
-    });
-  }
+  ) {}
 
   /**
    * Logs out the current user by performing necessary state updates and navigating to the login page.
