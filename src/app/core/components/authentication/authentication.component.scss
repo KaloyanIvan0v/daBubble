@@ -158,7 +158,9 @@ h4 {
 }
 
 .privacy-mode {
-  overflow: auto;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: $light-purple transparent;
 }
 
 form {
