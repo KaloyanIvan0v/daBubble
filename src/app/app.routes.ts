@@ -11,6 +11,7 @@ import { DirectChatComponent } from './core/components/main/main-workspace/direc
 import { ChannelChatComponent } from './core/components/main/main-workspace/channel-chat/channel-chat.component';
 import { ChooseAvatarComponent } from './core/components/authentication/choose-avatar/choose-avatar.component';
 import { ImprintComponent } from './core/components/authentication/imprint/imprint.component';
+import { PrivacyPolicyComponent } from './core/components/authentication/privacy-policy/privacy-policy.component';
 
 export const routes: Routes = [
   {
@@ -51,6 +52,11 @@ export const routes: Routes = [
         path: 'imprint',
         component: ImprintComponent,
         data: { modeClass: 'imprint-mode' },
+      },
+      {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent,
+        data: { modeClass: 'privacy-mode' },
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       { path: '**', redirectTo: 'login' },

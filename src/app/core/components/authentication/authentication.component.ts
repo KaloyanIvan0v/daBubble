@@ -207,4 +207,10 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
       relativeTo: this.activatedRoute,
     });
   }
+
+  navigateToPrivacyPolicy() {
+    this.router.navigate(['privacy-policy'], {
+      relativeTo: this.activatedRoute,
+    });
+  }
 }
