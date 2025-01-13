@@ -126,7 +126,8 @@ h4 {
   z-index: -1;
 }
 
-.login-mode {
+.login-mode,
+.privacy-mode {
   height: 769px;
   width: 606px;
 }
@@ -154,6 +155,10 @@ h4 {
 .imprint-mode {
   height: 469px;
   width: 676px;
+}
+
+.privacy-mode {
+  overflow: auto;
 }
 
 form {
@@ -281,7 +286,7 @@ form {
 
 .bottom-links {
   position: fixed;
-  bottom: 100px;
+  bottom: 15px;
   width: 100%;
   @include dFlex();
 
@@ -415,7 +420,8 @@ form {
 }
 
 @media (max-width: 1200px) {
-  .login-mode {
+  .login-mode,
+  .privacy-mode {
     height: 675px;
     width: 565px;
   }
@@ -506,7 +512,8 @@ form {
 
 @media (max-width: 650px) {
   .login-mode,
-  .signup-mode {
+  .signup-mode,
+  .privacy-mode {
     height: 530px;
     width: 85%;
   }
@@ -681,7 +688,8 @@ form {
 
 @media (max-width: 450px) {
   .login-mode,
-  .signup-mode {
+  .signup-mode,
+  .privacy-mode {
     height: 500px;
   }
 
@@ -757,7 +765,8 @@ form {
     height: 15vh;
   }
 
-  .login-mode {
+  .login-mode,
+  .privacy-mode {
     height: 485px;
   }
 
@@ -782,7 +791,8 @@ form {
     height: 13vh;
   }
 
-  .login-mode {
+  .login-mode,
+  .privacy-mode {
     height: 475px;
   }
 

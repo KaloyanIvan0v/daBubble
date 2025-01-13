@@ -104,4 +104,10 @@ export class SignupComponent {
       relativeTo: this.activatedRoute.parent,
     });
   }
+
+  navigateToPrivacyPolicy() {
+    this.router.navigate(['/authentication/privacy-policy'], {
+      relativeTo: this.activatedRoute,
+    });
+  }
 }
