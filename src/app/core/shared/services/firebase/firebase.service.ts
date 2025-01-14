@@ -388,4 +388,8 @@ export class FirebaseServicesService implements OnDestroy {
   isEmail(text: string): boolean {
     return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(text);
   }
+
+  getAllChannels(): Observable<Channel[]> {
+    return this.getCollection<Channel>('channels', false);
+  }
 }

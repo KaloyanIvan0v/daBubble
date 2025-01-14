@@ -6,8 +6,8 @@
         placeholder="{{ placeholder() }}"
         [(ngModel)]="inputData.message"
         (input)="onMessageChange()"
-        (keyup)="checkForMentionSign()"
-        (click)="checkForMentionSign()"
+        (keyup)="onMessageChange()"
+        (click)="onMessageChange()"
         #messageTextarea
       ></textarea>
 
@@ -34,6 +34,13 @@
         (mouseleave)="closeUserList()"
         (selectedUser)="returnUser($event)"
       ></app-user-list>
+      <app-channels-list
+        *ngIf="showChannelListTextArea"
+        class="channel-list overflow-y-scroll"
+        [channelUids]="filteredChannelUids"
+        (mouseleave)="showChannelListTextArea = false"
+        (selectedChannel)="returnChannel($event)"
+      ></app-channels-list>
     </div>
   </div>
   <div class="message-options">

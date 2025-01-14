@@ -1,9 +1,19 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  SimpleChanges,
+  OnChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { Channel } from '../../models/channel.class';
+import { firstValueFrom } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-channels-list',
@@ -12,33 +22,42 @@ import { Channel } from '../../models/channel.class';
   templateUrl: './channels-list.component.html',
   styleUrls: ['./channels-list.component.scss'],
 })
-export class ChannelsListComponent {
-  /**
-   * List of channels passed into this component.
-   */
+export class ChannelsListComponent implements OnInit, OnChanges {
   @Input() channelsInput: Channel[] = [];
-
-  /**
-   * Emits the ID of the selected channel.
-   */
+  @Input() channelUids: string[] = [];
   @Output() selectedChannel = new EventEmitter<string>();
 
-  /**
-   * Creates an instance of ChannelsListComponent.
-   * @param firebaseService - Firebase service for data operations
-   * @param workspaceService - Workspace service for managing workspace state
-   * @param authService - Authentication service
-   */
   constructor(
     public firebaseService: FirebaseServicesService,
     public workspaceService: WorkspaceService,
     public authService: AuthService
   ) {}
 
-  /**
-   * Emits the ID of the clicked channel to notify parent components.
-   * @param channelId - The ID of the clicked channel
-   */
+  ngOnInit(): void {
+    this.loadChannels();
+  }
+
+  async loadChannels(): Promise<void> {
+    if (this.channelUids && this.channelUids.length > 0) {
+      this.channelsInput = [];
+      for (const uid of this.channelUids) {
+        const channel$ = this.firebaseService.getChannel(uid);
+        const channel = await firstValueFrom(
+          channel$.pipe(filter((channelData) => channelData !== null))
+        );
+        if (channel) {
+          this.channelsInput.push(channel);
+        }
+      }
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['channelUids']) {
+      this.loadChannels();
+    }
+  }
+
   returnChannelId(channelId: string): void {
     this.selectedChannel.emit(channelId);
   }
