@@ -1,8 +1,9 @@
+import { user } from '@angular/fire/auth';
 import { Injectable, inject, signal } from '@angular/core';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Message } from 'src/app/core/shared/models/message.class';
 import { Thread } from 'src/app/core/shared/models/thread.class';
@@ -195,5 +196,30 @@ export class MainService {
           }
         });
     }
+  }
+
+  channelExists(channelName: string): Observable<boolean> {
+    const allChannels = this.firestore.getAllChannels();
+    return allChannels.pipe(
+      map((channels) =>
+        channels.some((channel) => channel.name.trim() === channelName.trim())
+      )
+    );
+  }
+
+  userNameExists(userName: string): Observable<boolean> {
+    const allUsers = this.firestore.getUsers();
+    return allUsers.pipe(
+      map((users) => users.some((user) => user.name.trim() === userName.trim()))
+    );
+  }
+
+  userEmailExists(userEmail: string): Observable<boolean> {
+    const allUsers = this.firestore.getUsers();
+    return allUsers.pipe(
+      map((users) =>
+        users.some((user) => user.email.trim() === userEmail.trim())
+      )
+    );
   }
 }

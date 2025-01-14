@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { FirebaseServicesService } from '../../../services/firebase/firebase.service';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
+import { MainService } from '../../../services/main-service/main.service';
+import { first, pipe } from 'rxjs';
 
 @Component({
   selector: 'app-add-channel',
@@ -18,6 +20,7 @@ export class AddChannelComponent {
 
   channelName: string = '';
   chanelDescription: string = '';
+  channelNameExists: boolean = false;
 
   /**
    * Constructs the AddChannelComponent with necessary service dependencies.
@@ -28,7 +31,8 @@ export class AddChannelComponent {
   constructor(
     public firebaseService: FirebaseServicesService,
     public authService: AuthService,
-    public workspaceService: WorkspaceService
+    public workspaceService: WorkspaceService,
+    public mainService: MainService
   ) {}
 
   /**
@@ -65,8 +69,8 @@ export class AddChannelComponent {
     const newChannel: Channel = {
       uid: [uid ?? ''],
       id: channelId,
-      name: this.channelName,
-      description: this.chanelDescription,
+      name: this.channelName.trim(),
+      description: this.chanelDescription.trim(),
       creator: uid ?? '',
     };
 
@@ -82,5 +86,18 @@ export class AddChannelComponent {
    */
   get popUpVisible() {
     return this.workspaceService.addChannelPopUp();
+  }
+
+  checkIfChannelNameExists() {
+    this.mainService
+      .channelExists(this.channelName)
+      .pipe(first())
+      .subscribe((exists) => {
+        this.channelNameExists = exists;
+      });
+  }
+
+  nameIsValid() {
+    return this.channelName.trim().length > 0;
   }
 }

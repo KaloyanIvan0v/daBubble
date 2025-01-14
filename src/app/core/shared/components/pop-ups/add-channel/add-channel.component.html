@@ -13,9 +13,13 @@
       <img src="assets/img/icons/tag-grey.svg" alt="" />
       <input
         [(ngModel)]="channelName"
+        (ngModelChange)="checkIfChannelNameExists()"
         placeholder="z.B Kooperationsprojekte"
         type="text"
       />
+    </div>
+    <div *ngIf="channelNameExists" class="channel-exists-warning">
+      Channel existiert bereits
     </div>
     <div class="font18-700">Beschreibung (optional)</div>
     <div class="pop-up-input">
@@ -26,7 +30,13 @@
       />
     </div>
     <div class="btn-wrapper">
-      <div class="primary-btn" (click)="createChannel()">Erstellen</div>
+      <button
+        [disabled]="channelNameExists || !nameIsValid()"
+        class="primary-btn"
+        (click)="createChannel()"
+      >
+        Erstellen
+      </button>
     </div>
   </div>
   <div class="pop-up-shadow" (click)="closePopUp()"></div>

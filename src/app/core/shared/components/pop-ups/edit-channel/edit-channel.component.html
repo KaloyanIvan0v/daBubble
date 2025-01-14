@@ -32,7 +32,12 @@
           *ngIf="editNameActive"
           class="purple3-btn"
         >
-          <span class="edit-text">Speichern</span>
+          <button
+            ngClass="{{ channelNameExists ? 'disabled' : 'purple3-btn' }}"
+            [disabled]="channelNameExists"
+          >
+            Speichern
+          </button>
         </div>
       </div>
       <div
@@ -45,8 +50,12 @@
           placeholder="z.B Kooperationsprojekte"
           type="text"
           [(ngModel)]="channelData.name"
+          (ngModelChange)="checkIfChannelNameExists()"
         />
         <div *ngIf="!editNameActive">{{ (channelData$ | async)?.name }}</div>
+      </div>
+      <div *ngIf="channelNameExists" class="channel-exists-warning">
+        Channel existiert bereits
       </div>
     </div>
 

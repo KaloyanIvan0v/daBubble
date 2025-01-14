@@ -17,6 +17,12 @@ section {
   z-index: 4;
 }
 
+.channel-exists-warning {
+  margin-top: -16px;
+  margin-left: 5%;
+  color: red;
+}
+
 .tittle-closse {
   @include dFlex($jc: space-between);
   width: 100%;

@@ -1,15 +1,16 @@
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { Component, effect, OnDestroy } from '@angular/core';
+import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, filter } from 'rxjs';
 import { User } from 'src/app/core/shared/models/user.class';
 import { Router } from '@angular/router';
 import { takeUntil, first } from 'rxjs/operators';
 import { UserListComponent } from '../../user-list/user-list.component';
+import { MainService } from '../../../services/main-service/main.service';
 
 @Component({
   selector: 'app-edit-channel',
@@ -18,7 +19,7 @@ import { UserListComponent } from '../../user-list/user-list.component';
   templateUrl: './edit-channel.component.html',
   styleUrls: ['./edit-channel.component.scss'],
 })
-export class EditChannelComponent implements OnDestroy {
+export class EditChannelComponent implements OnDestroy, OnInit {
   channelData$!: Observable<Channel>;
   channelData!: Channel;
   currentChannelId: string = '';
@@ -27,6 +28,8 @@ export class EditChannelComponent implements OnDestroy {
 
   editNameActive: boolean = false;
   editDescriptionActive: boolean = false;
+  channelNameExists: boolean = false;
+  initialChannelName: string = '';
 
   /**
    * Constructs the EditChannelComponent with necessary service dependencies.
@@ -40,6 +43,7 @@ export class EditChannelComponent implements OnDestroy {
     public workspaceService: WorkspaceService,
     public firebaseService: FirebaseServicesService,
     public authService: AuthService,
+    public mainService: MainService,
     private router: Router
   ) {
     this.initializeChannelData();
@@ -91,9 +95,19 @@ export class EditChannelComponent implements OnDestroy {
    * This method updates the local `channelData` property with the latest channel information.
    */
   setInputValues() {
-    this.channelData$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
-      this.channelData = data;
-    });
+    this.channelData$
+      .pipe(first((data) => data != null))
+      .subscribe((data: Channel) => {
+        if (!this.channelData) {
+          this.channelData = {} as Channel;
+        }
+        this.channelData.name = data.name;
+        this.initialChannelName = this.channelData.name;
+      });
+  }
+
+  ngOnInit(): void {
+    //this.initialChannelName = this.channelData.name;
   }
 
   /**
@@ -134,11 +148,16 @@ export class EditChannelComponent implements OnDestroy {
    * This method updates the channel document in Firebase with the current `channelData`.
    */
   saveChanges() {
-    this.firebaseService.updateDoc<Channel>(
-      'channels',
-      this.currentChannelId,
-      this.channelData
-    );
+    if (this.channelData.name) {
+      this.channelData.name = this.channelData.name.trim();
+      this.firebaseService.updateDoc<Channel>(
+        'channels',
+        this.currentChannelId,
+        this.channelData
+      );
+    } else {
+      console.error('Name ist nicht definiert.');
+    }
   }
 
   /**
@@ -209,5 +228,22 @@ export class EditChannelComponent implements OnDestroy {
    */
   openAddUserToChannelPopUp() {
     this.workspaceService.addUserToChannelPopUp.set(true);
+  }
+
+  checkIfChannelNameExists() {
+    if (this.channelData.name.trim() === this.initialChannelName) {
+      this.channelNameExists = false;
+    } else {
+      this.mainService
+        .channelExists(this.channelData.name)
+        .pipe(first())
+        .subscribe((exists) => {
+          this.channelNameExists = exists;
+        });
+    }
+  }
+
+  nameIsValid() {
+    return this.channelData.name.trim().length > 0;
   }
 }
