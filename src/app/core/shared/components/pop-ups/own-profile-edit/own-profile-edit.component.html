@@ -26,6 +26,9 @@
       <div class="input-wrapper">
         <input [(ngModel)]="userData.name" type="text" />
       </div>
+      <div *ngIf="!validName()" class="error-message">
+        gib eine gueltigen Name ein
+      </div>
     </div>
     <div class="edit-section-wrapper">
       <div class="title">
@@ -35,10 +38,19 @@
       <div class="pop-up-input">
         <input [(ngModel)]="userData.email" type="text" />
       </div>
+      <div *ngIf="!validEmail()" class="error-message">
+        gib eine gueltige E-Mail-Adresse ein
+      </div>
     </div>
     <div class="btn-wrapper">
       <button class="secondary-btn" (click)="cancelEdit()">Abbrechen</button>
-      <button class="primary-btn" (click)="saveEdit()">Speichern</button>
+      <button
+        [disabled]="!validEmail() || !validName()"
+        class="primary-btn"
+        (click)="saveEdit()"
+      >
+        Speichern
+      </button>
     </div>
   </div>
   <div class="pop-up-shadow-sec-layer" (click)="closePopUp()"></div>

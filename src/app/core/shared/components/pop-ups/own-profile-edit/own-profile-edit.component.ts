@@ -108,4 +108,13 @@ export class OwnProfileEditComponent implements OnInit, OnDestroy {
   setUserPhoto(photo: string): void {
     this.userData.photoURL = photo;
   }
+
+  validEmail(): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(this.userData.email);
+  }
+
+  validName(): boolean {
+    return this.userData.name.trim().length > 1;
+  }
 }

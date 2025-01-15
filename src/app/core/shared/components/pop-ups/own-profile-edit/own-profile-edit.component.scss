@@ -96,6 +96,12 @@ section {
   gap: 20px;
 }
 
+.error-message {
+  color: red;
+  font-size: 16px;
+  margin-left: 5%;
+}
+
 @media (max-width: 960px) {
   .pop-up-wrapper {
     max-width: 398px;
