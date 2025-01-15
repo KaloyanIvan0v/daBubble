@@ -58,7 +58,6 @@ export class EditChannelComponent implements OnDestroy {
   private initializeChannelData() {
     effect(() => {
       this.currentChannelId = this.workspaceService.currentActiveUnitId();
-      // Hier z. B. => channelData$
       this.channelData$ = this.firebaseService
         .getChannel(this.currentChannelId)
         .pipe(takeUntil(this.destroy$));
@@ -96,11 +95,8 @@ export class EditChannelComponent implements OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe((data: Channel) => {
-        if (!this.channelData) {
-          this.channelData = {} as Channel;
-        }
-        this.channelData.name = data.name;
-        this.initialChannelName = this.channelData.name;
+        this.channelData = data;
+        this.initialChannelName = data.name;
       });
   }
 
@@ -184,6 +180,7 @@ export class EditChannelComponent implements OnDestroy {
    * This method ensures that the channel's user list is updated to exclude the current user.
    */
   private async removeCurrentUserFromChannel() {
+    console.log(this.channelData.uid);
     const currentLoggedInUserUid = await this.authService.getCurrentUserUID();
     this.channelData.uid = this.channelData.uid.filter(
       (uid) => uid !== currentLoggedInUserUid
