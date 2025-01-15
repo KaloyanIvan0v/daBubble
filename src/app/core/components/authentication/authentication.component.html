@@ -37,12 +37,25 @@
 
   <div class="logo-container d-none">
     <img src="assets/img/logo-long.svg" alt="logo" class="d-none" #mainLogo />
+    <div class="sign-in" *ngIf="currentModeClass === 'login-mode'">
+      <div>
+        <h4>Neu bei DaBubble?</h4>
+      </div>
+
+      <div
+        (click)="navigateToSignup()"
+        class="link"
+        *ngIf="currentModeClass === 'login-mode'"
+      >
+        <span>Konto erstellen</span>
+      </div>
+    </div>
   </div>
-  <div class="sign-in" *ngIf="currentModeClass === 'login-mode'">
+
+  <div class="sign-in-mobile" *ngIf="currentModeClass === 'login-mode'">
     <div>
       <h4>Neu bei DaBubble?</h4>
     </div>
-
     <div
       (click)="navigateToSignup()"
       class="link"

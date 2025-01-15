@@ -23,25 +23,25 @@ h4 {
   font-weight: 400;
   line-height: 24px;
   text-align: center;
-  margin-top: 30px;
 }
 
 .authentication {
   min-height: 100vh;
   background-color: $bg-color;
+  @include dFlex($jc: center);
 }
 
 .logo-container {
   position: absolute;
+  width: 100%;
+  max-width: 1800px;
   top: 30px;
-  left: 30px;
-
   display: flex;
-  justify-content: center;
   align-items: center;
   img {
     width: 243px;
     height: auto;
+    margin-left: 20px;
   }
 }
 
@@ -68,10 +68,14 @@ h4 {
 
 .sign-in {
   position: absolute;
-  top: 30px;
+  top: 0;
   right: 30px;
   display: flex;
   flex-direction: column;
+}
+
+.sign-in-mobile {
+  display: none;
 }
 
 .auth-wrapper {
@@ -433,16 +437,8 @@ form {
     width: 565px;
   }
 
-  .sign-in {
-    top: 0px;
-  }
-
   h2 {
     margin-top: 45px;
-  }
-
-  h4 {
-    margin-top: 25px;
   }
 
   .inputs-container {
@@ -534,6 +530,7 @@ form {
   }
 
   .logo-container {
+    justify-content: center;
     left: unset;
     width: 100%;
     top: 0;
@@ -542,11 +539,13 @@ form {
   }
 
   .sign-in {
-    top: unset;
-    right: unset;
-    bottom: 0;
+    display: none;
+  }
+
+  .sign-in-mobile {
+    position: fixed;
+    bottom: 5%;
     width: 100%;
-    height: 20vh;
     @include dFlex($ai: center, $fd: column, $jc: flex-start);
   }
 
@@ -557,7 +556,6 @@ form {
 
   h4 {
     font-size: 17px;
-    margin-top: 5px;
   }
 
   .inputs-container {
@@ -704,13 +702,8 @@ form {
     font-size: 32px;
   }
 
-  h4 {
-    margin-top: 3px;
-  }
-
   .link-text,
   .link,
-  .sign-in,
   h4 {
     font-size: 16px;
   }
@@ -762,8 +755,7 @@ form {
     height: 55%;
   }
 
-  .logo-container,
-  .sign-in {
+  .logo-container {
     height: 15vh;
   }
 
@@ -788,8 +780,7 @@ form {
 }
 
 @media (max-height: 670px) {
-  .logo-container,
-  .sign-in {
+  .logo-container {
     height: 13vh;
   }
 

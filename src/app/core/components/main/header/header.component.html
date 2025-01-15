@@ -1,37 +1,39 @@
-<section>
-  <div class="logo-container">
-    <div
-      *ngIf="showDevSpaceOnMobile"
-      (click)="statefulWindowService.backToListOnMobile()"
-      class="arrow-left"
-      alt="arrow-left"
-    ></div>
-    <img
-      [src]="logoSrc"
-      alt="logo"
-      [ngClass]="{ 'width-height-50': showDevSpaceOnMobile }"
-    />
-    <div *ngIf="showDevSpaceOnMobile" class="logo-name">Devspace</div>
-  </div>
-  <app-search-input #searchArea></app-search-input>
-  <!-- Use *ngIf to assign the async value to a template variable -->
-  <div
-    class="user-wrapper"
-    (click)="openPopUp()"
-    *ngIf="userData$ | async as userData"
-  >
-    <div class="user-name">{{ userData.name }}</div>
-    <div class="user-img">
+<div class="header-container">
+  <section>
+    <div class="logo-container">
+      <div
+        *ngIf="showDevSpaceOnMobile"
+        (click)="statefulWindowService.backToListOnMobile()"
+        class="arrow-left"
+        alt="arrow-left"
+      ></div>
       <img
-        referrerpolicy="no-referrer"
-        [src]="
-          userData.photoURL ||
-          'assets/img/profile-img/profile-img-placeholder.svg'
-        "
-        alt="avatar"
+        [src]="logoSrc"
+        alt="logo"
+        [ngClass]="{ 'width-height-50': showDevSpaceOnMobile }"
       />
-      <div class="user-status"></div>
+      <div *ngIf="showDevSpaceOnMobile" class="logo-name">Devspace</div>
     </div>
-    <div class="user-menu"></div>
-  </div>
-</section>
+    <app-search-input #searchArea></app-search-input>
+    <!-- Use *ngIf to assign the async value to a template variable -->
+    <div
+      class="user-wrapper"
+      (click)="openPopUp()"
+      *ngIf="userData$ | async as userData"
+    >
+      <div class="user-name">{{ userData.name }}</div>
+      <div class="user-img">
+        <img
+          referrerpolicy="no-referrer"
+          [src]="
+            userData.photoURL ||
+            'assets/img/profile-img/profile-img-placeholder.svg'
+          "
+          alt="avatar"
+        />
+        <div class="user-status"></div>
+      </div>
+      <div class="user-menu"></div>
+    </div>
+  </section>
+</div>
