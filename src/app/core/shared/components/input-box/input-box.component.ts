@@ -8,6 +8,7 @@ import {
   ElementRef,
   OnInit,
   signal,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputBoxData } from 'src/app/core/shared/models/input.class';
@@ -18,7 +19,6 @@ import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { User } from 'src/app/core/shared/models/user.class';
 import { first } from 'rxjs/operators';
-import { Channel } from 'src/app/core/shared/models/channel.class';
 import { ChannelListComponent } from 'src/app/core/components/main/left-side-component/channel-list/channel-list.component';
 import { ChannelsListComponent } from '../channels-list/channels-list.component';
 import { MentionService } from '../../services/mention-service/mention.service';
@@ -37,7 +37,7 @@ import { MentionService } from '../../services/mention-service/mention.service';
   templateUrl: './input-box.component.html',
   styleUrls: ['./input-box.component.scss'],
 })
-export class InputBoxComponent implements OnChanges, OnInit {
+export class InputBoxComponent implements OnChanges, OnInit, AfterViewInit {
   @Input() messagePath: string = '';
   @Input() showEmojiPicker: boolean = false;
   @Input() receiverId: string | null = null;
@@ -55,6 +55,7 @@ export class InputBoxComponent implements OnChanges, OnInit {
 
   @ViewChild('mirrorElement')
   mirrorElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('inputField') inputElement!: ElementRef<HTMLInputElement>;
 
   userListBottom = 0;
   userListLeft = 0;
@@ -95,6 +96,18 @@ export class InputBoxComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges) {
     this.handleChangeMessageToEdit(changes);
     this.handleChangePathOrReceiver(changes);
+
+    if (changes['messagePath']) {
+      setTimeout(() => this.focusInput(), 200);
+    }
+  }
+
+  ngAfterViewInit() {
+    this.inputElement.nativeElement.focus();
+  }
+
+  focusInput(): void {
+    this.inputElement.nativeElement.focus();
   }
 
   /**

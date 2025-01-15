@@ -6,7 +6,8 @@ import { WorkspaceService } from '../../../services/workspace-service/workspace.
 import { User } from '../../../models/user.class';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-own-profile-edit',
@@ -29,6 +30,7 @@ export class OwnProfileEditComponent implements OnInit, OnDestroy {
   ];
 
   private userSubscription?: Subscription;
+  private destroy$ = new Subject<void>();
 
   constructor(
     public workspaceService: WorkspaceService,
@@ -42,8 +44,9 @@ export class OwnProfileEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.getCurrentUserUID().then((userId) => {
       if (userId) {
-        this.userSubscription = this.firebaseService
+        this.firebaseService
           .getUser(userId)
+          .pipe(takeUntil(this.destroy$))
           .subscribe((user: User) => {
             this.userData = { ...user };
           });
@@ -56,6 +59,8 @@ export class OwnProfileEditComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     this.userSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**

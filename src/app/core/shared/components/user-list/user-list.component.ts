@@ -12,7 +12,6 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/shared/services/auth-services/auth.service';
 import { FirebaseServicesService } from 'src/app/core/shared/services/firebase/firebase.service';
-import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { User } from 'src/app/core/shared/models/user.class';
 
 @Component({
@@ -33,7 +32,6 @@ export class UserListComponent implements OnChanges, OnDestroy, OnInit {
 
   constructor(
     private firebaseService: FirebaseServicesService,
-    private workspaceService: WorkspaceService,
     private authService: AuthService
   ) {}
 
@@ -42,6 +40,7 @@ export class UserListComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (!this.usersUid) return;
     if (changes['usersUid'] && this.usersUid.length > 0) {
       this.loadUsersByUids(this.usersUid);
     }

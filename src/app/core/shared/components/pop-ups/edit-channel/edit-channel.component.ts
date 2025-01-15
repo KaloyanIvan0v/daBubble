@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../services/workspace-service/workspace.service';
 import { Channel } from 'src/app/core/shared/models/channel.class';
-import { Observable, Subject, filter } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { User } from 'src/app/core/shared/models/user.class';
 import { Router } from '@angular/router';
 import { takeUntil, first } from 'rxjs/operators';
@@ -19,25 +19,26 @@ import { MainService } from '../../../services/main-service/main.service';
   templateUrl: './edit-channel.component.html',
   styleUrls: ['./edit-channel.component.scss'],
 })
-export class EditChannelComponent implements OnDestroy, OnInit {
+export class EditChannelComponent implements OnDestroy {
   channelData$!: Observable<Channel>;
   channelData!: Channel;
   currentChannelId: string = '';
   channelCreator$!: Observable<User>;
-  private destroy$ = new Subject<void>();
 
   editNameActive: boolean = false;
   editDescriptionActive: boolean = false;
   channelNameExists: boolean = false;
   initialChannelName: string = '';
+  private destroy$ = new Subject<void>();
 
   /**
    * Constructs the EditChannelComponent with necessary service dependencies.
-   * Initializes the channel data.
+   * Initializes the active channel's data and subscribes to it.
    * @param workspaceService Service for managing workspace-related data.
    * @param firebaseService Service for interacting with Firebase.
-   * @param authService Service for authentication and user information.
-   * @param router Router service for navigation.
+   * @param AuthService Service for authentication and user information.
+   * @param MainService Service for providing main application state.
+   * @param Router Service for navigating within the application.
    */
   constructor(
     public workspaceService: WorkspaceService,
@@ -50,29 +51,34 @@ export class EditChannelComponent implements OnDestroy, OnInit {
   }
 
   /**
-   * Initializes the channel data by setting up reactive effects and subscriptions.
-   * This method sets up an effect to monitor changes in the active channel and subscribes to channel data updates.
+   * Initializes the active channel's data by fetching it from Firebase.
+   * Subscribes to the channel data and updates the local variables when the active channel changes.
+   * Also sets the input values and subscribes to the channel data.
    */
   private initializeChannelData() {
     effect(() => {
       this.currentChannelId = this.workspaceService.currentActiveUnitId();
-      this.channelData$ = this.firebaseService.getChannel(
-        this.currentChannelId
-      );
+      // Hier z. B. => channelData$
+      this.channelData$ = this.firebaseService
+        .getChannel(this.currentChannelId)
+        .pipe(takeUntil(this.destroy$));
       this.setInputValues();
       this.subscribeToChannelData();
     });
   }
 
   /**
-   * Subscribes to the channel data observable to receive updates about the current channel.
-   * It ensures that the subscription is terminated when the component is destroyed.
+   * Subscribes to channel data and extracts the channel creator's information.
+   * Subscribes to the channel data observable with the following effects:
+   * 1. Ensures that at least one value is emitted by the observable before subscribing.
+   * 2. Unsubscribes from the observable when the component is destroyed.
+   * When the channel data is received, sets the channel creator.
    */
   private subscribeToChannelData() {
     this.channelData$
       .pipe(
         first((channelData) => channelData !== null),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$) // <== takeUntil
       )
       .subscribe((channelData: Channel) => {
         this.setChannelCreator(channelData.creator);
@@ -80,23 +86,15 @@ export class EditChannelComponent implements OnDestroy, OnInit {
   }
 
   /**
-   * Sets the creator of the channel by fetching the creator's user data from Firebase.
-   * @param creatorUid The UID of the channel creator.
-   */
-  async setChannelCreator(creatorUid: string) {
-    const currentUserUid = await this.authService.getCurrentUserUID();
-    if (currentUserUid) {
-      this.channelCreator$ = this.firebaseService.getUser(creatorUid);
-    }
-  }
-
-  /**
-   * Sets the input values for the channel data by subscribing to the channel data observable.
-   * This method updates the local `channelData` property with the latest channel information.
+   * Subscribes to channel data and sets the input values for the channel name and its initial value.
+   * When the channel data is received, sets the channel name and its initial value.
    */
   setInputValues() {
     this.channelData$
-      .pipe(first((data) => data != null))
+      .pipe(
+        first((data) => data != null),
+        takeUntil(this.destroy$)
+      )
       .subscribe((data: Channel) => {
         if (!this.channelData) {
           this.channelData = {} as Channel;
@@ -106,14 +104,20 @@ export class EditChannelComponent implements OnDestroy, OnInit {
       });
   }
 
-  ngOnInit(): void {
-    //this.initialChannelName = this.channelData.name;
+  /**
+   * Subscribes to channel data and sets the channel creator's information.
+   * When the channel data is received, sets the channel creator.
+   * @param creatorUid The UID of the channel creator.
+   */
+  async setChannelCreator(creatorUid: string) {
+    const currentUserUid = await this.authService.getCurrentUserUID();
+    if (currentUserUid) {
+      this.channelCreator$ = this.firebaseService
+        .getUser(creatorUid)
+        .pipe(takeUntil(this.destroy$));
+    }
   }
 
-  /**
-   * Lifecycle hook that is called when the component is destroyed.
-   * Cleans up all active subscriptions to prevent memory leaks.
-   */
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
