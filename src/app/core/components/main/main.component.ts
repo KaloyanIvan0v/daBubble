@@ -22,7 +22,7 @@ import { OwnProfileViewComponent } from '../../shared/components/pop-ups/own-pro
 import { AddChannelComponent } from '../../shared/components/pop-ups/add-channel/add-channel.component';
 import { ProfileViewComponent } from '../../shared/components/pop-ups/profile-view/profile-view.component';
 import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar/edit-avatar.component';
-
+import { AddMemberAfterCreateComponent } from '../../shared/components/pop-ups/add-member-after-create/add-member-after-create.component';
 @Component({
   selector: 'app-main',
   standalone: true,
@@ -39,6 +39,7 @@ import { EditAvatarComponent } from '../../shared/components/pop-ups/edit-avatar
     AddChannelComponent,
     ProfileViewComponent,
     EditAvatarComponent,
+    AddMemberAfterCreateComponent,
   ],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],

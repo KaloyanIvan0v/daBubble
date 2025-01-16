@@ -265,6 +265,15 @@ export class FirebaseServicesService implements OnDestroy {
     return (await addDoc(this.getCollectionRef(collection), data)).id;
   }
 
+  async createDocWithCustomId<T extends Record<string, any>>(
+    collection: string,
+    docId: string,
+    data: T
+  ): Promise<void> {
+    const docRef = doc(this.getCollectionRef(collection), docId);
+    await setDoc(docRef, data);
+  }
+
   /**
    * Updates an existing document with partial data.
    * @param collection Collection name.

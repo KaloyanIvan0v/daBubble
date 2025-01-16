@@ -180,7 +180,6 @@ export class EditChannelComponent implements OnDestroy {
    * This method ensures that the channel's user list is updated to exclude the current user.
    */
   private async removeCurrentUserFromChannel() {
-    console.log(this.channelData.uid);
     const currentLoggedInUserUid = await this.authService.getCurrentUserUID();
     this.channelData.uid = this.channelData.uid.filter(
       (uid) => uid !== currentLoggedInUserUid

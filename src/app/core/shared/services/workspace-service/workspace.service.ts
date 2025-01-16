@@ -34,6 +34,7 @@ export class WorkspaceService {
   userMenuPopUp = signal(false);
   mobileUserMenuPopUp = signal(false);
   editAvatarPopUp = signal(false);
+  addUserAfterCreateChannelPopUp = signal(false);
 
   private userUpdates = new BehaviorSubject<any>(null);
   userUpdates$ = this.userUpdates.asObservable();

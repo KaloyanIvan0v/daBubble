@@ -7,6 +7,8 @@ import { AuthService } from 'src/app/core/shared/services/auth-services/auth.ser
 import { WorkspaceService } from 'src/app/core/shared/services/workspace-service/workspace.service';
 import { MainService } from '../../../services/main-service/main.service';
 import { first, pipe } from 'rxjs';
+import { Router } from '@angular/router';
+import { StatefulWindowServiceService } from '../../../services/stateful-window-service/stateful-window-service.service';
 
 @Component({
   selector: 'app-add-channel',
@@ -32,7 +34,9 @@ export class AddChannelComponent {
     public firebaseService: FirebaseServicesService,
     public authService: AuthService,
     public workspaceService: WorkspaceService,
-    public mainService: MainService
+    public mainService: MainService,
+    private statefulWindowService: StatefulWindowServiceService,
+    private router: Router
   ) {}
 
   /**
@@ -63,9 +67,7 @@ export class AddChannelComponent {
    */
   async createChannel() {
     const uid = await this.authService.getCurrentUserUID();
-
     const channelId = this.firebaseService.getUniqueId();
-
     const newChannel: Channel = {
       uid: [uid ?? ''],
       id: channelId,
@@ -74,9 +76,15 @@ export class AddChannelComponent {
       creator: uid ?? '',
     };
 
-    this.firebaseService.addDoc('channels', newChannel);
+    this.firebaseService.createDocWithCustomId(
+      'channels',
+      channelId,
+      newChannel
+    );
     this.clearForm();
     this.closePopUp();
+    this.navigateToChannelChat(channelId);
+    this.workspaceService.addUserAfterCreateChannelPopUp.set(true);
   }
 
   /**
@@ -99,5 +107,28 @@ export class AddChannelComponent {
 
   nameIsValid() {
     return this.channelName.trim().length > 0;
+  }
+
+  /**
+   * Navigate to the channel-chat page and set the currentActiveUnitId.
+   * Additionally, if the screen width is smaller than 960px, open the chat on mobile devices.
+   * @param currentActiveUnitId The id of the channel to be navigated to.
+   */
+  navigateToChannelChat(currentActiveUnitId: string) {
+    this.setCurrentActiveUnitId(currentActiveUnitId);
+    this.router.navigate(['dashboard', 'channel-chat']);
+    if (window.innerWidth < 960) {
+      this.statefulWindowService.openChatOnMobile();
+    }
+  }
+
+  /**
+   * Sets the current active unit ID in the workspace service.
+   * This ID is used to identify the currently active channel or unit.
+   * @param currentActiveUnitId - The ID of the channel to be set as the current active unit.
+   */
+
+  setCurrentActiveUnitId(currentActiveUnitId: string) {
+    this.workspaceService.currentActiveUnitId.set(currentActiveUnitId);
   }
 }
