@@ -544,7 +544,7 @@ form {
 
   .sign-in-mobile {
     position: fixed;
-    bottom: 5%;
+    bottom: 7%;
     width: 100%;
     @include dFlex($ai: center, $fd: column, $jc: flex-start);
   }
@@ -653,10 +653,6 @@ form {
       height: auto;
       margin-right: 10px;
     }
-  }
-
-  .bottom-links {
-    display: none;
   }
 }
 
@@ -793,6 +789,10 @@ form {
     margin-top: 10px;
   }
 
+  h4 {
+    font-size: 14px;
+  }
+
   .inputs-container {
     margin-bottom: 0;
   }
@@ -803,6 +803,21 @@ form {
   }
 
   .sign-in-mobile {
-    bottom: 2%;
+    bottom: 5%;
+  }
+
+  .link {
+    margin-top: 0;
+    font-size: 14px;
+    padding: 5px 15px 5px 15px;
+  }
+
+  .bottom-links {
+    font-size: 14px;
+    bottom: 5px;
+
+    span {
+      padding: 2px 7px 2px 7px;
+    }
   }
 }
