@@ -49,15 +49,52 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
   @ViewChild('backgroundFade') backgroundFade!: ElementRef;
 
   ngOnInit(): void {
-    this.removeLoginAnimationAfterDelay();
+    this.checkAndPlayAnimation();
     this.setInitialModeClass();
     this.subscribeToRouteChanges();
   }
 
+  ngAfterViewInit(): void {
+    this.startAnimationSequence();
+  }
+
+  /**
+   * Checks if the logo animation has been played before and plays it if not.
+   *
+   * If the animation has been played before, the main logo is displayed
+   * immediately. Otherwise, the animation is played and the main logo is
+   * displayed after the animation has finished.
+   */
+  private checkAndPlayAnimation(): void {
+    const animationPlayed = localStorage.getItem('logoAnimationPlayed');
+
+    if (animationPlayed) {
+      this.removeLoginAnimation = true;
+      setTimeout(() => {
+        this.keepMainLogoDisplayed();
+      });
+    } else {
+      this.removeLoginAnimationAfterDelay();
+      localStorage.setItem('logoAnimationPlayed', 'true');
+    }
+  }
+
+  /**
+   * Removes the login animation after a delay of 2.7 seconds.
+   *
+   * This is used to give the animation enough time to finish before removing
+   * the logo animation container from the DOM.
+   */
   private removeLoginAnimationAfterDelay(): void {
     setTimeout(() => {
       this.removeLoginAnimation = true;
     }, 2700);
+  }
+
+  keepMainLogoDisplayed() {
+    if (this.mainLogo?.nativeElement) {
+      this.renderer.removeClass(this.mainLogo.nativeElement, 'd-none');
+    }
   }
 
   /**
@@ -104,10 +141,6 @@ export class AuthenticationComponent implements OnInit, AfterViewInit {
       childRoute = childRoute.firstChild;
     }
     return childRoute;
-  }
-
-  ngAfterViewInit(): void {
-    this.startAnimationSequence();
   }
 
   private startAnimationSequence(): void {
