@@ -70,12 +70,16 @@ export class AddMemberAfterCreateComponent implements OnDestroy {
   private initializeChannelData() {
     effect(() => {
       this.currentChannelId = this.workspaceService.currentActiveUnitId();
-      this.channelData$ = this.firebaseService.getChannel(
-        this.currentChannelId
-      );
-      this.channelData$.pipe(takeUntil(this.destroy$)).subscribe((channel) => {
-        this.channelData = channel;
-      });
+      if (this.currentChannelId) {
+        this.channelData$ = this.firebaseService.getChannel(
+          this.currentChannelId
+        );
+        this.channelData$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((channel) => {
+            this.channelData = channel;
+          });
+      }
     });
   }
 
@@ -110,7 +114,6 @@ export class AddMemberAfterCreateComponent implements OnDestroy {
     this.closePopUp();
     let newUids: string[] = [];
     if (this.allUserSelected) {
-      console.log('All users selected');
       newUids = this.users.map((user) => user.uid);
     } else {
       newUids = this.getSelectedUserUids();
